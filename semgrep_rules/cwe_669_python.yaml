@@ -1,0 +1,9 @@
+rules:
+- id: detect-cwe_669-python
+  languages:
+  - python
+  severity: medium
+  matchers:
+    - type: regex
+      pattern: |
+        \b(urllib3|urllib)\.(request|get|post|put|delete)\(.*?url=.*

@@ -1,0 +1,19 @@
+rules:
+  - id: detect-prototype_pollution-python
+    pattern-file: prototype_pollution.yaml
+    languages:
+      - python
+    severity: critical
+    metadata:
+      cwe:
+        - CWE-1321
+    description: Detects common sinks and patterns for prototype pollution in Django applications.
+    matchers:
+      - type: regex
+        pattern: |
+          \.update\([^{]*'Prototype'.*'
+        message: Potential prototype pollution through update method.
+      - type: regex
+        pattern: |
+          \.setdefault\([^{]*'Prototype'.*'
+        message: Potential prototype pollution through setdefault method.

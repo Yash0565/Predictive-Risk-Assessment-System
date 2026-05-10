@@ -1,0 +1,285 @@
+{
+  "sql_injection": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\aws-lambda\\security\\tainted-sql-string.yaml",
+    "rule_id": "tainted-sql-string",
+    "cwe_ids": [
+      "CWE-89"
+    ]
+  },
+  "resource_exhaustion": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\anthropic-missing-max-tokens\\anthropic-missing-max-tokens-python.yaml",
+    "rule_id": "anthropic-missing-max-tokens-python",
+    "cwe_ids": [
+      "CWE-400",
+      "CWE-407",
+      "CWE-674",
+      "CWE-770"
+    ]
+  },
+  "incorrect_permissions": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\lang\\security\\audit\\insecure-file-permissions.yaml",
+    "rule_id": "insecure-file-permissions",
+    "cwe_ids": [
+      "CWE-276"
+    ]
+  },
+  "injection": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\django\\security\\injection\\email\\xss-html-email-body.yaml",
+    "rule_id": "xss-html-email-body",
+    "cwe_ids": [
+      "CWE-74"
+    ]
+  },
+  "weak_credentials": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\jwt\\security\\jwt-exposed-credentials.yaml",
+    "rule_id": "jwt-python-exposed-credentials",
+    "cwe_ids": [
+      "CWE-522"
+    ]
+  },
+  "xss": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\csharp\\razor\\security\\html-raw-json.yaml",
+    "rule_id": "html-raw-json",
+    "cwe_ids": [
+      "CWE-79"
+    ]
+  },
+  "cleartext_transmission": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\lang\\security\\audit\\network\\http-not-https-connection.yaml",
+    "rule_id": "http-not-https-connection",
+    "cwe_ids": [
+      "CWE-319"
+    ]
+  },
+  "path_traversal": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\hooks-path-traversal\\hooks-path-traversal-python.yaml",
+    "rule_id": "hooks-path-traversal-python",
+    "cwe_ids": [
+      "CWE-22"
+    ]
+  },
+  "input_validation": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\django\\security\\django-using-request-post-after-is-valid.yaml",
+    "rule_id": "django-using-request-post-after-is-valid",
+    "cwe_ids": [
+      "CWE-20"
+    ]
+  },
+  "deserialization": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\django\\security\\audit\\avoid-insecure-deserialization.yaml",
+    "rule_id": "avoid-insecure-deserialization",
+    "cwe_ids": [
+      "CWE-502"
+    ]
+  },
+  "cwe_754": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\anthropic-no-error-handling\\anthropic-no-error-handling-python.yaml",
+    "rule_id": "anthropic-no-error-handling",
+    "cwe_ids": [
+      "CWE-754"
+    ]
+  },
+  "code_injection": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\langchain-dangerous-exec\\langchain-dangerous-exec.yaml",
+    "rule_id": "langchain-dangerous-exec-python",
+    "cwe_ids": [
+      "CWE-94"
+    ]
+  },
+  "cwe_252": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\openai-missing-moderation-check\\openai-missing-moderation-check.yaml",
+    "rule_id": "openai-missing-moderation-check",
+    "cwe_ids": [
+      "CWE-252"
+    ]
+  },
+  "cwe_835": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\agent-unbounded-loop\\agent-unbounded-loop.yaml",
+    "rule_id": "agent-unbounded-loop-python",
+    "cwe_ids": [
+      "CWE-835"
+    ]
+  },
+  "cwe_1333": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\lang\\security\\audit\\regex-dos.yaml",
+    "rule_id": "regex_dos",
+    "cwe_ids": [
+      "CWE-1333"
+    ]
+  },
+  "cwe_200": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\java\\spring\\security\\audit\\spring-actuator-fully-enabled.yaml",
+    "rule_id": "spring-actuator-fully-enabled",
+    "cwe_ids": [
+      "CWE-200"
+    ]
+  },
+  "cwe_295": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\lang\\security\\unverified-ssl-context.yaml",
+    "rule_id": "unverified-ssl-context",
+    "cwe_ids": [
+      "CWE-295"
+    ]
+  },
+  "cwe_601": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\flask\\security\\open-redirect.yaml",
+    "rule_id": "open-redirect",
+    "cwe_ids": [
+      "CWE-601"
+    ]
+  },
+  "cwe_93": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\django\\security\\injection\\request-data-write.yaml",
+    "rule_id": "request-data-write",
+    "cwe_ids": [
+      "CWE-93"
+    ]
+  },
+  "weak_password_recovery": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\weak_password_recovery_python.yaml",
+    "cwe_ids": [
+      "CWE-640"
+    ]
+  },
+  "prototype_pollution": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\prototype_pollution_python.yaml",
+    "cwe_ids": [
+      "CWE-1321"
+    ]
+  },
+  "information_exposure": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\information_exposure_python.yaml",
+    "cwe_ids": [
+      "CWE-203"
+    ]
+  },
+  "log_injection": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\log_injection_python.yaml",
+    "cwe_ids": [
+      "CWE-117"
+    ]
+  },
+  "session_management": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\session_management_python.yaml",
+    "cwe_ids": [
+      "CWE-539"
+    ]
+  },
+  "timing_attack": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\timing_attack_python.yaml",
+    "cwe_ids": [
+      "CWE-385"
+    ]
+  },
+  "type_confusion": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\type_confusion_python.yaml",
+    "cwe_ids": [
+      "CWE-843"
+    ]
+  },
+  "null_dereference": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\null_dereference_python.yaml",
+    "cwe_ids": [
+      "CWE-476"
+    ]
+  },
+  "cwe_693": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_693_python.yaml",
+    "cwe_ids": [
+      "CWE-693"
+    ]
+  },
+  "cwe_1336": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_1336_python.yaml",
+    "cwe_ids": [
+      "CWE-1336"
+    ]
+  },
+  "buffer_overflow": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\buffer_overflow_python.yaml",
+    "cwe_ids": [
+      "CWE-120",
+      "CWE-125",
+      "CWE-787"
+    ]
+  },
+  "integer_overflow": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\integer_overflow_python.yaml",
+    "cwe_ids": [
+      "CWE-190"
+    ]
+  },
+  "cwe_665": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_665_python.yaml",
+    "cwe_ids": [
+      "CWE-665"
+    ]
+  },
+  "cwe_670": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_670_python.yaml",
+    "cwe_ids": [
+      "CWE-670"
+    ]
+  },
+  "cwe_409": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_409_python.yaml",
+    "cwe_ids": [
+      "CWE-409"
+    ]
+  },
+  "cwe_669": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_669_python.yaml",
+    "cwe_ids": [
+      "CWE-669"
+    ]
+  },
+  "integrity_check": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\integrity_check_python.yaml",
+    "cwe_ids": [
+      "CWE-494"
+    ]
+  },
+  "cwe_680": {
+    "source": "ollama",
+    "rule_path": "C:\\Users\\praty\\Documents\\Projects\\HPE Project\\semgrep_rules\\cwe_680_python.yaml",
+    "cwe_ids": [
+      "CWE-680"
+    ]
+  }
+}

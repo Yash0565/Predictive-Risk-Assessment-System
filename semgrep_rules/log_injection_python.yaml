@@ -1,0 +1,12 @@
+rules:
+- id: detect-log_injection-python
+  severity: medium
+  pattern-language: regex
+  patterns:
+  - java: |
+      \b(log|info|debug|warning|error)\s*\(\s*['"]\K[^'"]*(template|context|render_to_string|get_template|loader.render_to_string)[^'"]*
+  languages: [python]
+  metadata:
+    cwe: ["CWE-117"]
+    description: Detect log injection vulnerability in Django
+    package: django

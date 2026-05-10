@@ -1,0 +1,7 @@
+rules:
+  - id: detect-cwe_665-python
+    languages:
+      - python
+    severity: medium
+    pattern-file: cwe-665-patterns.yaml
+    description: Detects common vulnerabilities related to CWE-665 in Python code using pillow package.
