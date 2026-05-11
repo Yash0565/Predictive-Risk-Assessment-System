@@ -1,0 +1,8 @@
+rules:
+- id: detect-cwe_1336_python
+  severity: high
+  languages: [python]
+  messages:
+    en: Potential CWE-1336 vulnerability detected
+  patterns:
+  - pattern-file: CWE-1336-patterns.yaml

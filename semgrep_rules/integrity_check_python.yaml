@@ -1,0 +1,11 @@
+rules:
+  - id: detect-integrity_check-python
+    languages:
+      - python
+    severity: medium
+    pattern-file: integrity_check.yaml
+    description: Detect common patterns for the 'integrity_check' vulnerability family in Django.
+    metadata:
+      cwe:
+        - CWE-494
+      package: Django

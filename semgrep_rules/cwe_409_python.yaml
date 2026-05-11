@@ -1,0 +1,9 @@
+rules:
+- id: detect-cwe_409-python
+  languages:
+  - python
+  message: Detecting potential CWE-409 vulnerability in urllib3
+  patterns:
+  - pattern-file: CWE-409.yaml
+    lines: []
+  condition: and(/pattern-file/pattern-line)

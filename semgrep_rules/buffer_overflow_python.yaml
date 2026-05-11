@@ -1,0 +1,16 @@
+rules:
+- id: detect-buffer_overflow_python
+  languages:
+  - python
+  severity: medium
+  patterns:
+  - pattern-file: CWE-120.yaml
+  - pattern-file: CWE-125.yaml
+  - pattern-file: CWE-787.yaml
+  metadata:
+    description: Detects buffer overflow vulnerabilities in pillow code.
+    cwe_ids:
+    - "CWE-120"
+    - "CWE-125"
+    - "CWE-787"
+    root cause: Code using pillow that does not properly check the size of buffers

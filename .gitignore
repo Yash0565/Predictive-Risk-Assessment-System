@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# Generated folders/files
+semgrep-rules/
+results_test/
+enriched_trivy_output.json
+pipeline_a_report.json
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/

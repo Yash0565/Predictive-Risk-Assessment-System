@@ -1,0 +1,9 @@
+rules:
+  - id: detect-cwe_680_python
+    languages:
+      - python
+    severity: medium
+    pattern-file: cwe_680.yaml
+    metadata:
+      name: Detect CWE-680 in Python code using pillow
+      description: Common sinks and patterns for CWE-680 in pillow package

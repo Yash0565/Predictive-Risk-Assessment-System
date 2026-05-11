@@ -1,0 +1,11 @@
+rules:
+  - id: detect-cwe_670-python
+    languages:
+      - python
+    severity: medium
+    pattern-eval: true
+    patterns:
+      - pattern-type: expression
+        pattern: |
+          requests.post | requests.get | requests.put | requests.delete
+    message: Potential CWE-670 vulnerability detected. Ensure proper handling of URL encoding and input validation.

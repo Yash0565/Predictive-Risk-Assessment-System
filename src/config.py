@@ -1,0 +1,105 @@
+"""Shared constants for Pipeline A.
+
+Single source of truth for CWE-to-family mappings, language maps, and
+directory skip-lists. Import from here — never duplicate these tables.
+"""
+
+# ── CWE → Vulnerability Family ─────────────────────────────────────
+# Many CVEs share the same CWE; many CWEs share the same *family*.
+# One good Semgrep rule per family covers every CVE in that cluster.
+CWE_FAMILY_MAP = {
+    # SQL Injection
+    "CWE-89":  "sql_injection",
+    "CWE-564": "sql_injection",
+    # XSS
+    "CWE-79":  "xss",
+    "CWE-87":  "xss",
+    # Path Traversal
+    "CWE-22":  "path_traversal",
+    "CWE-23":  "path_traversal",
+    "CWE-36":  "path_traversal",
+    # OS Command Injection
+    "CWE-78":  "os_command_injection",
+    "CWE-77":  "os_command_injection",
+    # Code / Generic Injection
+    "CWE-94":  "code_injection",
+    "CWE-95":  "code_injection",
+    "CWE-74":  "injection",
+    # Deserialization
+    "CWE-502": "deserialization",
+    # XXE
+    "CWE-611": "xxe",
+    # Input Validation
+    "CWE-20":  "input_validation",
+    # Credentials
+    "CWE-798": "hardcoded_credentials",
+    "CWE-522": "weak_credentials",
+    # Resource Exhaustion
+    "CWE-400": "resource_exhaustion",
+    "CWE-770": "resource_exhaustion",
+    "CWE-674": "resource_exhaustion",
+    "CWE-407": "resource_exhaustion",
+    # Auth
+    "CWE-287": "auth_bypass",
+    "CWE-306": "auth_bypass",
+    "CWE-862": "missing_authorization",
+    "CWE-276": "incorrect_permissions",
+    # Memory safety (C/C++ — usually irrelevant for Python projects)
+    "CWE-120": "buffer_overflow",
+    "CWE-125": "buffer_overflow",
+    "CWE-787": "buffer_overflow",
+    "CWE-190": "integer_overflow",
+    "CWE-476": "null_dereference",
+    # Web / Session
+    "CWE-640": "weak_password_recovery",
+    "CWE-319": "cleartext_transmission",
+    "CWE-539": "session_management",
+    "CWE-524": "information_exposure",
+    "CWE-203": "information_exposure",
+    # Misc
+    "CWE-1321": "prototype_pollution",
+    "CWE-494":  "integrity_check",
+    "CWE-117":  "log_injection",
+    "CWE-843":  "type_confusion",
+    "CWE-385":  "timing_attack",
+}
+
+# ── Human-readable CWE names (for prompts & reports) ───────────────
+CWE_NAMES = {
+    "CWE-89":  "SQL Injection",
+    "CWE-79":  "Cross-Site Scripting",
+    "CWE-22":  "Path Traversal",
+    "CWE-78":  "OS Command Injection",
+    "CWE-94":  "Code Injection",
+    "CWE-611": "XXE Injection",
+    "CWE-502": "Deserialization of Untrusted Data",
+    "CWE-400": "Uncontrolled Resource Consumption",
+    "CWE-20":  "Improper Input Validation",
+    "CWE-287": "Improper Authentication",
+    "CWE-798": "Hard-coded Credentials",
+    "CWE-306": "Missing Authentication",
+    "CWE-862": "Missing Authorization",
+    "CWE-74":  "Injection",
+    "CWE-770": "Allocation of Resources Without Limits",
+    "CWE-120": "Buffer Copy without Checking Size",
+    "CWE-125": "Out-of-bounds Read",
+    "CWE-787": "Out-of-bounds Write",
+    "CWE-190": "Integer Overflow",
+    "CWE-476": "NULL Pointer Dereference",
+}
+
+# ── File extension → Semgrep language ──────────────────────────────
+LANG_MAP = {
+    ".py":   "python",
+    ".js":   "javascript",
+    ".ts":   "javascript",
+    ".java": "java",
+    ".go":   "go",
+    ".rb":   "ruby",
+    ".cpp":  "cpp",
+    ".c":    "cpp",
+    ".cs":   "csharp",
+}
+
+# Directories to skip when detecting project language
+SKIP_DIRS = {"venv", "node_modules", ".git", "codeql", "__pycache__", "semgrep-rules"}
