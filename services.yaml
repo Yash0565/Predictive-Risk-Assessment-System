@@ -1,0 +1,38 @@
+# Manual service entry points for graph reachability analysis.
+# Use file: test.py when running with --project-dir ./test
+services:
+  - name: login
+    route: /login
+    method: GET
+    file: test.py
+    handler: login
+
+  - name: search
+    route: /search
+    method: GET
+    file: test.py
+    handler: search
+
+  - name: read_file
+    route: /read
+    method: GET
+    file: test.py
+    handler: read_file
+
+  - name: ping
+    route: /ping
+    method: GET
+    file: test.py
+    handler: ping
+
+  - name: deserialize
+    route: /deserialize
+    method: POST
+    file: test.py
+    handler: deserialize
+
+  - name: token
+    route: /token
+    method: GET
+    file: test.py
+    handler: token
