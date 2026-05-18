@@ -121,3 +121,33 @@ python pipeline_a.py --input enriched_trivy_output.json --project-dir ./test --o
 ```powershell
 python pipeline_a.py --input enriched_trivy_output.json --project-dir ./test --llm gemini
 ```
+
+---
+
+# Presentation Demo (Phases 1–9, no LLM)
+
+Uses frozen Trivy input, handcrafted Semgrep rules, offline EPSS/KEV, and optional Neo4j.
+
+```powershell
+# 1. Start Neo4j (optional — pipeline falls back to graph_snapshot.json)
+docker compose up -d
+
+# 2. Install graph/report dependencies
+pip install -r requirements-graph.txt
+
+# 3. Run full demo pipeline
+python pipeline_a.py --demo --project-dir ./test --services services.yaml --output-dir ./demo_out
+
+# 4. Open HTML report
+start .\demo_out\risk_report.html
+
+# 5. Future-work agent stub (mocked, no LLM)
+python -m src.agent
+
+# 6. Tear down Neo4j
+docker compose down
+```
+
+If Neo4j is not running, the pipeline still completes using the JSON graph snapshot.
+
+Skip graph phases: add `--no-graph`.
