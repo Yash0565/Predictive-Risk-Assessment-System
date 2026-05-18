@@ -13,6 +13,11 @@ semgrep-rules/
 results_test/
 enriched_trivy_output.json
 pipeline_a_report.json
+risk_assessment.json
+explanations.json
+risk_report.html
+graph_snapshot.json
+demo_out/
 
 # OS / editor files
 .DS_Store
