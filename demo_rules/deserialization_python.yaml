@@ -1,0 +1,8 @@
+rules:
+  - id: demo-unsafe-pickle-loads
+    languages: [python]
+    message: Unsafe deserialization via pickle.loads on request data
+    severity: ERROR
+    metadata:
+      cwe: CWE-502
+    pattern: pickle.loads(...)

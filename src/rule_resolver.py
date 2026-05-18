@@ -97,9 +97,25 @@ def _strip_markdown_fences(text):
 
 # ── Public API ──────────────────────────────────────────────────────
 
+_DEMO_RULES_DIR = os.path.join("demo_rules")
+
+
+def _demo_rule_for_family(name, language, cluster):
+    """Return demo rule info if a handcrafted rule exists."""
+    path = os.path.join(_DEMO_RULES_DIR, f"{name}_{language}.yaml")
+    if os.path.exists(path):
+        return {
+            "source": "demo",
+            "rule_path": os.path.abspath(path),
+            "cwe_ids": sorted(cluster.cwe_ids),
+        }
+    return None
+
+
 async def resolve_rules(families, language, registry_index, api_key,
                         rules_dir, max_concurrent=4,
-                        llm_backend="ollama", ollama_model="qwen2.5:7b"):
+                        llm_backend="ollama", ollama_model="qwen2.5:7b",
+                        skip_llm=False, demo_mode=False):
     """Resolve a rule for every family.  Returns { family: resolved_info }."""
     os.makedirs(rules_dir, exist_ok=True)
     db = _load_db()
@@ -111,6 +127,14 @@ async def resolve_rules(families, language, registry_index, api_key,
     print("=" * 60)
 
     for name, cluster in families.items():
+        # ── Step 0 (demo): handcrafted rules ────────────────────
+        if demo_mode:
+            demo = _demo_rule_for_family(name, language, cluster)
+            if demo:
+                print(f"  [D] DEMO     hit  → {name}")
+                resolved[name] = demo
+                continue
+
         # ── Step A: local cache ─────────────────────────────────
         cached = db.get(name)
         if cached and os.path.exists(cached.get("rule_path", "")):
@@ -134,11 +158,15 @@ async def resolve_rules(families, language, registry_index, api_key,
             continue
 
         # ── Step C: LLM needed ──────────────────────────────────
+        if skip_llm:
+            print(f"  [C] SKIP (no LLM) → {name}")
+            resolved[name] = {"source": "none", "rule_path": "", "cwe_ids": sorted(cluster.cwe_ids)}
+            continue
         needs_llm.append((name, cluster))
         print(f"  [C] LLM queue   → {name}")
 
     # Run all LLM calls concurrently (rate-limited by semaphore)
-    if needs_llm:
+    if needs_llm and not skip_llm:
         backend_label = f"Ollama ({ollama_model})" if llm_backend == "ollama" else "Gemini"
         print(f"\n  [*] Sending {len(needs_llm)} families to {backend_label} "
               f"(max {max_concurrent} concurrent)...")
@@ -155,9 +183,10 @@ async def resolve_rules(families, language, registry_index, api_key,
 
     cached_n = sum(1 for r in resolved.values() if r.get("source") == "cache")
     reg_n    = sum(1 for r in resolved.values() if r.get("source") == "registry")
+    demo_n   = sum(1 for r in resolved.values() if r.get("source") == "demo")
     llm_n    = sum(1 for r in resolved.values() if r.get("source") in ("gemini", "ollama"))
     print(f"\n  Summary: {len(resolved)} families resolved  "
-          f"(cache={cached_n}, registry={reg_n}, llm={llm_n})")
+          f"(cache={cached_n}, registry={reg_n}, demo={demo_n}, llm={llm_n})")
     return resolved
 
 

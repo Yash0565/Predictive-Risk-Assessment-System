@@ -1,0 +1,12 @@
+rules:
+  - id: demo-path-traversal-open
+    languages: [python]
+    message: Path traversal via user-controlled filename in open()
+    severity: ERROR
+    metadata:
+      cwe: CWE-22
+    patterns:
+      - pattern: open($PATH, ...)
+      - pattern-inside: |
+          $PATH = os.path.join(..., $USER_INPUT)
+          ...

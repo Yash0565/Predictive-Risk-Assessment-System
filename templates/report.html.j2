@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Upgrade Risk Assessment Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         background: #f4f6f9; color: #1a1a2e; line-height: 1.5; padding: 2rem; }
+  .container { max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: #2d3748; }
+  .subtitle { color: #718096; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+  .banner { padding: 1.25rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
+            font-size: 1.3rem; font-weight: 700; text-align: center; color: #fff; }
+  .banner.BLOCK  { background: #c53030; }
+  .banner.REVIEW { background: #d69e2e; color: #1a1a2e; }
+  .banner.PROCEED { background: #38a169; }
+
+  .card { background: #fff; border-radius: 8px; padding: 1.25rem;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+  .exec { font-size: 1rem; color: #2d3748; }
+
+  .score-row { display: flex; align-items: center; margin-bottom: 0.6rem; }
+  .score-label { width: 160px; font-size: 0.85rem; color: #4a5568; }
+  .score-bar-bg { flex: 1; height: 22px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; }
+  .score-val { width: 50px; text-align: right; font-size: 0.85rem; font-weight: 600; margin-left: 8px; }
+  .fill-severity { background: #e53e3e; }
+  .fill-exploit { background: #dd6b20; }
+  .fill-reach { background: #d69e2e; }
+  .fill-blast { background: #805ad5; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: #edf2f7; text-align: left; padding: 0.5rem 0.75rem; font-weight: 600; }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  tr:hover td { background: #f7fafc; }
+  .mono { font-family: Consolas, "Courier New", monospace; font-size: 0.8rem; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+         font-weight: 600; color: #fff; }
+  .tag.BLOCK { background: #c53030; }
+  .tag.REVIEW { background: #d69e2e; color: #1a1a2e; }
+  .tag.PROCEED { background: #38a169; }
+  .kev-yes { color: #c53030; font-weight: 700; }
+
+  ol.upgrade { padding-left: 1.5rem; }
+  ol.upgrade li { margin-bottom: 0.35rem; font-size: 0.9rem; }
+
+  .footer { text-align: center; color: #a0aec0; font-size: 0.75rem; margin-top: 2rem; }
+  .explain-block { margin-top: 0.75rem; padding: 0.75rem; background: #f7fafc;
+                   border-left: 3px solid #4299e1; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Pre-Upgrade Risk Assessment</h1>
+  <p class="subtitle">Generated {{ generated_at }} &middot; Scorer v{{ scorer_version }} &middot; Graph: {{ graph_mode }}</p>
+
+  <div class="banner {{ overall_rec }}">
+    {{ overall_rec }} &mdash; Overall Risk Score: {{ overall_raw_risk }}/100
+  </div>
+
+  <div class="card">
+    <p class="exec">{{ executive_summary }}</p>
+  </div>
+
+  {% if top_cve %}
+  <h2>Score Breakdown (Top CVE)</h2>
+  <div class="card">
+    <p style="margin-bottom:0.75rem;font-weight:600;">{{ top_cve.cve_id }} ({{ top_cve.package }})</p>
+    {% set s = top_cve.scores %}
+    <div class="score-row">
+      <span class="score-label">Severity (0–40)</span>
+      <div class="score-bar-bg"><div class="score-bar-fill fill-severity" style="width:{{ (s.severity_score / 40 * 100)|int }}%"></div></div>
+      <span class="score-val">{{ s.severity_score }}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Exploit (0–20)</span>
+      <div class="score-bar-bg"><div class="score-bar-fill fill-exploit" style="width:{{ (s.exploit_score / 20 * 100)|int }}%"></div></div>
+      <span class="score-val">{{ s.exploit_score }}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Reachability (0–25)</span>
+      <div class="score-bar-bg"><div class="score-bar-fill fill-reach" style="width:{{ (s.reachability_score / 25 * 100)|int }}%"></div></div>
+      <span class="score-val">{{ s.reachability_score }}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Blast Radius (0–15)</span>
+      <div class="score-bar-bg"><div class="score-bar-fill fill-blast" style="width:{{ (s.blast_radius_score / 15 * 100)|int }}%"></div></div>
+      <span class="score-val">{{ s.blast_radius_score }}</span>
+    </div>
+    <p style="margin-top:0.5rem;font-weight:700;">Total: {{ s.raw_risk }}/100</p>
+  </div>
+  {% endif %}
+
+  <h2>Evidence Table</h2>
+  <div class="card" style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>CVE</th><th>CVSS</th><th>EPSS</th><th>KEV</th>
+          <th>Reachability</th><th>Path</th><th>Services</th><th>Rec</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cves %}
+        <tr>
+          <td class="mono">{{ c.cve_id }}</td>
+          <td>{{ c.cvss_score }}</td>
+          <td>{{ "%.2f"|format(c.evidence.epss) if c.evidence.epss else "—" }}</td>
+          <td>{% if c.evidence.in_kev %}<span class="kev-yes">YES</span>{% else %}—{% endif %}</td>
+          <td>{{ c.evidence.reachability_kind }}</td>
+          <td class="mono">
+            {% for ch in c.evidence.dependency_chains[:1] %}
+              {{ ch.service }} → {{ ch.path|join(' → ') }}
+            {% else %}
+              {% for p in c.evidence.reachable_paths[:1] %}
+                {{ p.service }} → {{ p.vuln_fn }} ({{ p.file }}:{{ p.line }})
+              {% else %}—{% endfor %}
+            {% endfor %}
+          </td>
+          <td>{{ c.evidence.service_names|join(', ') if c.evidence.service_names else '—' }}</td>
+          <td><span class="tag {{ c.recommendation }}">{{ c.recommendation }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Suggested Upgrade Order</h2>
+  <div class="card">
+    <ol class="upgrade">
+      {% for cve_id in upgrade_order %}
+      <li class="mono">{{ cve_id }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  {% if explanations %}
+  <h2>Explanations</h2>
+  <div class="card">
+    {% for ex in explanations %}
+    <div class="explain-block">
+      <strong>{{ ex.cve_id }}</strong> ({{ ex.recommendation }})<br>
+      {{ ex.paragraph }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <p class="footer">
+    Score model v{{ scorer_version }} &middot; {{ graph_mode }} graph &middot; Deterministic scoring — LLM does not make upgrade decisions
+  </p>
+</div>
+</body>
+</html>

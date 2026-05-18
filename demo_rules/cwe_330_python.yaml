@@ -1,0 +1,9 @@
+rules:
+  - id: demo-weak-random-token
+    languages: [python]
+    message: Weak randomness used for security token
+    severity: WARNING
+    metadata:
+      cwe: CWE-330
+    patterns:
+      - pattern: random.randint(...)

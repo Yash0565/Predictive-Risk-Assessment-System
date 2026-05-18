@@ -1,0 +1,12 @@
+rules:
+  - id: demo-cmd-injection-subprocess-shell
+    languages: [python]
+    message: OS command injection via subprocess with shell=True
+    severity: ERROR
+    metadata:
+      cwe: CWE-78
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.check_output(..., shell=True, ...)
+          - pattern: subprocess.call(..., shell=True, ...)
+          - pattern: subprocess.run(..., shell=True, ...)
