@@ -151,3 +151,45 @@ docker compose down
 If Neo4j is not running, the pipeline still completes using the JSON graph snapshot.
 
 Skip graph phases: add `--no-graph`.
+
+---
+
+## Patch Fetcher (`src/patch_fetcher.py`)
+
+The patch fetcher sits between Trivy/CVE discovery and the Symbol Scanner. For each CVE it locates the official GitHub security fix (via Trivy commit URLs, NVD, OSV, or GitHub Advisories), downloads the raw `.patch`, and parses the diff to list **exact symbols** that changed (function names, signatures, hardening vs. breaking changes).
+
+### Why patch-aware beats CWE-pattern matching
+
+CWE-based rules guess likely vulnerable APIs (e.g. “any `pickle.load`”). Patch-aware analysis **knows** which functions the maintainer changed to fix the CVE—e.g. `rebuild_proxies` for CVE-2023-32681 or `yaml.load`’s loader path for CVE-2020-1747—so downstream reachability and upgrade simulation target real fix sites, not generic patterns.
+
+### Caching (offline-first)
+
+- Cache path: `data/patches/{CVE_ID}.json`
+- Fresh for **30 days**; after that, the next `fetch_patch` refreshes from the network unless the cache is still readable (network errors fall back to stale cache).
+- Pre-populated demo caches ship for the eight TaskFlow CVEs so demos work without Wi‑Fi.
+
+### Public API
+
+```python
+from src.patch_fetcher import fetch_patch, fetch_patches_batch, get_vulnerable_symbols
+
+record = fetch_patch("CVE-2023-32681", package="requests")
+symbols = get_vulnerable_symbols("CVE-2023-32681")
+```
+
+Optional: set `GITHUB_TOKEN` for higher GitHub API rate limits (anonymous `.patch` downloads work without it).
+
+### Refresh the cache
+
+```powershell
+python -c "from src.patch_fetcher import fetch_patch; fetch_patch('CVE-2023-32681', 'requests', force_refresh=True)"
+```
+
+Or delete `data/patches/CVE-2023-32681.json` and call `fetch_patch` again.
+
+### Tests
+
+```powershell
+pip install -r requirements.txt
+pytest tests/test_patch_fetcher.py -v
+```
