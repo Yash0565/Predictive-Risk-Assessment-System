@@ -172,7 +172,27 @@ async def run_pipeline(args):
 
     # ── Phase 9: HTML Report ────────────────────────────────────
     print("\n>>> Starting Phase 9: HTML Report...")
-    render_html(assessment, explanations, graph_meta, output_dir)
+    symbol_scan_path = getattr(args, "symbol_scan", None)
+    if not symbol_scan_path:
+        for candidate in (
+            os.path.join(output_dir, "symbol_scan.json"),
+            os.path.join("examples", "symbol_scan_output.json"),
+        ):
+            if os.path.isfile(candidate):
+                symbol_scan_path = candidate
+                break
+    upgrade_sim_path = getattr(args, "upgrade_sim", None)
+    render_html(
+        assessment,
+        explanations,
+        graph_meta,
+        output_dir,
+        symbol_scan_path=symbol_scan_path,
+        upgrade_sim_path=upgrade_sim_path,
+        project_dir=project_dir,
+        target_repo=os.path.basename(project_dir) or "project",
+        offline=getattr(args, "offline", False),
+    )
     print(">>> Phase 9 complete.")
 
     if driver:
@@ -210,6 +230,12 @@ def main():
                    help="Demo mode: frozen Trivy input, demo rules, skip LLM, overlay matches")
     p.add_argument("--no-graph",     action="store_true",
                    help="Skip Neo4j graph phases 5–6")
+    p.add_argument("--offline",      action="store_true",
+                   help="Self-contained HTML report (inline vendor JS/CSS)")
+    p.add_argument("--symbol-scan",  default=None,
+                   help="Path to symbol_scan JSON for reachability in HTML report")
+    p.add_argument("--upgrade-sim",  default=None,
+                   help="Path to upgrade_simulation JSON for HTML report")
     p.add_argument("--verbose",      action="store_true")
     args = p.parse_args()
 
