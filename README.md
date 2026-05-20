@@ -193,3 +193,43 @@ Or delete `data/patches/CVE-2023-32681.json` and call `fetch_patch` again.
 pip install -r requirements.txt
 pytest tests/test_patch_fetcher.py -v
 ```
+
+---
+
+## Symbol Scanner (`src/symbol_scanner.py`)
+
+The symbol scanner consumes Patch Fetcher output and walks the user's Python project with `ast` to find **every import and call** that resolves to a patched vulnerable symbol.
+
+### Why AST-based beats grep
+
+`grep rebuild_auth` matches comments, strings, unrelated identifiers, and misses `ra(x)` after `import rebuild_auth as ra`. The scanner builds a per-file alias table from `import` / `from … import` nodes and resolves call targets to fully qualified names before matching CVE symbols.
+
+### Confidence levels
+
+| Level | Meaning |
+|-------|---------|
+| **HIGH** | Direct binding from a resolved import; call chain is complete |
+| **MEDIUM** | Star import or attribute access on a known module (possible match) |
+| **LOW** | Name matches but import chain could not be resolved |
+
+### Interpreting output
+
+- `findings_by_cve[CVE].is_reachable` — `true` when at least one reference exists in your code (not merely a transitive dependency).
+- `references[].in_entry_point` — finding sits under a Flask/Django/FastAPI route (or similar); higher operational risk.
+- `summary.noise_reduction_percent` — share of scanned CVEs with **no** direct code references (transitive-only noise filtered out).
+
+### Usage
+
+```python
+from src.symbol_scanner import load_patches_from_cache, scan_symbols, save_findings
+
+patches = load_patches_from_cache()
+report = scan_symbols("./vulnerable-task-tracker", patches)
+save_findings(report, "demo_out/symbol_scan.json")
+```
+
+TaskFlow demo:
+
+```powershell
+python -m pytest tests/test_symbol_scanner.py -v
+```
