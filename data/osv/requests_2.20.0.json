@@ -1,0 +1,39 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-9hjg-9r4m-mvj7",
+      "cvss": 0.0,
+      "note": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+      "package": "requests",
+      "version": "2.20.0"
+    },
+    {
+      "cve": "GHSA-9wx4-h78v-vm56",
+      "cvss": 0.0,
+      "note": "Requests `Session` object does not verify requests after making first request with verify=False",
+      "package": "requests",
+      "version": "2.20.0"
+    },
+    {
+      "cve": "GHSA-gc5v-m9x4-r6x2",
+      "cvss": 0.0,
+      "note": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+      "package": "requests",
+      "version": "2.20.0"
+    },
+    {
+      "cve": "GHSA-j8r2-6x86-q33q",
+      "cvss": 0.0,
+      "note": "Unintended leak of Proxy-Authorization header in requests",
+      "package": "requests",
+      "version": "2.20.0"
+    },
+    {
+      "cve": "PYSEC-2023-74",
+      "cvss": 0.0,
+      "note": "",
+      "package": "requests",
+      "version": "2.20.0"
+    }
+  ]
+}

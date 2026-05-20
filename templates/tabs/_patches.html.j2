@@ -1,0 +1,46 @@
+<section class="tab-panel hidden" id="tab-patches" role="tabpanel" aria-labelledby="tab-btn-patches" hidden>
+  {% if cves %}
+  <div class="toolbar">
+    <label>Select CVE
+      <select id="patch-cve-select">
+        {% for c in cves %}
+        <option value="{{ loop.index0 }}">{{ c.cve_id }} ({{ c.package }})</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <div id="patch-panels">
+    {% for c in cves %}
+    <article class="patch-panel {% if not loop.first %}hidden{% endif %}" data-patch-index="{{ loop.index0 }}" {% if not loop.first %}hidden{% endif %}>
+      <div class="card">
+        <p><strong>Vulnerable symbol:</strong> <span class="mono">{{ c.vulnerable_symbol }}</span></p>
+        <p><strong>Change:</strong> {{ c.change_classification }}</p>
+        {% if c.patch.url %}<p><a href="{{ c.patch.url }}" target="_blank" rel="noopener">View commit</a></p>{% endif %}
+      </div>
+      <div class="diff-grid">
+        <div class="diff-col">
+          <h3>Before (vulnerable)</h3>
+          <pre><code class="language-python patch-before">{{ c.patch.before_code }}</code></pre>
+        </div>
+        <div class="diff-col">
+          <h3>After (patched)</h3>
+          <pre><code class="language-python patch-after">{{ c.patch.after_code }}</code></pre>
+        </div>
+      </div>
+      {% if c.references %}
+      <div class="card">
+        <h3>Your code that calls this function</h3>
+        {% for ref in c.references %}
+        <p>{{ ref.file }}:{{ ref.line }}{% if ref.enclosing_function %} ({{ ref.enclosing_function }}){% endif %}</p>
+        <pre><code class="language-python">{{ ref.source }}</code></pre>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state card"><p>No patch metadata available.</p></div>
+  {% endif %}
+</section>

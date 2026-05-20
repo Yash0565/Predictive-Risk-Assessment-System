@@ -1,0 +1,2635 @@
+{
+  "agent_metadata": {
+    "completed_at": "2026-05-20T06:18:47+00:00",
+    "duration_seconds": 0.1,
+    "entity_violations": 0,
+    "fallback_used": true,
+    "llm_model": "none",
+    "max_steps": 15,
+    "schema_violations": 0,
+    "started_at": "2026-05-20T06:18:47+00:00",
+    "status": "completed_with_fallback",
+    "steps_taken": 8
+  },
+  "collected_data": {
+    "cves": [
+      {
+        "commit_urls": [],
+        "cve": "CVE-2018-1000656",
+        "cvss_score": 7.5,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+        "cwe": [
+          "CWE-89"
+        ],
+        "fixed_version": "1.0",
+        "installed_version": "0.12",
+        "package": "flask",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "high",
+            "confidentiality": "none",
+            "integrity": "none"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000656",
+        "severity": "HIGH"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2019-1010083",
+        "cvss_score": 4.3,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N",
+        "cwe": [
+          "CWE-79"
+        ],
+        "fixed_version": "1.0",
+        "installed_version": "0.12",
+        "package": "flask",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "none",
+            "confidentiality": "none",
+            "integrity": "low"
+          },
+          "privileges_required": "none",
+          "user_interaction": true
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-1010083",
+        "severity": "MEDIUM"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2018-18074",
+        "cvss_score": 7.5,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+        "cwe": [
+          "CWE-22"
+        ],
+        "fixed_version": "2.20.0",
+        "installed_version": "2.19.0",
+        "package": "requests",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "none",
+            "confidentiality": "high",
+            "integrity": "none"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-18074",
+        "severity": "HIGH"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2019-11324",
+        "cvss_score": 7.5,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+        "cwe": [
+          "CWE-78"
+        ],
+        "fixed_version": "1.24.2",
+        "installed_version": "1.24.1",
+        "package": "urllib3",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "none",
+            "confidentiality": "high",
+            "integrity": "none"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11324",
+        "severity": "HIGH"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2020-14343",
+        "cvss_score": 9.8,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "cwe": [
+          "CWE-502"
+        ],
+        "fixed_version": "5.4",
+        "installed_version": "5.1",
+        "package": "pyyaml",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "high",
+            "confidentiality": "high",
+            "integrity": "high"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-14343",
+        "severity": "CRITICAL"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2019-8341",
+        "cvss_score": 8.1,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "cwe": [
+          "CWE-330"
+        ],
+        "fixed_version": "2.10.1",
+        "installed_version": "2.10",
+        "package": "jinja2",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "high",
+            "confidentiality": "high",
+            "integrity": "high"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-8341",
+        "severity": "HIGH"
+      },
+      {
+        "commit_urls": [],
+        "cve": "CVE-2018-10903",
+        "cvss_score": 7.5,
+        "cvss_vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+        "cwe": [
+          "CWE-310"
+        ],
+        "fixed_version": "2.3.1",
+        "installed_version": "2.3",
+        "package": "cryptography",
+        "parsed_cvss": {
+          "attack_vector": "network",
+          "impact": {
+            "availability": "none",
+            "confidentiality": "high",
+            "integrity": "none"
+          },
+          "privileges_required": "none",
+          "user_interaction": false
+        },
+        "primary_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10903",
+        "severity": "HIGH"
+      }
+    ],
+    "dependencies": {
+      "boto3": "1.10.0",
+      "cryptography": "2.3",
+      "flask": "0.12",
+      "jinja2": "2.10",
+      "pillow": "6.0.0",
+      "pyyaml": "5.1",
+      "requests": "2.20.0",
+      "sqlalchemy": "1.3.0",
+      "urllib3": "1.24.1"
+    },
+    "explanations": {
+      "executive_summary": "Pre-upgrade risk assessment (model v1.0.0): overall recommendation is BLOCK with a composite score of 75/100 across 7 CVE(s) (1 BLOCK, 5 REVIEW).",
+      "mode": "template",
+      "per_cve": [
+        {
+          "cve_id": "CVE-2018-18074",
+          "paragraph": "CVE-2018-18074 scores 75/100 (BLOCK). CVSS 7.5 contributes 30 severity points. The /auth.py entry point reaches `requests.sessions.rebuild_auth` in auth.py:10 via a 2-hop call-graph path. Exploit likelihood: EPSS 0.55 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "recommendation": "BLOCK"
+        },
+        {
+          "cve_id": "CVE-2020-14343",
+          "paragraph": "CVE-2020-14343 scores 69/100 (REVIEW). CVSS 9.8 contributes 39 severity points. Transitive exposure: package pyyaml affected, no code path Exploit likelihood: EPSS 0.65 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "recommendation": "REVIEW"
+        },
+        {
+          "cve_id": "CVE-2018-1000656",
+          "paragraph": "CVE-2018-1000656 scores 63/100 (REVIEW). CVSS 7.5 contributes 30 severity points. The //api/data entry point reaches `api_data` in app.py:27 via a 1-hop call-graph path. Exploit likelihood: EPSS 0.12. Blast radius: no services directly impacted.",
+          "recommendation": "REVIEW"
+        },
+        {
+          "cve_id": "CVE-2019-8341",
+          "paragraph": "CVE-2019-8341 scores 58/100 (REVIEW). CVSS 8.1 contributes 32 severity points. Transitive exposure: package jinja2 affected, no code path Exploit likelihood: EPSS 0.48 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "recommendation": "REVIEW"
+        },
+        {
+          "cve_id": "CVE-2019-11324",
+          "paragraph": "CVE-2019-11324 scores 48/100 (REVIEW). CVSS 7.5 contributes 30 severity points. Transitive exposure: package urllib3 affected, no code path Exploit likelihood: EPSS 0.22. Blast radius: no services directly impacted.",
+          "recommendation": "REVIEW"
+        },
+        {
+          "cve_id": "CVE-2018-10903",
+          "paragraph": "CVE-2018-10903 scores 44/100 (REVIEW). CVSS 7.5 contributes 30 severity points. Transitive exposure: package cryptography affected, no code path Exploit likelihood: EPSS 0.03. Blast radius: no services directly impacted.",
+          "recommendation": "REVIEW"
+        },
+        {
+          "cve_id": "CVE-2019-1010083",
+          "paragraph": "CVE-2019-1010083 scores 31/100 (PROCEED). CVSS 4.3 contributes 17 severity points. Transitive exposure: package flask affected, no code path Exploit likelihood: EPSS 0.08. Blast radius: no services directly impacted.",
+          "recommendation": "PROCEED"
+        }
+      ]
+    },
+    "patches": {
+      "CVE-2018-1000656": {
+        "cve_id": "CVE-2018-1000656",
+        "fetched_at": "2026-05-19T17:55:00+00:00",
+        "files_changed": [
+          "flask/json.py",
+          "flask/wrappers.py",
+          "tests/test_helpers.py"
+        ],
+        "import_aliases": [
+          "from flask.json import _load_arg_defaults",
+          "from flask import json",
+          "from flask.json import loads",
+          "from flask.wrappers import get_json",
+          "from flask import wrappers"
+        ],
+        "package": "flask",
+        "patch_commit": "b178e89e4456e777b1a7ac6d7199052d0dfdbbbe",
+        "patch_repo": "pallets/flask",
+        "patch_url": "https://github.com/pallets/flask/commit/b178e89e4456e777b1a7ac6d7199052d0dfdbbbe",
+        "sources_tried": [
+          "ghsa"
+        ],
+        "status": "ok",
+        "vulnerable_symbols": [
+          {
+            "after_signature": "def _load_arg_defaults(...)",
+            "before_signature": "def _load_arg_defaults(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "flask/json.py",
+            "fully_qualified_name": "flask.json._load_arg_defaults",
+            "kind": "function",
+            "lines_added": 43,
+            "lines_removed": 0,
+            "short_name": "_load_arg_defaults",
+            "summary": "Internal logic updated in _load_arg_defaults (+43/-0 lines in hunk)"
+          },
+          {
+            "after_signature": "def loads(...)",
+            "before_signature": "def loads(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "flask/json.py",
+            "fully_qualified_name": "flask.json.loads",
+            "kind": "function",
+            "lines_added": 4,
+            "lines_removed": 1,
+            "short_name": "loads",
+            "summary": "Internal logic updated in loads (+4/-1 lines in hunk)"
+          },
+          {
+            "after_signature": "def get_json(...)",
+            "before_signature": "def get_json(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "flask/wrappers.py",
+            "fully_qualified_name": "flask.wrappers.get_json",
+            "kind": "function",
+            "lines_added": 3,
+            "lines_removed": 10,
+            "short_name": "get_json",
+            "summary": "Internal logic updated in get_json (+3/-10 lines in hunk)"
+          }
+        ]
+      },
+      "CVE-2018-10903": {
+        "cve_id": "CVE-2018-10903",
+        "fetched_at": "2026-05-20T06:18:43+00:00",
+        "files_changed": [
+          "CHANGELOG.rst",
+          "docs/hazmat/primitives/symmetric-encryption.rst",
+          "src/cryptography/hazmat/backends/openssl/ciphers.py",
+          "src/cryptography/hazmat/primitives/ciphers/modes.py",
+          "tests/hazmat/primitives/test_aes.py"
+        ],
+        "import_aliases": [
+          "from cryptography.src.cryptography.hazmat.backends.openssl.ciphers import finalize_with_tag",
+          "from cryptography import ciphers",
+          "from cryptography.src.cryptography.hazmat.primitives.ciphers.modes import __init__",
+          "from cryptography import modes"
+        ],
+        "package": "cryptography",
+        "patch_commit": "d4378e42937b56f473ddade2667f919ce32208cb",
+        "patch_repo": "pyca/cryptography",
+        "patch_url": "https://github.com/pyca/cryptography/commit/d4378e42937b56f473ddade2667f919ce32208cb",
+        "sources_tried": [
+          "ghsa"
+        ],
+        "status": "ok",
+        "vulnerable_symbols": [
+          {
+            "after_signature": "def finalize_with_tag(...)",
+            "before_signature": "def finalize_with_tag(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "src/cryptography/hazmat/backends/openssl/ciphers.py",
+            "fully_qualified_name": "cryptography.src.cryptography.hazmat.backends.openssl.ciphers.finalize_with_tag",
+            "kind": "function",
+            "lines_added": 5,
+            "lines_removed": 0,
+            "short_name": "finalize_with_tag",
+            "summary": "Internal logic updated in finalize_with_tag (+5/-0 lines in hunk)"
+          },
+          {
+            "after_signature": "def __init__(...)",
+            "before_signature": "def __init__(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "src/cryptography/hazmat/primitives/ciphers/modes.py",
+            "fully_qualified_name": "cryptography.src.cryptography.hazmat.primitives.ciphers.modes.__init__",
+            "kind": "function",
+            "lines_added": 1,
+            "lines_removed": 0,
+            "short_name": "__init__",
+            "summary": "Internal logic updated in __init__ (+1/-0 lines in hunk)"
+          }
+        ]
+      },
+      "CVE-2018-18074": {
+        "cve_id": "CVE-2018-18074",
+        "fetched_at": "2026-05-20T06:18:39+00:00",
+        "files_changed": [
+          "requests/sessions.py",
+          "tests/test_requests.py"
+        ],
+        "import_aliases": [
+          "from requests.sessions import rebuild_auth",
+          "from requests import sessions",
+          "from requests.sessions import get_redirect_target"
+        ],
+        "package": "requests",
+        "patch_commit": "c45d7c49ea75133e52ab22a8e9e13173938e36ff",
+        "patch_repo": "requests/requests",
+        "patch_url": "https://github.com/requests/requests/commit/c45d7c49ea75133e52ab22a8e9e13173938e36ff",
+        "sources_tried": [
+          "nvd",
+          "osv",
+          "ghsa"
+        ],
+        "status": "ok",
+        "vulnerable_symbols": [
+          {
+            "after_signature": "def get_redirect_target(...)",
+            "before_signature": "def get_redirect_target(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "requests/sessions.py",
+            "fully_qualified_name": "requests.sessions.get_redirect_target",
+            "kind": "function",
+            "lines_added": 16,
+            "lines_removed": 0,
+            "short_name": "get_redirect_target",
+            "summary": "Internal logic updated in get_redirect_target (+16/-0 lines in hunk)"
+          },
+          {
+            "after_signature": "def rebuild_auth(...)",
+            "before_signature": "def rebuild_auth(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "requests/sessions.py",
+            "fully_qualified_name": "requests.sessions.rebuild_auth",
+            "kind": "function",
+            "lines_added": 3,
+            "lines_removed": 1,
+            "short_name": "rebuild_auth",
+            "summary": "Internal logic updated in rebuild_auth (+3/-1 lines in hunk)"
+          }
+        ]
+      },
+      "CVE-2019-1010083": {
+        "cve_id": "CVE-2019-1010083",
+        "fetched_at": "2026-05-20T06:18:33+00:00",
+        "files_changed": [],
+        "import_aliases": [],
+        "package": "flask",
+        "patch_commit": null,
+        "patch_repo": null,
+        "patch_url": null,
+        "sources_tried": [],
+        "status": "no_patch_found",
+        "vulnerable_symbols": []
+      },
+      "CVE-2019-11324": {
+        "cve_id": "CVE-2019-11324",
+        "fetched_at": "2026-05-19T17:55:08+00:00",
+        "files_changed": [
+          "CHANGES.rst",
+          "CONTRIBUTORS.txt",
+          "dummyserver/certs/server.ipv6_san.crt",
+          "dummyserver/server.py",
+          "src/urllib3/__init__.py",
+          "src/urllib3/contrib/pyopenssl.py",
+          "src/urllib3/poolmanager.py",
+          "src/urllib3/util/retry.py",
+          "src/urllib3/util/ssl_.py",
+          "test/contrib/test_pyopenssl.py",
+          "test/test_retry.py",
+          "test/test_ssl.py",
+          "test/with_dummyserver/test_https.py",
+          "test/with_dummyserver/test_poolmanager.py"
+        ],
+        "import_aliases": [
+          "from urllib3.src.urllib3.contrib.pyopenssl import idna_encode",
+          "from urllib3 import pyopenssl",
+          "from urllib3.src.urllib3.poolmanager import urlopen",
+          "from urllib3 import poolmanager",
+          "from urllib3.src.urllib3.util.retry import __init__",
+          "from urllib3 import retry",
+          "from urllib3.src.urllib3.util.ssl_ import ssl_wrap_socket",
+          "from urllib3 import ssl_"
+        ],
+        "package": "urllib3",
+        "patch_commit": "1efadf43dc63317cd9eaa3e0fdb9e05ab07254b1",
+        "patch_repo": "urllib3/urllib3",
+        "patch_url": "https://github.com/urllib3/urllib3/commit/1efadf43dc63317cd9eaa3e0fdb9e05ab07254b1",
+        "sources_tried": [
+          "ghsa"
+        ],
+        "status": "ok",
+        "vulnerable_symbols": [
+          {
+            "after_signature": "def idna_encode(...)",
+            "before_signature": "def idna_encode(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "src/urllib3/contrib/pyopenssl.py",
+            "fully_qualified_name": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode",
+            "kind": "function",
+            "lines_added": 3,
+            "lines_removed": 0,
+            "short_name": "idna_encode",
+            "summary": "Internal logic updated in idna_encode (+3/-0 lines in hunk)"
+          },
+          {
+            "after_signature": "def urlopen(...)",
+            "before_signature": "def urlopen(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "src/urllib3/poolmanager.py",
+            "fully_qualified_name": "urllib3.src.urllib3.poolmanager.urlopen",
+            "kind": "function",
+            "lines_added": 4,
+            "lines_removed": 2,
+            "short_name": "urlopen",
+            "summary": "Internal logic updated in urlopen (+4/-2 lines in hunk)"
+          },
+          {
+            "after_signature": "def __init__(...)",
+            "before_signature": "def __init__(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "src/urllib3/util/retry.py",
+            "fully_qualified_name": "urllib3.src.urllib3.util.retry.__init__",
+            "kind": "function",
+            "lines_added": 2,
+            "lines_removed": 1,
+            "short_name": "__init__",
+            "summary": "Internal logic updated in __init__ (+2/-1 lines in hunk)"
+          },
+          {
+            "after_signature": "def ssl_wrap_socket(...)",
+            "before_signature": "def ssl_wrap_socket(...)",
+            "change_classification": "HARDENED_ONLY",
+            "file_in_patch": "src/urllib3/util/ssl_.py",
+            "fully_qualified_name": "urllib3.src.urllib3.util.ssl_.ssl_wrap_socket",
+            "kind": "function",
+            "lines_added": 4,
+            "lines_removed": 1,
+            "short_name": "ssl_wrap_socket",
+            "summary": "Added validation or guards in ssl_wrap_socket (+4/-1 lines in hunk)"
+          }
+        ]
+      },
+      "CVE-2019-8341": {
+        "cve_id": "CVE-2019-8341",
+        "fetched_at": "2026-05-20T06:18:33+00:00",
+        "files_changed": [],
+        "import_aliases": [],
+        "package": "jinja2",
+        "patch_commit": null,
+        "patch_repo": null,
+        "patch_url": null,
+        "sources_tried": [],
+        "status": "no_patch_found",
+        "vulnerable_symbols": []
+      },
+      "CVE-2020-14343": {
+        "cve_id": "CVE-2020-14343",
+        "fetched_at": "2026-05-20T06:18:39+00:00",
+        "files_changed": [
+          "lib/yaml/constructor.py",
+          "lib3/yaml/constructor.py",
+          "tests/lib/test_recursive.py",
+          "tests/lib3/test_recursive.py"
+        ],
+        "import_aliases": [
+          "from yaml.lib.yaml.constructor import construct_python_object_new",
+          "from yaml import constructor",
+          "from yaml.lib.yaml.constructor import set_python_instance_state",
+          "from yaml.lib3.yaml.constructor import construct_python_object_new",
+          "from yaml.lib3.yaml.constructor import set_python_instance_state"
+        ],
+        "package": "pyyaml",
+        "patch_commit": "a001f2782501ad2d24986959f0239a354675f9dc",
+        "patch_repo": "yaml/pyyaml",
+        "patch_url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc",
+        "sources_tried": [
+          "ghsa"
+        ],
+        "status": "ok",
+        "vulnerable_symbols": [
+          {
+            "after_signature": "def construct_python_object_new(...)",
+            "before_signature": "def construct_python_object_new(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "lib/yaml/constructor.py",
+            "fully_qualified_name": "yaml.lib.yaml.constructor.construct_python_object_new",
+            "kind": "function",
+            "lines_added": 0,
+            "lines_removed": 12,
+            "short_name": "construct_python_object_new",
+            "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+          },
+          {
+            "after_signature": "def set_python_instance_state(...)",
+            "before_signature": "def set_python_instance_state(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "lib/yaml/constructor.py",
+            "fully_qualified_name": "yaml.lib.yaml.constructor.set_python_instance_state",
+            "kind": "function",
+            "lines_added": 12,
+            "lines_removed": 0,
+            "short_name": "set_python_instance_state",
+            "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
+          },
+          {
+            "after_signature": "def construct_python_object_new(...)",
+            "before_signature": "def construct_python_object_new(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "lib3/yaml/constructor.py",
+            "fully_qualified_name": "yaml.lib3.yaml.constructor.construct_python_object_new",
+            "kind": "function",
+            "lines_added": 0,
+            "lines_removed": 12,
+            "short_name": "construct_python_object_new",
+            "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+          },
+          {
+            "after_signature": "def set_python_instance_state(...)",
+            "before_signature": "def set_python_instance_state(...)",
+            "change_classification": "INTERNAL_CHANGE",
+            "file_in_patch": "lib3/yaml/constructor.py",
+            "fully_qualified_name": "yaml.lib3.yaml.constructor.set_python_instance_state",
+            "kind": "function",
+            "lines_added": 12,
+            "lines_removed": 0,
+            "short_name": "set_python_instance_state",
+            "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
+          }
+        ]
+      }
+    },
+    "report_data": {
+      "chart_scores": {
+        "blast": 0,
+        "exploit": 20,
+        "reachability": 25,
+        "severity": 30
+      },
+      "cves": [
+        {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "cve_id": "CVE-2018-18074",
+          "cvss": 7.5,
+          "epss": 0.55,
+          "explanation": "CVE-2018-18074 scores 75/100 (BLOCK). CVSS 7.5 contributes 30 severity points. The /auth.py entry point reaches `requests.sessions.rebuild_auth` in auth.py:10 via a 2-hop call-graph path. Exploit likelihood: EPSS 0.55 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": true,
+          "installed_version": "",
+          "is_reachable": true,
+          "package": "requests",
+          "patch": {
+            "after_code": "# Patched\ndef rebuild_auth(...)",
+            "before_code": "# Internal logic updated in rebuild_auth (+3/-1 lines in hunk)\ndef rebuild_auth(...)",
+            "summary": "Internal logic updated in rebuild_auth (+3/-1 lines in hunk)",
+            "symbols": [
+              {
+                "after_signature": "def get_redirect_target(...)",
+                "before_signature": "def get_redirect_target(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "requests/sessions.py",
+                "fully_qualified_name": "requests.sessions.get_redirect_target",
+                "kind": "function",
+                "lines_added": 16,
+                "lines_removed": 0,
+                "short_name": "get_redirect_target",
+                "summary": "Internal logic updated in get_redirect_target (+16/-0 lines in hunk)"
+              },
+              {
+                "after_signature": "def rebuild_auth(...)",
+                "before_signature": "def rebuild_auth(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "requests/sessions.py",
+                "fully_qualified_name": "requests.sessions.rebuild_auth",
+                "kind": "function",
+                "lines_added": 3,
+                "lines_removed": 1,
+                "short_name": "rebuild_auth",
+                "summary": "Internal logic updated in rebuild_auth (+3/-1 lines in hunk)"
+              }
+            ],
+            "url": "https://github.com/requests/requests/commit/c45d7c49ea75133e52ab22a8e9e13173938e36ff"
+          },
+          "recommendation": "BLOCK",
+          "references": [
+            {
+              "code_snippet": "       7 | # ---------------------------------------------------------------------------\n       8 | #\n       9 | from requests import Session\n>>>   10 | from requests.utils import rebuild_auth\n      11 | \n      12 | auth_bp = Blueprint(\"auth\", __name__)\n      13 | ",
+              "col": 0,
+              "confidence": "HIGH",
+              "enclosing_function": null,
+              "file": "auth.py",
+              "import_chain": "requests.utils.rebuild_auth",
+              "in_entry_point": false,
+              "kind": "import",
+              "line": 10,
+              "source": "from requests.utils import rebuild_auth"
+            },
+            {
+              "code_snippet": "      39 |     session = Session()\n      40 |     prepared = session.prepare_request(request)\n      41 |     # Vulnerable pattern: uses patched rebuild_auth on redirect chain\n>>>   42 |     prepared.headers = rebuild_auth(prepared, _build_redirect_response())\n      43 |     return jsonify({\"status\": \"ok\", \"user\": request.form.get(\"username\", \"\")})",
+              "col": 23,
+              "confidence": "HIGH",
+              "enclosing_function": "login_user",
+              "entry_point_info": {
+                "framework": "flask",
+                "method": "POST",
+                "route": "/auth/login"
+              },
+              "file": "auth.py",
+              "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
+              "in_entry_point": true,
+              "kind": "call",
+              "line": 42,
+              "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
+            }
+          ],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 20,
+            "raw_risk": 75,
+            "reachability_score": 25,
+            "severity_score": 30
+          },
+          "vulnerable_symbol": "requests.sessions.rebuild_auth"
+        },
+        {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "cve_id": "CVE-2020-14343",
+          "cvss": 9.8,
+          "epss": 0.65,
+          "explanation": "CVE-2020-14343 scores 69/100 (REVIEW). CVSS 9.8 contributes 39 severity points. Transitive exposure: package pyyaml affected, no code path Exploit likelihood: EPSS 0.65 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": true,
+          "installed_version": "",
+          "is_reachable": false,
+          "package": "pyyaml",
+          "patch": {
+            "after_code": "# Patched\ndef construct_python_object_new(...)",
+            "before_code": "# Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)\ndef construct_python_object_new(...)",
+            "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)",
+            "symbols": [
+              {
+                "after_signature": "def construct_python_object_new(...)",
+                "before_signature": "def construct_python_object_new(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "lib/yaml/constructor.py",
+                "fully_qualified_name": "yaml.lib.yaml.constructor.construct_python_object_new",
+                "kind": "function",
+                "lines_added": 0,
+                "lines_removed": 12,
+                "short_name": "construct_python_object_new",
+                "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+              },
+              {
+                "after_signature": "def set_python_instance_state(...)",
+                "before_signature": "def set_python_instance_state(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "lib/yaml/constructor.py",
+                "fully_qualified_name": "yaml.lib.yaml.constructor.set_python_instance_state",
+                "kind": "function",
+                "lines_added": 12,
+                "lines_removed": 0,
+                "short_name": "set_python_instance_state",
+                "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
+              },
+              {
+                "after_signature": "def construct_python_object_new(...)",
+                "before_signature": "def construct_python_object_new(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "lib3/yaml/constructor.py",
+                "fully_qualified_name": "yaml.lib3.yaml.constructor.construct_python_object_new",
+                "kind": "function",
+                "lines_added": 0,
+                "lines_removed": 12,
+                "short_name": "construct_python_object_new",
+                "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+              },
+              {
+                "after_signature": "def set_python_instance_state(...)",
+                "before_signature": "def set_python_instance_state(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "lib3/yaml/constructor.py",
+                "fully_qualified_name": "yaml.lib3.yaml.constructor.set_python_instance_state",
+                "kind": "function",
+                "lines_added": 12,
+                "lines_removed": 0,
+                "short_name": "set_python_instance_state",
+                "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
+              }
+            ],
+            "url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc"
+          },
+          "recommendation": "REVIEW",
+          "references": [],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 20,
+            "raw_risk": 69,
+            "reachability_score": 10,
+            "severity_score": 39
+          },
+          "vulnerable_symbol": "yaml.lib.yaml.constructor.construct_python_object_new"
+        },
+        {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "cve_id": "CVE-2018-1000656",
+          "cvss": 7.5,
+          "epss": 0.12,
+          "explanation": "CVE-2018-1000656 scores 63/100 (REVIEW). CVSS 7.5 contributes 30 severity points. The //api/data entry point reaches `api_data` in app.py:27 via a 1-hop call-graph path. Exploit likelihood: EPSS 0.12. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": false,
+          "installed_version": "",
+          "is_reachable": true,
+          "package": "flask",
+          "patch": {
+            "after_code": "# Patched\ndef get_json(...)",
+            "before_code": "# Internal logic updated in get_json (+3/-10 lines in hunk)\ndef get_json(...)",
+            "summary": "Internal logic updated in get_json (+3/-10 lines in hunk)",
+            "symbols": [
+              {
+                "after_signature": "def _load_arg_defaults(...)",
+                "before_signature": "def _load_arg_defaults(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "flask/json.py",
+                "fully_qualified_name": "flask.json._load_arg_defaults",
+                "kind": "function",
+                "lines_added": 43,
+                "lines_removed": 0,
+                "short_name": "_load_arg_defaults",
+                "summary": "Internal logic updated in _load_arg_defaults (+43/-0 lines in hunk)"
+              },
+              {
+                "after_signature": "def loads(...)",
+                "before_signature": "def loads(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "flask/json.py",
+                "fully_qualified_name": "flask.json.loads",
+                "kind": "function",
+                "lines_added": 4,
+                "lines_removed": 1,
+                "short_name": "loads",
+                "summary": "Internal logic updated in loads (+4/-1 lines in hunk)"
+              },
+              {
+                "after_signature": "def get_json(...)",
+                "before_signature": "def get_json(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "flask/wrappers.py",
+                "fully_qualified_name": "flask.wrappers.get_json",
+                "kind": "function",
+                "lines_added": 3,
+                "lines_removed": 10,
+                "short_name": "get_json",
+                "summary": "Internal logic updated in get_json (+3/-10 lines in hunk)"
+              }
+            ],
+            "url": "https://github.com/pallets/flask/commit/b178e89e4456e777b1a7ac6d7199052d0dfdbbbe"
+          },
+          "recommendation": "REVIEW",
+          "references": [
+            {
+              "code_snippet": "      24 | @app.route(\"/api/data\", methods=[\"POST\"])\n      25 | def api_data():\n      26 |     # Triggers Flask JSON decode path (get_json / loads family)\n>>>   27 |     payload = request.get_json(force=True, silent=False)\n      28 |     return {\"received\": payload}",
+              "col": 14,
+              "confidence": "HIGH",
+              "enclosing_function": "api_data",
+              "entry_point_info": {
+                "framework": "flask",
+                "method": "POST",
+                "route": "/api/data"
+              },
+              "file": "app.py",
+              "import_chain": "request (from flask import request).get_json",
+              "in_entry_point": true,
+              "kind": "call",
+              "line": 27,
+              "source": "payload = request.get_json(force=True, silent=False)"
+            }
+          ],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 8,
+            "raw_risk": 63,
+            "reachability_score": 25,
+            "severity_score": 30
+          },
+          "vulnerable_symbol": "flask.wrappers.get_json"
+        },
+        {
+          "change_classification": "",
+          "confidence": "LOW",
+          "cve_id": "CVE-2019-8341",
+          "cvss": 8.1,
+          "epss": 0.48,
+          "explanation": "CVE-2019-8341 scores 58/100 (REVIEW). CVSS 8.1 contributes 32 severity points. Transitive exposure: package jinja2 affected, no code path Exploit likelihood: EPSS 0.48 and listed in CISA KEV catalog. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": true,
+          "installed_version": "",
+          "is_reachable": false,
+          "package": "jinja2",
+          "patch": {
+            "after_code": "# See upstream commit for full diff",
+            "before_code": "# See upstream commit for full diff",
+            "summary": "",
+            "symbols": [],
+            "url": null
+          },
+          "recommendation": "REVIEW",
+          "references": [],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 16,
+            "raw_risk": 58,
+            "reachability_score": 10,
+            "severity_score": 32
+          },
+          "vulnerable_symbol": ""
+        },
+        {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "cve_id": "CVE-2019-11324",
+          "cvss": 7.5,
+          "epss": 0.22,
+          "explanation": "CVE-2019-11324 scores 48/100 (REVIEW). CVSS 7.5 contributes 30 severity points. Transitive exposure: package urllib3 affected, no code path Exploit likelihood: EPSS 0.22. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": false,
+          "installed_version": "",
+          "is_reachable": false,
+          "package": "urllib3",
+          "patch": {
+            "after_code": "# Patched\ndef idna_encode(...)",
+            "before_code": "# Internal logic updated in idna_encode (+3/-0 lines in hunk)\ndef idna_encode(...)",
+            "summary": "Internal logic updated in idna_encode (+3/-0 lines in hunk)",
+            "symbols": [
+              {
+                "after_signature": "def idna_encode(...)",
+                "before_signature": "def idna_encode(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "src/urllib3/contrib/pyopenssl.py",
+                "fully_qualified_name": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode",
+                "kind": "function",
+                "lines_added": 3,
+                "lines_removed": 0,
+                "short_name": "idna_encode",
+                "summary": "Internal logic updated in idna_encode (+3/-0 lines in hunk)"
+              },
+              {
+                "after_signature": "def urlopen(...)",
+                "before_signature": "def urlopen(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "src/urllib3/poolmanager.py",
+                "fully_qualified_name": "urllib3.src.urllib3.poolmanager.urlopen",
+                "kind": "function",
+                "lines_added": 4,
+                "lines_removed": 2,
+                "short_name": "urlopen",
+                "summary": "Internal logic updated in urlopen (+4/-2 lines in hunk)"
+              },
+              {
+                "after_signature": "def __init__(...)",
+                "before_signature": "def __init__(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "src/urllib3/util/retry.py",
+                "fully_qualified_name": "urllib3.src.urllib3.util.retry.__init__",
+                "kind": "function",
+                "lines_added": 2,
+                "lines_removed": 1,
+                "short_name": "__init__",
+                "summary": "Internal logic updated in __init__ (+2/-1 lines in hunk)"
+              },
+              {
+                "after_signature": "def ssl_wrap_socket(...)",
+                "before_signature": "def ssl_wrap_socket(...)",
+                "change_classification": "HARDENED_ONLY",
+                "file_in_patch": "src/urllib3/util/ssl_.py",
+                "fully_qualified_name": "urllib3.src.urllib3.util.ssl_.ssl_wrap_socket",
+                "kind": "function",
+                "lines_added": 4,
+                "lines_removed": 1,
+                "short_name": "ssl_wrap_socket",
+                "summary": "Added validation or guards in ssl_wrap_socket (+4/-1 lines in hunk)"
+              }
+            ],
+            "url": "https://github.com/urllib3/urllib3/commit/1efadf43dc63317cd9eaa3e0fdb9e05ab07254b1"
+          },
+          "recommendation": "REVIEW",
+          "references": [],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 8,
+            "raw_risk": 48,
+            "reachability_score": 10,
+            "severity_score": 30
+          },
+          "vulnerable_symbol": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode"
+        },
+        {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "cve_id": "CVE-2018-10903",
+          "cvss": 7.5,
+          "epss": 0.03,
+          "explanation": "CVE-2018-10903 scores 44/100 (REVIEW). CVSS 7.5 contributes 30 severity points. Transitive exposure: package cryptography affected, no code path Exploit likelihood: EPSS 0.03. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": false,
+          "installed_version": "",
+          "is_reachable": false,
+          "package": "cryptography",
+          "patch": {
+            "after_code": "# Patched\ndef finalize_with_tag(...)",
+            "before_code": "# Internal logic updated in finalize_with_tag (+5/-0 lines in hunk)\ndef finalize_with_tag(...)",
+            "summary": "Internal logic updated in finalize_with_tag (+5/-0 lines in hunk)",
+            "symbols": [
+              {
+                "after_signature": "def finalize_with_tag(...)",
+                "before_signature": "def finalize_with_tag(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "src/cryptography/hazmat/backends/openssl/ciphers.py",
+                "fully_qualified_name": "cryptography.src.cryptography.hazmat.backends.openssl.ciphers.finalize_with_tag",
+                "kind": "function",
+                "lines_added": 5,
+                "lines_removed": 0,
+                "short_name": "finalize_with_tag",
+                "summary": "Internal logic updated in finalize_with_tag (+5/-0 lines in hunk)"
+              },
+              {
+                "after_signature": "def __init__(...)",
+                "before_signature": "def __init__(...)",
+                "change_classification": "INTERNAL_CHANGE",
+                "file_in_patch": "src/cryptography/hazmat/primitives/ciphers/modes.py",
+                "fully_qualified_name": "cryptography.src.cryptography.hazmat.primitives.ciphers.modes.__init__",
+                "kind": "function",
+                "lines_added": 1,
+                "lines_removed": 0,
+                "short_name": "__init__",
+                "summary": "Internal logic updated in __init__ (+1/-0 lines in hunk)"
+              }
+            ],
+            "url": "https://github.com/pyca/cryptography/commit/d4378e42937b56f473ddade2667f919ce32208cb"
+          },
+          "recommendation": "REVIEW",
+          "references": [],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 4,
+            "raw_risk": 44,
+            "reachability_score": 10,
+            "severity_score": 30
+          },
+          "vulnerable_symbol": "cryptography.src.cryptography.hazmat.backends.openssl.ciphers.finalize_with_tag"
+        },
+        {
+          "change_classification": "",
+          "confidence": "LOW",
+          "cve_id": "CVE-2019-1010083",
+          "cvss": 4.3,
+          "epss": 0.08,
+          "explanation": "CVE-2019-1010083 scores 31/100 (PROCEED). CVSS 4.3 contributes 17 severity points. Transitive exposure: package flask affected, no code path Exploit likelihood: EPSS 0.08. Blast radius: no services directly impacted.",
+          "fixed_version": "",
+          "in_kev": false,
+          "installed_version": "",
+          "is_reachable": false,
+          "package": "flask",
+          "patch": {
+            "after_code": "# See upstream commit for full diff",
+            "before_code": "# See upstream commit for full diff",
+            "summary": "",
+            "symbols": [],
+            "url": null
+          },
+          "recommendation": "PROCEED",
+          "references": [],
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 4,
+            "raw_risk": 31,
+            "reachability_score": 10,
+            "severity_score": 17
+          },
+          "vulnerable_symbol": ""
+        }
+      ],
+      "graph": {
+        "edges": [
+          {
+            "kind": "calls",
+            "source": "n0",
+            "target": "n1"
+          },
+          {
+            "kind": "calls",
+            "source": "n2",
+            "target": "n3"
+          },
+          {
+            "kind": "calls",
+            "source": "n3",
+            "target": "n1"
+          },
+          {
+            "kind": "calls",
+            "source": "n4",
+            "target": "n5"
+          },
+          {
+            "kind": "calls",
+            "source": "n5",
+            "target": "n6"
+          }
+        ],
+        "nodes": [
+          {
+            "framework": "",
+            "id": "n0",
+            "label": "auth.py",
+            "method": "GET",
+            "type": "entry_point"
+          },
+          {
+            "cve": "CVE-2018-18074",
+            "id": "n1",
+            "label": "requests.sessions.rebuild_auth",
+            "recommendation": "BLOCK",
+            "type": "vulnerable"
+          },
+          {
+            "framework": "flask",
+            "id": "n2",
+            "label": "/auth/login",
+            "method": "POST",
+            "type": "entry_point"
+          },
+          {
+            "file": "auth.py",
+            "id": "n3",
+            "label": "login_user",
+            "type": "function"
+          },
+          {
+            "framework": "flask",
+            "id": "n4",
+            "label": "/api/data",
+            "method": "POST",
+            "type": "entry_point"
+          },
+          {
+            "file": "app.py",
+            "id": "n5",
+            "label": "api_data",
+            "type": "function"
+          },
+          {
+            "cve": "CVE-2018-1000656",
+            "id": "n6",
+            "label": "flask.wrappers.get_json",
+            "recommendation": "REVIEW",
+            "type": "vulnerable"
+          }
+        ]
+      },
+      "metadata": {
+        "generated_at": "2026-05-20T06:18:47.428063+00:00",
+        "pipeline_version": "1.0.0",
+        "scorer_version": "1.0.0",
+        "target_repo": "vulnerable-task-tracker"
+      },
+      "next_action": "Upgrade boto3 \u2192 1.26.0, then cryptography \u2192 2.3, then requests \u2192 2.20.0. Test affected endpoints.",
+      "overall": {
+        "confidence": 0.92,
+        "headline": "Pre-upgrade risk assessment (model v1.0.0): overall recommendation is BLOCK with a composite score of 75/100 across 7 CVE(s) (1 BLOCK, 5 REVIEW).",
+        "raw_risk": 75,
+        "recommendation": "BLOCK"
+      },
+      "project_dir": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker",
+      "summary_stats": {
+        "noise_filtered": 3,
+        "noise_reduction_percent": 60.0,
+        "reachable_cves": 2,
+        "total_cves": 7,
+        "would_break_build": false
+      },
+      "top_concerns": [
+        {
+          "detail": "BLOCK (75/100). Symbol requests.sessions.rebuild_auth; reachable at auth.py.",
+          "title": "requests \u2014 CVE-2018-18074"
+        },
+        {
+          "detail": "REVIEW (69/100). Symbol yaml.lib.yaml.constructor.construct_python_object_new; not directly referenced.",
+          "title": "pyyaml \u2014 CVE-2020-14343"
+        },
+        {
+          "detail": "REVIEW (63/100). Symbol flask.wrappers.get_json; reachable at /api/data.",
+          "title": "flask \u2014 CVE-2018-1000656"
+        }
+      ],
+      "upgrade_simulation": {
+        "cascade": {
+          "chain": [
+            {
+              "forced_by": "boto3",
+              "from": "1.24.1",
+              "package": "urllib3",
+              "to": "1.25.11"
+            },
+            {
+              "forced_by": "urllib3",
+              "from": "1.13.50",
+              "package": "botocore",
+              "to": "1.13.50"
+            },
+            {
+              "forced_by": "botocore",
+              "from": "1.10.0",
+              "package": "boto3",
+              "to": "1.28.0"
+            }
+          ],
+          "total_packages_affected": 4,
+          "trigger": "requests 2.20.0 -> 2.20.0"
+        },
+        "conflicts": [
+          {
+            "class": "DIRECT_CONFLICT",
+            "conflicting_packages": [
+              {
+                "constraint": "<2.8,>=2.5",
+                "package": "requests",
+                "satisfied_by": [
+                  "2.7.0"
+                ],
+                "version": "2.20.0"
+              },
+              {
+                "constraint": ">=2.1",
+                "package": "cryptography",
+                "satisfied_by": [
+                  "2.7.0"
+                ],
+                "version": "2.3"
+              }
+            ],
+            "human_explanation": "Packages requests, cryptography impose incompatible version ranges on idna; resolved idna 3.15.0 violates at least one constraint.",
+            "id": "C1",
+            "intersection": [
+              "2.7.0"
+            ],
+            "severity": "BLOCK",
+            "shared_dependency": "idna",
+            "would_break_build": true
+          },
+          {
+            "class": "DIRECT_CONFLICT",
+            "conflicting_packages": [
+              {
+                "constraint": ">=1.20,<1.26",
+                "package": "botocore",
+                "satisfied_by": [
+                  "1.21.1",
+                  "1.22.0",
+                  "1.23.0",
+                  "1.24.1",
+                  "1.25.2"
+                ],
+                "version": "1.13.50"
+              },
+              {
+                "constraint": "<1.25,>=1.21.1",
+                "package": "requests",
+                "satisfied_by": [
+                  "1.21.1",
+                  "1.22.0",
+                  "1.23.0",
+                  "1.24.1"
+                ],
+                "version": "2.20.0"
+              }
+            ],
+            "human_explanation": "Packages botocore, requests impose incompatible version ranges on urllib3; resolved urllib3 1.25.11 violates at least one constraint.",
+            "id": "C2",
+            "intersection": [
+              "1.21.1",
+              "1.22.0",
+              "1.23.0",
+              "1.24.1"
+            ],
+            "severity": "BLOCK",
+            "shared_dependency": "urllib3",
+            "would_break_build": true
+          }
+        ],
+        "current_tree": {
+          "asn1crypto": {
+            "requires": {},
+            "version": "1.5.1"
+          },
+          "boto3": {
+            "requires": {
+              "botocore": ">=1.13.0,<1.14.0",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "s3transfer": ">=0.2.0,<0.3.0"
+            },
+            "version": "1.10.0"
+          },
+          "botocore": {
+            "requires": {
+              "docutils": ">=0.10,<0.16",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "python-dateutil": ">=2.1,<3.0.0",
+              "urllib3": ">=1.20,<1.26"
+            },
+            "version": "1.13.50"
+          },
+          "certifi": {
+            "python_requires": ">=3.7",
+            "requires": {},
+            "version": "2026.4.22"
+          },
+          "cffi": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "pycparser": "==3.0.0"
+            },
+            "version": "2.0.0"
+          },
+          "chardet": {
+            "requires": {},
+            "version": "3.0.4"
+          },
+          "click": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "8.4.0"
+          },
+          "cryptography": {
+            "requires": {
+              "asn1crypto": ">=0.21.0",
+              "cffi": "!=1.11.3,>=1.7",
+              "idna": ">=2.1",
+              "six": ">=1.4.1"
+            },
+            "version": "2.3"
+          },
+          "docutils": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.15.2"
+          },
+          "flask": {
+            "requires": {
+              "click": ">=2.0",
+              "itsdangerous": ">=0.21",
+              "jinja2": ">=2.4",
+              "werkzeug": ">=0.7"
+            },
+            "version": "0.12"
+          },
+          "idna": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "3.15.0"
+          },
+          "itsdangerous": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "2.2.0"
+          },
+          "jinja2": {
+            "requires": {
+              "markupsafe": ">=0.23"
+            },
+            "version": "2.10"
+          },
+          "jmespath": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.10.0"
+          },
+          "markupsafe": {
+            "python_requires": ">=3.9",
+            "requires": {},
+            "version": "3.0.3"
+          },
+          "pillow": {
+            "requires": {},
+            "version": "6.0.0"
+          },
+          "pycparser": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "3.0.0"
+          },
+          "python-dateutil": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {
+              "six": ">=1.5"
+            },
+            "version": "2.9.0.post0"
+          },
+          "pyyaml": {
+            "requires": {},
+            "version": "5.1"
+          },
+          "requests": {
+            "requires": {
+              "certifi": ">=2017.4.17",
+              "chardet": "<3.1.0,>=3.0.2",
+              "idna": "<2.8,>=2.5",
+              "urllib3": "<1.25,>=1.21.1"
+            },
+            "version": "2.20.0"
+          },
+          "s3transfer": {
+            "requires": {
+              "botocore": ">=1.12.36,<2.0.0"
+            },
+            "version": "0.2.1"
+          },
+          "six": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {},
+            "version": "1.17.0"
+          },
+          "sqlalchemy": {
+            "requires": {},
+            "version": "1.3.0"
+          },
+          "urllib3": {
+            "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "requires": {},
+            "version": "1.24.1"
+          },
+          "werkzeug": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "markupsafe": ">=2.1.1"
+            },
+            "version": "3.1.8"
+          }
+        },
+        "python_version": "3.14.0",
+        "resolution_plan": {
+          "estimated_test_surface": {
+            "packages_changed": 6,
+            "recommendation": "Run integration tests for code paths using upgraded packages and shared dependencies (e.g. urllib3, boto3 sessions).",
+            "transitive_packages_touched": 4
+          },
+          "feasible": true,
+          "steps": [
+            {
+              "from": "1.10.0",
+              "order": 1,
+              "package": "boto3",
+              "reason": "Latest version that relaxes shared-deps before requests upgrade.",
+              "to": "1.26.0"
+            },
+            {
+              "from": "2.3",
+              "order": 2,
+              "package": "cryptography",
+              "reason": "Latest version that relaxes shared-deps before requests upgrade.",
+              "to": "2.3"
+            },
+            {
+              "from": "2.20.0",
+              "order": 3,
+              "package": "requests",
+              "reason": "Primary upgrade target.",
+              "to": "2.20.0"
+            }
+          ]
+        },
+        "runtime_conflicts": [
+          {
+            "compatible": true,
+            "package": "urllib3",
+            "project_python": "3.14.0",
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "version": "1.25.11"
+          }
+        ],
+        "simulated_at": "2026-05-20T06:18:47+00:00",
+        "status": "ok",
+        "summary": {
+          "headline": "Upgrade blocked as requested: requires upgrading boto3 first.",
+          "one_line": "BLOCKED. Cascade required: 4 packages must be upgraded in order.",
+          "verdict": "PROCEED_AFTER_RESOLUTION"
+        },
+        "target_introduces_cves": [
+          {
+            "cve": "GHSA-9hjg-9r4m-mvj7",
+            "cvss": 0.0,
+            "note": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-9wx4-h78v-vm56",
+            "cvss": 0.0,
+            "note": "Requests `Session` object does not verify requests after making first request with verify=False",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-gc5v-m9x4-r6x2",
+            "cvss": 0.0,
+            "note": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-j8r2-6x86-q33q",
+            "cvss": 0.0,
+            "note": "Unintended leak of Proxy-Authorization header in requests",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "PYSEC-2023-74",
+            "cvss": 0.0,
+            "note": "",
+            "package": "requests",
+            "version": "2.20.0"
+          }
+        ],
+        "target_tree": {
+          "asn1crypto": {
+            "requires": {},
+            "version": "1.5.1"
+          },
+          "boto3": {
+            "requires": {
+              "botocore": ">=1.13.0,<1.14.0",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "s3transfer": ">=0.2.0,<0.3.0"
+            },
+            "version": "1.10.0"
+          },
+          "botocore": {
+            "requires": {
+              "docutils": ">=0.10,<0.16",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "python-dateutil": ">=2.1,<3.0.0",
+              "urllib3": ">=1.20,<1.26"
+            },
+            "version": "1.13.50"
+          },
+          "certifi": {
+            "python_requires": ">=3.7",
+            "requires": {},
+            "version": "2026.4.22"
+          },
+          "cffi": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "pycparser": "==3.0.0"
+            },
+            "version": "2.0.0"
+          },
+          "chardet": {
+            "requires": {},
+            "version": "3.0.4"
+          },
+          "click": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "8.4.0"
+          },
+          "cryptography": {
+            "requires": {
+              "asn1crypto": ">=0.21.0",
+              "cffi": "!=1.11.3,>=1.7",
+              "idna": ">=2.1",
+              "six": ">=1.4.1"
+            },
+            "version": "2.3"
+          },
+          "docutils": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.15.2"
+          },
+          "flask": {
+            "requires": {
+              "click": ">=2.0",
+              "itsdangerous": ">=0.21",
+              "jinja2": ">=2.4",
+              "werkzeug": ">=0.7"
+            },
+            "version": "0.12"
+          },
+          "idna": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "3.15.0"
+          },
+          "itsdangerous": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "2.2.0"
+          },
+          "jinja2": {
+            "requires": {
+              "markupsafe": ">=0.23"
+            },
+            "version": "2.10"
+          },
+          "jmespath": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.10.0"
+          },
+          "markupsafe": {
+            "python_requires": ">=3.9",
+            "requires": {},
+            "version": "3.0.3"
+          },
+          "pillow": {
+            "requires": {},
+            "version": "6.0.0"
+          },
+          "pycparser": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "3.0.0"
+          },
+          "python-dateutil": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {
+              "six": ">=1.5"
+            },
+            "version": "2.9.0.post0"
+          },
+          "pyyaml": {
+            "requires": {},
+            "version": "5.1"
+          },
+          "requests": {
+            "requires": {
+              "certifi": ">=2017.4.17",
+              "chardet": "<3.1.0,>=3.0.2",
+              "idna": "<2.8,>=2.5",
+              "urllib3": "<1.25,>=1.21.1"
+            },
+            "version": "2.20.0"
+          },
+          "s3transfer": {
+            "requires": {
+              "botocore": ">=1.12.36,<2.0.0"
+            },
+            "version": "0.2.1"
+          },
+          "six": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {},
+            "version": "1.17.0"
+          },
+          "sqlalchemy": {
+            "requires": {},
+            "version": "1.3.0"
+          },
+          "urllib3": {
+            "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "requires": {},
+            "version": "1.25.11"
+          },
+          "werkzeug": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "markupsafe": ">=2.1.1"
+            },
+            "version": "3.1.8"
+          }
+        },
+        "tree_diff": {
+          "added": [],
+          "bumped": [
+            {
+              "from": "1.24.1",
+              "package": "urllib3",
+              "to": "1.25.11"
+            }
+          ],
+          "removed": []
+        },
+        "unresolved_packages": []
+      }
+    },
+    "scores": {
+      "cves": [
+        {
+          "cve_id": "CVE-2018-18074",
+          "cvss_score": 7.5,
+          "cwe": [
+            "CWE-22"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.55,
+            "epss_percentile": 0.95,
+            "impacted_services": 0,
+            "in_kev": true,
+            "reachability_kind": "direct",
+            "reachable_paths": [
+              {
+                "file": "auth.py",
+                "hops": 2,
+                "line": 10,
+                "service": "auth.py",
+                "vuln_fn": "requests.sessions.rebuild_auth"
+              },
+              {
+                "file": "auth.py",
+                "hops": 1,
+                "line": 42,
+                "service": "/auth/login",
+                "vuln_fn": "login_user"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "requests",
+          "recommendation": "BLOCK",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 20,
+            "raw_risk": 75,
+            "reachability_score": 25,
+            "severity_score": 30
+          },
+          "severity": "HIGH"
+        },
+        {
+          "cve_id": "CVE-2020-14343",
+          "cvss_score": 9.8,
+          "cwe": [
+            "CWE-502"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.65,
+            "epss_percentile": 0.97,
+            "impacted_services": 0,
+            "in_kev": true,
+            "reachability_kind": "transitive",
+            "reachable_paths": [
+              {
+                "note": "package pyyaml affected, no code path"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "pyyaml",
+          "recommendation": "REVIEW",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 20,
+            "raw_risk": 69,
+            "reachability_score": 10,
+            "severity_score": 39
+          },
+          "severity": "CRITICAL"
+        },
+        {
+          "cve_id": "CVE-2018-1000656",
+          "cvss_score": 7.5,
+          "cwe": [
+            "CWE-89"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.12,
+            "epss_percentile": 0.85,
+            "impacted_services": 0,
+            "in_kev": false,
+            "reachability_kind": "direct",
+            "reachable_paths": [
+              {
+                "file": "app.py",
+                "hops": 1,
+                "line": 27,
+                "service": "/api/data",
+                "vuln_fn": "api_data"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "flask",
+          "recommendation": "REVIEW",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 8,
+            "raw_risk": 63,
+            "reachability_score": 25,
+            "severity_score": 30
+          },
+          "severity": "HIGH"
+        },
+        {
+          "cve_id": "CVE-2019-8341",
+          "cvss_score": 8.1,
+          "cwe": [
+            "CWE-330"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.48,
+            "epss_percentile": 0.93,
+            "impacted_services": 0,
+            "in_kev": true,
+            "reachability_kind": "transitive",
+            "reachable_paths": [
+              {
+                "note": "package jinja2 affected, no code path"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "jinja2",
+          "recommendation": "REVIEW",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 16,
+            "raw_risk": 58,
+            "reachability_score": 10,
+            "severity_score": 32
+          },
+          "severity": "HIGH"
+        },
+        {
+          "cve_id": "CVE-2019-11324",
+          "cvss_score": 7.5,
+          "cwe": [
+            "CWE-78"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.22,
+            "epss_percentile": 0.88,
+            "impacted_services": 0,
+            "in_kev": false,
+            "reachability_kind": "transitive",
+            "reachable_paths": [
+              {
+                "note": "package urllib3 affected, no code path"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "urllib3",
+          "recommendation": "REVIEW",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 8,
+            "raw_risk": 48,
+            "reachability_score": 10,
+            "severity_score": 30
+          },
+          "severity": "HIGH"
+        },
+        {
+          "cve_id": "CVE-2018-10903",
+          "cvss_score": 7.5,
+          "cwe": [
+            "CWE-310"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.03,
+            "epss_percentile": 0.62,
+            "impacted_services": 0,
+            "in_kev": false,
+            "reachability_kind": "transitive",
+            "reachable_paths": [
+              {
+                "note": "package cryptography affected, no code path"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "cryptography",
+          "recommendation": "REVIEW",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 4,
+            "raw_risk": 44,
+            "reachability_score": 10,
+            "severity_score": 30
+          },
+          "severity": "HIGH"
+        },
+        {
+          "cve_id": "CVE-2019-1010083",
+          "cvss_score": 4.3,
+          "cwe": [
+            "CWE-79"
+          ],
+          "evidence": {
+            "dependency_chains": [],
+            "epss": 0.08,
+            "epss_percentile": 0.78,
+            "impacted_services": 0,
+            "in_kev": false,
+            "reachability_kind": "transitive",
+            "reachable_paths": [
+              {
+                "note": "package flask affected, no code path"
+              }
+            ],
+            "service_names": []
+          },
+          "package": "flask",
+          "recommendation": "PROCEED",
+          "scores": {
+            "blast_radius_score": 0,
+            "exploit_score": 4,
+            "raw_risk": 31,
+            "reachability_score": 10,
+            "severity_score": 17
+          },
+          "severity": "MEDIUM"
+        }
+      ],
+      "generated_at": "2026-05-20T06:18:47.428063+00:00",
+      "scorer_version": "1.0.0",
+      "summary": {
+        "block_count": 1,
+        "overall_raw_risk": 75,
+        "overall_recommendation": "BLOCK",
+        "review_count": 5,
+        "total_cves_scored": 7
+      },
+      "thresholds": {
+        "BLOCK": 70,
+        "REVIEW": 40
+      },
+      "upgrade_order": [
+        "CVE-2018-18074",
+        "CVE-2020-14343",
+        "CVE-2018-1000656",
+        "CVE-2019-8341",
+        "CVE-2019-11324",
+        "CVE-2018-10903",
+        "CVE-2019-1010083"
+      ]
+    },
+    "symbol_findings": {
+      "findings_by_cve": {
+        "CVE-2018-1000656": {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "is_reachable": true,
+          "package": "flask",
+          "reference_count": 1,
+          "references": [
+            {
+              "code_snippet": "      24 | @app.route(\"/api/data\", methods=[\"POST\"])\n      25 | def api_data():\n      26 |     # Triggers Flask JSON decode path (get_json / loads family)\n>>>   27 |     payload = request.get_json(force=True, silent=False)\n      28 |     return {\"received\": payload}",
+              "col": 14,
+              "confidence": "HIGH",
+              "enclosing_function": "api_data",
+              "entry_point_info": {
+                "framework": "flask",
+                "method": "POST",
+                "route": "/api/data"
+              },
+              "file": "app.py",
+              "import_chain": "request (from flask import request).get_json",
+              "in_entry_point": true,
+              "kind": "call",
+              "line": 27,
+              "source": "payload = request.get_json(force=True, silent=False)"
+            }
+          ],
+          "vulnerable_symbol": "flask.wrappers.get_json"
+        },
+        "CVE-2018-10903": {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "is_reachable": false,
+          "package": "cryptography",
+          "reference_count": 0,
+          "references": [],
+          "vulnerable_symbol": "cryptography.src.cryptography.hazmat.backends.openssl.ciphers.finalize_with_tag"
+        },
+        "CVE-2018-18074": {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "is_reachable": true,
+          "package": "requests",
+          "reference_count": 2,
+          "references": [
+            {
+              "code_snippet": "       7 | # ---------------------------------------------------------------------------\n       8 | #\n       9 | from requests import Session\n>>>   10 | from requests.utils import rebuild_auth\n      11 | \n      12 | auth_bp = Blueprint(\"auth\", __name__)\n      13 | ",
+              "col": 0,
+              "confidence": "HIGH",
+              "enclosing_function": null,
+              "file": "auth.py",
+              "import_chain": "requests.utils.rebuild_auth",
+              "in_entry_point": false,
+              "kind": "import",
+              "line": 10,
+              "source": "from requests.utils import rebuild_auth"
+            },
+            {
+              "code_snippet": "      39 |     session = Session()\n      40 |     prepared = session.prepare_request(request)\n      41 |     # Vulnerable pattern: uses patched rebuild_auth on redirect chain\n>>>   42 |     prepared.headers = rebuild_auth(prepared, _build_redirect_response())\n      43 |     return jsonify({\"status\": \"ok\", \"user\": request.form.get(\"username\", \"\")})",
+              "col": 23,
+              "confidence": "HIGH",
+              "enclosing_function": "login_user",
+              "entry_point_info": {
+                "framework": "flask",
+                "method": "POST",
+                "route": "/auth/login"
+              },
+              "file": "auth.py",
+              "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
+              "in_entry_point": true,
+              "kind": "call",
+              "line": 42,
+              "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
+            }
+          ],
+          "vulnerable_symbol": "requests.sessions.rebuild_auth"
+        },
+        "CVE-2019-11324": {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "is_reachable": false,
+          "package": "urllib3",
+          "reference_count": 0,
+          "references": [],
+          "vulnerable_symbol": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode"
+        },
+        "CVE-2020-14343": {
+          "change_classification": "INTERNAL_CHANGE",
+          "confidence": "HIGH",
+          "is_reachable": false,
+          "package": "pyyaml",
+          "reference_count": 0,
+          "references": [],
+          "vulnerable_symbol": "yaml.lib.yaml.constructor.construct_python_object_new"
+        }
+      },
+      "scanned_at": "2026-05-20T06:18:47+00:00",
+      "stats": {
+        "duration_ms": 8,
+        "files_failed": 0,
+        "files_parsed_ok": 6,
+        "files_scanned": 6,
+        "total_findings": 3
+      },
+      "summary": {
+        "noise_reduction_percent": 60.0,
+        "reachable_cves": [
+          "CVE-2018-1000656",
+          "CVE-2018-18074"
+        ],
+        "unreachable_cves": [
+          "CVE-2018-10903",
+          "CVE-2019-11324",
+          "CVE-2020-14343"
+        ]
+      },
+      "target_dir": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
+    },
+    "upgrade_simulations": {
+      "requests@2.20.0": {
+        "cascade": {
+          "chain": [
+            {
+              "forced_by": "boto3",
+              "from": "1.24.1",
+              "package": "urllib3",
+              "to": "1.25.11"
+            },
+            {
+              "forced_by": "urllib3",
+              "from": "1.13.50",
+              "package": "botocore",
+              "to": "1.13.50"
+            },
+            {
+              "forced_by": "botocore",
+              "from": "1.10.0",
+              "package": "boto3",
+              "to": "1.28.0"
+            }
+          ],
+          "total_packages_affected": 4,
+          "trigger": "requests 2.20.0 -> 2.20.0"
+        },
+        "conflicts": [
+          {
+            "class": "DIRECT_CONFLICT",
+            "conflicting_packages": [
+              {
+                "constraint": "<2.8,>=2.5",
+                "package": "requests",
+                "satisfied_by": [
+                  "2.7.0"
+                ],
+                "version": "2.20.0"
+              },
+              {
+                "constraint": ">=2.1",
+                "package": "cryptography",
+                "satisfied_by": [
+                  "2.7.0"
+                ],
+                "version": "2.3"
+              }
+            ],
+            "human_explanation": "Packages requests, cryptography impose incompatible version ranges on idna; resolved idna 3.15.0 violates at least one constraint.",
+            "id": "C1",
+            "intersection": [
+              "2.7.0"
+            ],
+            "severity": "BLOCK",
+            "shared_dependency": "idna",
+            "would_break_build": true
+          },
+          {
+            "class": "DIRECT_CONFLICT",
+            "conflicting_packages": [
+              {
+                "constraint": ">=1.20,<1.26",
+                "package": "botocore",
+                "satisfied_by": [
+                  "1.21.1",
+                  "1.22.0",
+                  "1.23.0",
+                  "1.24.1",
+                  "1.25.2"
+                ],
+                "version": "1.13.50"
+              },
+              {
+                "constraint": "<1.25,>=1.21.1",
+                "package": "requests",
+                "satisfied_by": [
+                  "1.21.1",
+                  "1.22.0",
+                  "1.23.0",
+                  "1.24.1"
+                ],
+                "version": "2.20.0"
+              }
+            ],
+            "human_explanation": "Packages botocore, requests impose incompatible version ranges on urllib3; resolved urllib3 1.25.11 violates at least one constraint.",
+            "id": "C2",
+            "intersection": [
+              "1.21.1",
+              "1.22.0",
+              "1.23.0",
+              "1.24.1"
+            ],
+            "severity": "BLOCK",
+            "shared_dependency": "urllib3",
+            "would_break_build": true
+          }
+        ],
+        "current_tree": {
+          "asn1crypto": {
+            "requires": {},
+            "version": "1.5.1"
+          },
+          "boto3": {
+            "requires": {
+              "botocore": ">=1.13.0,<1.14.0",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "s3transfer": ">=0.2.0,<0.3.0"
+            },
+            "version": "1.10.0"
+          },
+          "botocore": {
+            "requires": {
+              "docutils": ">=0.10,<0.16",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "python-dateutil": ">=2.1,<3.0.0",
+              "urllib3": ">=1.20,<1.26"
+            },
+            "version": "1.13.50"
+          },
+          "certifi": {
+            "python_requires": ">=3.7",
+            "requires": {},
+            "version": "2026.4.22"
+          },
+          "cffi": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "pycparser": "==3.0.0"
+            },
+            "version": "2.0.0"
+          },
+          "chardet": {
+            "requires": {},
+            "version": "3.0.4"
+          },
+          "click": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "8.4.0"
+          },
+          "cryptography": {
+            "requires": {
+              "asn1crypto": ">=0.21.0",
+              "cffi": "!=1.11.3,>=1.7",
+              "idna": ">=2.1",
+              "six": ">=1.4.1"
+            },
+            "version": "2.3"
+          },
+          "docutils": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.15.2"
+          },
+          "flask": {
+            "requires": {
+              "click": ">=2.0",
+              "itsdangerous": ">=0.21",
+              "jinja2": ">=2.4",
+              "werkzeug": ">=0.7"
+            },
+            "version": "0.12"
+          },
+          "idna": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "3.15.0"
+          },
+          "itsdangerous": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "2.2.0"
+          },
+          "jinja2": {
+            "requires": {
+              "markupsafe": ">=0.23"
+            },
+            "version": "2.10"
+          },
+          "jmespath": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.10.0"
+          },
+          "markupsafe": {
+            "python_requires": ">=3.9",
+            "requires": {},
+            "version": "3.0.3"
+          },
+          "pillow": {
+            "requires": {},
+            "version": "6.0.0"
+          },
+          "pycparser": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "3.0.0"
+          },
+          "python-dateutil": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {
+              "six": ">=1.5"
+            },
+            "version": "2.9.0.post0"
+          },
+          "pyyaml": {
+            "requires": {},
+            "version": "5.1"
+          },
+          "requests": {
+            "requires": {
+              "certifi": ">=2017.4.17",
+              "chardet": "<3.1.0,>=3.0.2",
+              "idna": "<2.8,>=2.5",
+              "urllib3": "<1.25,>=1.21.1"
+            },
+            "version": "2.20.0"
+          },
+          "s3transfer": {
+            "requires": {
+              "botocore": ">=1.12.36,<2.0.0"
+            },
+            "version": "0.2.1"
+          },
+          "six": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {},
+            "version": "1.17.0"
+          },
+          "sqlalchemy": {
+            "requires": {},
+            "version": "1.3.0"
+          },
+          "urllib3": {
+            "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "requires": {},
+            "version": "1.24.1"
+          },
+          "werkzeug": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "markupsafe": ">=2.1.1"
+            },
+            "version": "3.1.8"
+          }
+        },
+        "python_version": "3.14.0",
+        "resolution_plan": {
+          "estimated_test_surface": {
+            "packages_changed": 6,
+            "recommendation": "Run integration tests for code paths using upgraded packages and shared dependencies (e.g. urllib3, boto3 sessions).",
+            "transitive_packages_touched": 4
+          },
+          "feasible": true,
+          "steps": [
+            {
+              "from": "1.10.0",
+              "order": 1,
+              "package": "boto3",
+              "reason": "Latest version that relaxes shared-deps before requests upgrade.",
+              "to": "1.26.0"
+            },
+            {
+              "from": "2.3",
+              "order": 2,
+              "package": "cryptography",
+              "reason": "Latest version that relaxes shared-deps before requests upgrade.",
+              "to": "2.3"
+            },
+            {
+              "from": "2.20.0",
+              "order": 3,
+              "package": "requests",
+              "reason": "Primary upgrade target.",
+              "to": "2.20.0"
+            }
+          ]
+        },
+        "runtime_conflicts": [
+          {
+            "compatible": true,
+            "package": "urllib3",
+            "project_python": "3.14.0",
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "version": "1.25.11"
+          }
+        ],
+        "simulated_at": "2026-05-20T06:18:47+00:00",
+        "status": "ok",
+        "summary": {
+          "headline": "Upgrade blocked as requested: requires upgrading boto3 first.",
+          "one_line": "BLOCKED. Cascade required: 4 packages must be upgraded in order.",
+          "verdict": "PROCEED_AFTER_RESOLUTION"
+        },
+        "target_introduces_cves": [
+          {
+            "cve": "GHSA-9hjg-9r4m-mvj7",
+            "cvss": 0.0,
+            "note": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-9wx4-h78v-vm56",
+            "cvss": 0.0,
+            "note": "Requests `Session` object does not verify requests after making first request with verify=False",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-gc5v-m9x4-r6x2",
+            "cvss": 0.0,
+            "note": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "GHSA-j8r2-6x86-q33q",
+            "cvss": 0.0,
+            "note": "Unintended leak of Proxy-Authorization header in requests",
+            "package": "requests",
+            "version": "2.20.0"
+          },
+          {
+            "cve": "PYSEC-2023-74",
+            "cvss": 0.0,
+            "note": "",
+            "package": "requests",
+            "version": "2.20.0"
+          }
+        ],
+        "target_tree": {
+          "asn1crypto": {
+            "requires": {},
+            "version": "1.5.1"
+          },
+          "boto3": {
+            "requires": {
+              "botocore": ">=1.13.0,<1.14.0",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "s3transfer": ">=0.2.0,<0.3.0"
+            },
+            "version": "1.10.0"
+          },
+          "botocore": {
+            "requires": {
+              "docutils": ">=0.10,<0.16",
+              "jmespath": ">=0.7.1,<1.0.0",
+              "python-dateutil": ">=2.1,<3.0.0",
+              "urllib3": ">=1.20,<1.26"
+            },
+            "version": "1.13.50"
+          },
+          "certifi": {
+            "python_requires": ">=3.7",
+            "requires": {},
+            "version": "2026.4.22"
+          },
+          "cffi": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "pycparser": "==3.0.0"
+            },
+            "version": "2.0.0"
+          },
+          "chardet": {
+            "requires": {},
+            "version": "3.0.4"
+          },
+          "click": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "8.4.0"
+          },
+          "cryptography": {
+            "requires": {
+              "asn1crypto": ">=0.21.0",
+              "cffi": "!=1.11.3,>=1.7",
+              "idna": ">=2.1",
+              "six": ">=1.4.1"
+            },
+            "version": "2.3"
+          },
+          "docutils": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.15.2"
+          },
+          "flask": {
+            "requires": {
+              "click": ">=2.0",
+              "itsdangerous": ">=0.21",
+              "jinja2": ">=2.4",
+              "werkzeug": ">=0.7"
+            },
+            "version": "0.12"
+          },
+          "idna": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "3.15.0"
+          },
+          "itsdangerous": {
+            "python_requires": ">=3.8",
+            "requires": {},
+            "version": "2.2.0"
+          },
+          "jinja2": {
+            "requires": {
+              "markupsafe": ">=0.23"
+            },
+            "version": "2.10"
+          },
+          "jmespath": {
+            "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+            "requires": {},
+            "version": "0.10.0"
+          },
+          "markupsafe": {
+            "python_requires": ">=3.9",
+            "requires": {},
+            "version": "3.0.3"
+          },
+          "pillow": {
+            "requires": {},
+            "version": "6.0.0"
+          },
+          "pycparser": {
+            "python_requires": ">=3.10",
+            "requires": {},
+            "version": "3.0.0"
+          },
+          "python-dateutil": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {
+              "six": ">=1.5"
+            },
+            "version": "2.9.0.post0"
+          },
+          "pyyaml": {
+            "requires": {},
+            "version": "5.1"
+          },
+          "requests": {
+            "requires": {
+              "certifi": ">=2017.4.17",
+              "chardet": "<3.1.0,>=3.0.2",
+              "idna": "<2.8,>=2.5",
+              "urllib3": "<1.25,>=1.21.1"
+            },
+            "version": "2.20.0"
+          },
+          "s3transfer": {
+            "requires": {
+              "botocore": ">=1.12.36,<2.0.0"
+            },
+            "version": "0.2.1"
+          },
+          "six": {
+            "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+            "requires": {},
+            "version": "1.17.0"
+          },
+          "sqlalchemy": {
+            "requires": {},
+            "version": "1.3.0"
+          },
+          "urllib3": {
+            "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+            "requires": {},
+            "version": "1.25.11"
+          },
+          "werkzeug": {
+            "python_requires": ">=3.9",
+            "requires": {
+              "markupsafe": ">=2.1.1"
+            },
+            "version": "3.1.8"
+          }
+        },
+        "tree_diff": {
+          "added": [],
+          "bumped": [
+            {
+              "from": "1.24.1",
+              "package": "urllib3",
+              "to": "1.25.11"
+            }
+          ],
+          "removed": []
+        },
+        "unresolved_packages": []
+      }
+    }
+  },
+  "final_summary": "Found 7 CVEs, 2 reachable (fallback pipeline).",
+  "report_path": "D:\\Predictive-Risk-Assessment-System\\data\\report.html",
+  "status": "completed_with_fallback",
+  "trace": [
+    {
+      "action": {
+        "args": {
+          "repo_path": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
+        },
+        "tool": "list_dependencies"
+      },
+      "duration_ms": 1,
+      "result_summary": "Found 9 packages: flask 0.12, jinja2 2.10, requests 2.20.0, urllib3 1.24.1, boto3 1.10.0, pillow 6.0.0 (+3 more)",
+      "step": 1,
+      "thought": "Discover dependency pins",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "repo_path": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
+        },
+        "tool": "scan_vulnerabilities"
+      },
+      "duration_ms": 4,
+      "result_summary": "Found 7 CVEs (6 high/critical)",
+      "step": 2,
+      "thought": "Scan for known CVEs",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "count": 7
+        },
+        "tool": "fetch_patches_batch"
+      },
+      "duration_ms": 0,
+      "result_summary": "Fetched 7 patches",
+      "step": 3,
+      "thought": "Batch-fetch patches for discovered CVEs",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "repo_path": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker",
+          "vulnerable_symbols": [
+            "CVE-2018-1000656",
+            "CVE-2018-18074",
+            "CVE-2019-11324",
+            "CVE-2018-10903",
+            "CVE-2020-14343"
+          ]
+        },
+        "tool": "find_symbol_usage"
+      },
+      "duration_ms": 9,
+      "result_summary": "Reachable 2, unreachable 3 CVEs",
+      "step": 4,
+      "thought": "Check reachability of vulnerable symbols",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "package": "requests",
+          "repo_path": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker",
+          "target_version": "2.20.0"
+        },
+        "tool": "simulate_upgrade"
+      },
+      "duration_ms": 22,
+      "result_summary": "Upgrade requests\u21922.20.0: PROCEED_AFTER_RESOLUTION",
+      "step": 5,
+      "thought": "Simulate requests upgrade",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "collected_data": {}
+        },
+        "tool": "compute_score"
+      },
+      "duration_ms": 1,
+      "result_summary": "Scored 7 CVEs; overall BLOCK",
+      "step": 6,
+      "thought": "Deterministic risk scoring",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "collected_data": {}
+        },
+        "tool": "generate_report"
+      },
+      "duration_ms": 40,
+      "result_summary": "Report written to D:\\Predictive-Risk-Assessment-System\\data\\report.html",
+      "step": 7,
+      "thought": "Generate HTML report",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    },
+    {
+      "action": {
+        "args": {
+          "summary": "Found 7 CVEs, 2 reachable (fallback pipeline)."
+        },
+        "tool": "finish"
+      },
+      "duration_ms": 0,
+      "result_summary": "Found 7 CVEs, 2 reachable (fallback pipeline).",
+      "step": 8,
+      "thought": "Investigation complete",
+      "timestamp": "2026-05-20T06:18:47+00:00"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+<section class="tab-panel hidden" id="tab-graph" role="tabpanel" aria-labelledby="tab-btn-graph" hidden>
+  <div class="toolbar">
+    <label class="chk"><input type="checkbox" id="graph-block-only" /> BLOCK only</label>
+    <button type="button" class="btn btn-secondary" id="graph-reset">Reset view</button>
+  </div>
+  <div class="graph-layout">
+    <div id="graph-network" class="graph-canvas" role="img" aria-label="Reachability graph"></div>
+    <aside id="graph-detail" class="graph-detail card">
+      <p class="muted">Click a node for details.</p>
+    </aside>
+  </div>
+  <div class="legend card">
+    <span class="leg-item leg-entry">Entry point</span>
+    <span class="leg-item leg-fn">Function</span>
+    <span class="leg-item leg-block">BLOCK</span>
+    <span class="leg-item leg-review">REVIEW</span>
+  </div>
+</section>

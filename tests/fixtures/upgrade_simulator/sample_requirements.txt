@@ -1,0 +1,4 @@
+# comment
+requests[security]==2.20.0
+-e git+https://example.com/foo
+flask==0.12

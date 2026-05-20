@@ -3,156 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pre-Upgrade Risk Assessment Report</title>
+<title>{{ metadata.target_repo }} — Pre-Upgrade Risk Report</title>
+{% if not offline %}
+{% for a in cdn_assets %}{% if a.kind == 'css' %}<link rel="stylesheet" href="{{ a.href }}">{% endif %}{% endfor %}
+{% for a in cdn_assets %}{% if a.kind == 'js' %}<script src="{{ a.src }}" defer></script>{% endif %}{% endfor %}
+{% endif %}
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         background: #f4f6f9; color: #1a1a2e; line-height: 1.5; padding: 2rem; }
-  .container { max-width: 960px; margin: 0 auto; }
-  h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: #2d3748; }
-  .subtitle { color: #718096; font-size: 0.9rem; margin-bottom: 1.5rem; }
-
-  .banner { padding: 1.25rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;
-            font-size: 1.3rem; font-weight: 700; text-align: center; color: #fff; }
-  .banner.BLOCK  { background: #c53030; }
-  .banner.REVIEW { background: #d69e2e; color: #1a1a2e; }
-  .banner.PROCEED { background: #38a169; }
-
-  .card { background: #fff; border-radius: 8px; padding: 1.25rem;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 1rem; }
-  .exec { font-size: 1rem; color: #2d3748; }
-
-  .score-row { display: flex; align-items: center; margin-bottom: 0.6rem; }
-  .score-label { width: 160px; font-size: 0.85rem; color: #4a5568; }
-  .score-bar-bg { flex: 1; height: 22px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
-  .score-bar-fill { height: 100%; border-radius: 4px; }
-  .score-val { width: 50px; text-align: right; font-size: 0.85rem; font-weight: 600; margin-left: 8px; }
-  .fill-severity { background: #e53e3e; }
-  .fill-exploit { background: #dd6b20; }
-  .fill-reach { background: #d69e2e; }
-  .fill-blast { background: #805ad5; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { background: #edf2f7; text-align: left; padding: 0.5rem 0.75rem; font-weight: 600; }
-  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-  tr:hover td { background: #f7fafc; }
-  .mono { font-family: Consolas, "Courier New", monospace; font-size: 0.8rem; }
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
-         font-weight: 600; color: #fff; }
-  .tag.BLOCK { background: #c53030; }
-  .tag.REVIEW { background: #d69e2e; color: #1a1a2e; }
-  .tag.PROCEED { background: #38a169; }
-  .kev-yes { color: #c53030; font-weight: 700; }
-
-  ol.upgrade { padding-left: 1.5rem; }
-  ol.upgrade li { margin-bottom: 0.35rem; font-size: 0.9rem; }
-
-  .footer { text-align: center; color: #a0aec0; font-size: 0.75rem; margin-top: 2rem; }
-  .explain-block { margin-top: 0.75rem; padding: 0.75rem; background: #f7fafc;
-                   border-left: 3px solid #4299e1; font-size: 0.85rem; }
+:root {
+  --primary:#1F4E79; --accent:#2E75B6; --danger:#C53030; --warning:#D69E2E;
+  --success:#38A169; --surface:#F8FAFC; --card:#FFFFFF; --text:#1A202C; --muted:#718096;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--surface);color:var(--text);line-height:1.5}
+.site-header{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid #e2e8f0;padding:1rem 1.5rem}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.header-title h1{font-size:1.25rem;color:var(--primary)}
+.header-meta{font-size:.85rem;color:var(--muted)}
+.header-badge{text-align:right;padding:.5rem 1rem;border-radius:8px;color:#fff}
+.header-badge.rec-BLOCK{background:var(--danger)}
+.header-badge.rec-REVIEW{background:var(--warning);color:var(--text)}
+.header-badge.rec-PROCEED{background:var(--success)}
+.badge-rec{display:block;font-weight:700;font-size:1rem}
+.badge-score{font-size:.9rem;opacity:.95}
+.tab-nav{position:sticky;top:72px;z-index:90;background:var(--card);border-bottom:1px solid #e2e8f0;padding:.5rem 1.5rem;display:flex;gap:.35rem;flex-wrap:wrap;max-width:1280px;margin:0 auto}
+.tab-btn{border:1px solid #cbd5e0;background:#fff;color:var(--text);padding:.45rem .9rem;border-radius:6px;cursor:pointer;font-size:.85rem}
+.tab-btn[aria-selected="true"],.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{max-width:1280px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+.tab-panel.hidden{display:none!important}
+.card{background:var(--card);border-radius:10px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:1rem}
+.banner{text-align:center;padding:1.5rem;border-radius:10px;color:#fff;margin-bottom:1rem}
+.banner.rec-BLOCK{background:var(--danger)}
+.banner.rec-REVIEW{background:var(--warning);color:var(--text)}
+.banner.rec-PROCEED{background:var(--success)}
+.banner-rec{font-size:1.5rem;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem}
+.stat-card{background:var(--card);border-radius:10px;padding:1rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-num{display:block;font-size:2rem;font-weight:700;color:var(--primary)}
+.stat-label{font-size:.8rem;color:var(--muted)}
+.prose{font-size:1rem;color:#2d3748}
+.toolbar{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1rem}
+.search-input{padding:.4rem .6rem;border:1px solid #cbd5e0;border-radius:6px;min-width:200px}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.data-table th,.data-table td{padding:.5rem .6rem;border-bottom:1px solid #e2e8f0;text-align:left}
+.data-table th{cursor:pointer;background:#edf2f7}
+.mono{font-family:Consolas,Monaco,monospace;font-size:.8rem}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600;color:#fff}
+.tag-BLOCK{background:var(--danger)}
+.tag-REVIEW{background:var(--warning);color:var(--text)}
+.tag-PROCEED{background:var(--success)}
+.tag-high{background:var(--accent)}
+.tag-muted{background:#a0aec0}
+.kev-yes{color:var(--danger);font-weight:700}
+.detail-row.hidden{display:none}
+.detail-panel{padding:1rem;background:#f7fafc;border-radius:8px}
+.code-snippet{font-size:.75rem;overflow:auto}
+.score-row{display:flex;align-items:center;gap:.5rem;margin:.35rem 0}
+.score-row span:first-child{width:100px;font-size:.8rem}
+.bar{flex:1;height:18px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.fill{height:100%}
+.fill-sev{background:var(--danger)}.fill-exp{background:#dd6b20}.fill-reach{background:var(--warning)}.fill-blast{background:#805ad5}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.timeline{padding-left:1.25rem}
+.step-card{border-left:4px solid var(--accent);padding:.75rem 1rem;margin:.5rem 0;background:#f7fafc}
+.step-num{font-weight:700;color:var(--primary);font-size:.75rem}
+.graph-layout{display:grid;grid-template-columns:1fr 280px;gap:1rem}
+.graph-canvas{height:480px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem}
+.leg-entry::before{content:'';display:inline-block;width:10px;height:10px;background:#2E75B6;border-radius:50%;margin-right:4px}
+.leg-fn::before{content:'';display:inline-block;width:10px;height:10px;background:#A0AEC0;border-radius:50%;margin-right:4px}
+.leg-block::before{content:'';display:inline-block;width:10px;height:10px;background:#C53030;border-radius:50%;margin-right:4px}
+.leg-review::before{content:'';display:inline-block;width:10px;height:10px;background:#D69E2E;border-radius:50%;margin-right:4px}
+.site-footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem}
+.btn{padding:.45rem .9rem;border-radius:6px;border:none;cursor:pointer;font-size:.85rem}
+.btn-secondary{background:#edf2f7;color:var(--text)}
+.empty-state{padding:2rem;text-align:center;color:var(--muted)}
+.conflict-diagram{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem;padding:1rem;background:#fff5f5;border-radius:8px}
+@media(max-width:768px){.stat-grid{grid-template-columns:1fr 1fr}.diff-grid,.graph-layout{grid-template-columns:1fr}.tab-nav{top:auto;position:relative}}
+@media print{
+  .tab-nav,.toolbar,.btn,.btn-expand{display:none!important}
+  .tab-panel,.tab-panel.hidden{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Pre-Upgrade Risk Assessment</h1>
-  <p class="subtitle">Generated {{ generated_at }} &middot; Scorer v{{ scorer_version }} &middot; Graph: {{ graph_mode }}</p>
+{% include 'partials/_header.html.j2' %}
+{% include 'partials/_tab_nav.html.j2' %}
+<main>
+{% include 'tabs/_executive.html.j2' %}
+{% include 'tabs/_technical.html.j2' %}
+{% include 'tabs/_patches.html.j2' %}
+{% include 'tabs/_upgrade.html.j2' %}
+{% include 'tabs/_graph.html.j2' %}
+</main>
+{% include 'partials/_footer.html.j2' %}
+<script>
+const REPORT_CVES = {{ cves_json|safe }};
+const GRAPH_DATA = {{ graph_json|safe }};
+const CHART_SCORES = {{ chart_json|safe }};
+</script>
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  function showTab(id){
+    tabs.forEach(t=>{const on=t.dataset.tab===id; t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');});
+    panels.forEach(p=>{const on=p.id==='tab-'+id; p.classList.toggle('hidden',!on); p.hidden=!on;});
+    if(id==='graph' && window.initGraph) window.initGraph();
+  }
+  tabs.forEach((t,i)=>{
+    t.addEventListener('click',()=>showTab(t.dataset.tab));
+    t.addEventListener('keydown',e=>{
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=e.key==='ArrowRight'?(i+1)%tabs.length:(i-1+tabs.length)%tabs.length;
+        tabs[n].focus(); showTab(tabs[n].dataset.tab);
+      }
+    });
+  });
 
-  <div class="banner {{ overall_rec }}">
-    {{ overall_rec }} &mdash; Overall Risk Score: {{ overall_raw_risk }}/100
-  </div>
+  const table=document.getElementById('cve-table');
+  if(table){
+    let sortKey='cvss',sortAsc=false;
+    table.querySelectorAll('th[data-sort]').forEach(th=>{
+      th.addEventListener('click',()=>{
+        const k=th.dataset.sort;
+        if(sortKey===k) sortAsc=!sortAsc; else{sortKey=k;sortAsc=false;}
+        const tbody=table.querySelector('tbody');
+        const pairs=[];
+        tbody.querySelectorAll('tr.cve-row').forEach(row=>{
+          const detail=document.getElementById(row.querySelector('.btn-expand').dataset.target);
+          pairs.push({row,detail});
+        });
+        pairs.sort((a,b)=>{
+          const av=a.row.dataset[sortKey==='cve'?'cve':sortKey==='rec'?'rec':sortKey==='reach'?'reachable':sortKey]||0;
+          const bv=b.row.dataset[sortKey==='cve'?'cve':sortKey==='rec'?'rec':sortKey==='reach'?'reachable':sortKey]||0;
+          if(sortKey==='cvss'||sortKey==='epss') return (parseFloat(av)-parseFloat(bv))*(sortAsc?1:-1);
+          return String(av).localeCompare(String(bv))*(sortAsc?1:-1);
+        });
+        pairs.forEach(p=>{tbody.appendChild(p.row); if(p.detail) tbody.appendChild(p.detail);});
+      });
+    });
+    document.querySelectorAll('.btn-expand').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const tr=document.getElementById(btn.dataset.target);
+        const open=tr.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded',open?'false':'true');
+        btn.textContent=open?'▶':'▼';
+        tr.hidden=open;
+      });
+    });
+    function applyFilters(){
+      const rec=document.getElementById('filter-rec').value;
+      const reach=document.getElementById('filter-reachable').checked;
+      const q=(document.getElementById('filter-search').value||'').toLowerCase();
+      table.querySelectorAll('tr.cve-row').forEach(row=>{
+        const ok=(rec==='all'||row.dataset.rec===rec)&&(!reach||row.dataset.reachable==='1')&&(!q||row.textContent.toLowerCase().includes(q));
+        row.style.display=ok?'':'none';
+        const d=document.getElementById(row.querySelector('.btn-expand').dataset.target);
+        if(d&&!ok) d.style.display='none';
+      });
+    }
+    ['filter-rec','filter-reachable','filter-search'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.addEventListener(el.type==='checkbox'?'change':'input',applyFilters);
+    });
+  }
 
-  <div class="card">
-    <p class="exec">{{ executive_summary }}</p>
-  </div>
+  const sel=document.getElementById('patch-cve-select');
+  if(sel){
+    sel.addEventListener('change',()=>{
+      document.querySelectorAll('.patch-panel').forEach((p,i)=>{
+        const on=String(i)===sel.value;
+        p.classList.toggle('hidden',!on); p.hidden=!on;
+      });
+      if(window.hljs) document.querySelectorAll('pre code').forEach(el=>hljs.highlightElement(el));
+    });
+  }
 
-  {% if top_cve %}
-  <h2>Score Breakdown (Top CVE)</h2>
-  <div class="card">
-    <p style="margin-bottom:0.75rem;font-weight:600;">{{ top_cve.cve_id }} ({{ top_cve.package }})</p>
-    {% set s = top_cve.scores %}
-    <div class="score-row">
-      <span class="score-label">Severity (0–40)</span>
-      <div class="score-bar-bg"><div class="score-bar-fill fill-severity" style="width:{{ (s.severity_score / 40 * 100)|int }}%"></div></div>
-      <span class="score-val">{{ s.severity_score }}</span>
-    </div>
-    <div class="score-row">
-      <span class="score-label">Exploit (0–20)</span>
-      <div class="score-bar-bg"><div class="score-bar-fill fill-exploit" style="width:{{ (s.exploit_score / 20 * 100)|int }}%"></div></div>
-      <span class="score-val">{{ s.exploit_score }}</span>
-    </div>
-    <div class="score-row">
-      <span class="score-label">Reachability (0–25)</span>
-      <div class="score-bar-bg"><div class="score-bar-fill fill-reach" style="width:{{ (s.reachability_score / 25 * 100)|int }}%"></div></div>
-      <span class="score-val">{{ s.reachability_score }}</span>
-    </div>
-    <div class="score-row">
-      <span class="score-label">Blast Radius (0–15)</span>
-      <div class="score-bar-bg"><div class="score-bar-fill fill-blast" style="width:{{ (s.blast_radius_score / 15 * 100)|int }}%"></div></div>
-      <span class="score-val">{{ s.blast_radius_score }}</span>
-    </div>
-    <p style="margin-top:0.5rem;font-weight:700;">Total: {{ s.raw_risk }}/100</p>
-  </div>
-  {% endif %}
+  if(typeof Chart!=='undefined'){
+    const ctx=document.getElementById('riskDonut');
+    if(ctx) new Chart(ctx,{type:'doughnut',data:{
+      labels:['Severity','Exploit','Reachability','Blast'],
+      datasets:[{data:[CHART_SCORES.severity||0,CHART_SCORES.exploit||0,CHART_SCORES.reachability||0,CHART_SCORES.blast||0],
+        backgroundColor:['#C53030','#dd6b20','#D69E2E','#805ad5']}]},
+      options:{plugins:{legend:{position:'bottom'}},maintainAspectRatio:true}});
+  }
 
-  <h2>Evidence Table</h2>
-  <div class="card" style="overflow-x:auto;">
-    <table>
-      <thead>
-        <tr>
-          <th>CVE</th><th>CVSS</th><th>EPSS</th><th>KEV</th>
-          <th>Reachability</th><th>Path</th><th>Services</th><th>Rec</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in cves %}
-        <tr>
-          <td class="mono">{{ c.cve_id }}</td>
-          <td>{{ c.cvss_score }}</td>
-          <td>{{ "%.2f"|format(c.evidence.epss) if c.evidence.epss else "—" }}</td>
-          <td>{% if c.evidence.in_kev %}<span class="kev-yes">YES</span>{% else %}—{% endif %}</td>
-          <td>{{ c.evidence.reachability_kind }}</td>
-          <td class="mono">
-            {% for ch in c.evidence.dependency_chains[:1] %}
-              {{ ch.service }} → {{ ch.path|join(' → ') }}
-            {% else %}
-              {% for p in c.evidence.reachable_paths[:1] %}
-                {{ p.service }} → {{ p.vuln_fn }} ({{ p.file }}:{{ p.line }})
-              {% else %}—{% endfor %}
-            {% endfor %}
-          </td>
-          <td>{{ c.evidence.service_names|join(', ') if c.evidence.service_names else '—' }}</td>
-          <td><span class="tag {{ c.recommendation }}">{{ c.recommendation }}</span></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  let network=null;
+  window.initGraph=function(){
+    if(network||typeof vis==='undefined') return;
+    const nodes=new vis.DataSet((GRAPH_DATA.nodes||[]).map(n=>({
+      id:n.id, label:n.label,
+      color: n.type==='entry_point'?'#2E75B6': n.type==='vulnerable'?(n.recommendation==='BLOCK'?'#C53030':'#D69E2E'):'#A0AEC0',
+      font:{size:12}
+    })));
+    const edges=new vis.DataSet((GRAPH_DATA.edges||[]).map((e,i)=>({id:i,from:e.source,to:e.target,arrows:'to'})));
+    const container=document.getElementById('graph-network');
+    if(!container) return;
+    network=new vis.Network(container,{nodes,edges},{physics:{stabilization:true},interaction:{hover:true}});
+    network.on('click',p=>{
+      const panel=document.getElementById('graph-detail');
+      if(!panel||!p.nodes.length) return;
+      const n=GRAPH_DATA.nodes.find(x=>x.id===p.nodes[0]);
+      if(n) panel.innerHTML='<p><strong>'+n.label+'</strong></p><p>Type: '+n.type+'</p>'+(n.cve?'<p>CVE: '+n.cve+'</p>':'');
+    });
+  };
+  document.getElementById('graph-reset')?.addEventListener('click',()=>network&&network.fit());
+  document.getElementById('graph-block-only')?.addEventListener('change',e=>{
+    if(!network) return;
+    const only=e.target.checked;
+    network.setOptions({filter:{enabled:only,filterFn:node=>{
+      const n=GRAPH_DATA.nodes.find(x=>x.id===node);
+      return !only||n.type!=='vulnerable'||n.recommendation==='BLOCK';
+    }}});
+  });
 
-  <h2>Suggested Upgrade Order</h2>
-  <div class="card">
-    <ol class="upgrade">
-      {% for cve_id in upgrade_order %}
-      <li class="mono">{{ cve_id }}</li>
-      {% endfor %}
-    </ol>
-  </div>
-
-  {% if explanations %}
-  <h2>Explanations</h2>
-  <div class="card">
-    {% for ex in explanations %}
-    <div class="explain-block">
-      <strong>{{ ex.cve_id }}</strong> ({{ ex.recommendation }})<br>
-      {{ ex.paragraph }}
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <p class="footer">
-    Score model v{{ scorer_version }} &middot; {{ graph_mode }} graph &middot; Deterministic scoring — LLM does not make upgrade decisions
-  </p>
-</div>
+  if(window.hljs) hljs.highlightAll();
+})();
+</script>
 </body>
 </html>

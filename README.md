@@ -233,3 +233,127 @@ TaskFlow demo:
 ```powershell
 python -m pytest tests/test_symbol_scanner.py -v
 ```
+
+---
+
+## Upgrade Simulator (`src/upgrade_simulator.py`)
+
+Predicts whether a dependency upgrade will resolve on PyPI **before** you run `pip install`. This is the core “pre-upgrade” differentiator: Snyk/Dependabot/Trivy flag CVEs; this module models **resolver conflicts and forced cascades**.
+
+### Why deps.dev
+
+[deps.dev](https://deps.dev) exposes precomputed dependency graphs per package version (`…/versions/{version}:dependencies`). The simulator walks those graphs offline (cached under `data/depsdev/PyPI/`) and applies `packaging` specifier math—no pip, no venv changes.
+
+### Four conflict classes
+
+| Class | Code | Meaning |
+|-------|------|---------|
+| A | `DIRECT_CONFLICT` | Two parents need incompatible ranges on the same shared dependency |
+| B | `cascade` | Upgrading A forces B, then C (transitive bumps) |
+| C | `runtime_conflicts` | `Requires-Python` incompatible with your project interpreter |
+| D | `target_introduces_cves` | Target version still has known CVEs (OSV / Trivy enrichment) |
+
+### Resolution planning
+
+When conflicts are fixable, `resolution_plan.steps` lists upgrades in **topological order** (e.g. bump `boto3` before `requests` to release the `urllib3` pin).
+
+### Usage
+
+```python
+from src.upgrade_simulator import parse_requirements, simulate_upgrade
+
+reqs = parse_requirements("vulnerable-task-tracker/requirements.txt")
+report = simulate_upgrade(
+    reqs,
+    [{"package": "requests", "target_version": "2.31.0"}],
+    python_version="3.9.5",
+)
+print(report["summary"]["verdict"], report["resolution_plan"]["steps"])
+```
+
+### Refresh deps.dev cache
+
+```powershell
+python scripts/populate_depsdev_cache.py
+```
+
+### Tests
+
+```powershell
+python -m pytest tests/test_upgrade_simulator.py -v
+```
+
+## HTML risk report
+
+Phase 9 (`src/html_reporter.py`) produces a **five-tab, self-contained HTML dashboard**:
+
+| Tab | Content |
+|-----|---------|
+| Executive | Overall recommendation, stats, donut chart, top concerns |
+| Technical | Sortable/filterable CVE table with score breakdown |
+| Patches | Before/after code from patch fetcher |
+| Upgrade | Conflict timeline and resolution steps |
+| Reachability Graph | vis-network graph from symbol scan references |
+
+### Generate a demo report
+
+```powershell
+python -c "from src.html_reporter import assemble_and_generate_demo; assemble_and_generate_demo('examples/sample_report.html', offline=True)"
+start examples\sample_report.html
+```
+
+### Pipeline integration
+
+```powershell
+python pipeline_a.py --demo --project-dir ./test --offline
+```
+
+Optional inputs: `--symbol-scan path/to/symbol_scan.json`, `--upgrade-sim path/to/upgrade.json`. When omitted, the pipeline looks for `symbol_scan.json` in the output directory or `examples/symbol_scan_output.json`.
+
+### Offline mode
+
+Pass `offline=True` to `generate_report()` or `--offline` on the pipeline. Vendor assets under `static/vendor/` are inlined so the file opens via `file://` without network access (target size &lt; 2 MB).
+
+### Tests
+
+```powershell
+python -m pytest tests/test_html_reporter.py -v
+```
+
+## ReAct agent
+
+`src/agent.py` replaces rigid phase-by-phase orchestration with an **LLM-driven ReAct loop** that chooses the next investigation step. The same pipeline modules are exposed as **whitelisted tools**; the LLM never scores risk or writes rules.
+
+### Why the LLM is on a leash
+
+| Guardrail | Effect |
+|-----------|--------|
+| Tool whitelist | Only 8 named tools; unknown tools are rejected |
+| Pydantic JSON schema | Every LLM reply must match `{thought, action, done}` |
+| Entity whitelist | CVE/package/version strings must already appear in the scratchpad |
+| Deterministic scorer | `compute_score` calls `scorer.py`; the LLM cannot override PROCEED/REVIEW/BLOCK |
+| Fallback pipeline | After repeated invalid output or if Ollama is down, a scripted path runs the same tools in order |
+
+### Run the agent
+
+```powershell
+# Live LLM investigation (Ollama + qwen2.5:7b)
+python -m src.agent --target ./vulnerable-task-tracker --verbose
+
+# Scripted fallback only (no Ollama) — same output schema
+python -m src.agent --target ./vulnerable-task-tracker --no-llm
+
+# Open the report and inspect the trace
+start data\report.html
+type data\agent_trace.json
+```
+
+### Trace file
+
+Each run writes `data/agent_trace.json` with metadata, per-step thought/action/result, and `collected_data`. A trimmed sample lives in `examples/agent_trace_demo.json`.
+
+### Tests
+
+```powershell
+python -m pytest tests/test_agent.py -v
+```

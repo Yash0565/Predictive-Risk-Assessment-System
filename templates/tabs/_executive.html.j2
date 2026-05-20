@@ -1,0 +1,42 @@
+<section class="tab-panel" id="tab-executive" role="tabpanel" aria-labelledby="tab-btn-executive">
+  <div class="banner rec-{{ overall.recommendation|rec_class }}">
+    <p class="banner-rec">{{ overall.recommendation }}</p>
+    <p class="banner-score">Risk Score {{ overall.raw_risk|fmt_num(0) }}/100</p>
+    {% if summary_stats.would_break_build %}
+    <p class="banner-warn">This upgrade may break your build without following the resolution plan.</p>
+    {% endif %}
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><span class="stat-num">{{ summary_stats.total_cves }}</span><span class="stat-label">CVEs Found</span></div>
+    <div class="stat-card"><span class="stat-num">{{ summary_stats.reachable_cves }}</span><span class="stat-label">Actually Reachable</span></div>
+    <div class="stat-card"><span class="stat-num">{{ summary_stats.noise_filtered }}</span><span class="stat-label">Noise Filtered</span></div>
+    <div class="stat-card"><span class="stat-num">{% if summary_stats.would_break_build %}1{% else %}0{% endif %}</span><span class="stat-label">Would Break Build</span></div>
+  </div>
+
+  <div class="card">
+    <h2>The Bottom Line</h2>
+    <p class="prose">{{ overall.headline }}</p>
+  </div>
+
+  <div class="card chart-card">
+    <h2>Risk by Category (Top CVE)</h2>
+    <canvas id="riskDonut" height="220" aria-label="Risk score breakdown chart"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Top 3 Concerns</h2>
+    <ol class="concern-list">
+      {% for item in top_concerns %}
+      <li><strong>{{ item.title }}</strong> — {{ item.detail }}</li>
+      {% else %}
+      <li>No CVE data available.</li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  <div class="card next-action">
+    <h2>Next Action</h2>
+    <p>{{ next_action }}</p>
+  </div>
+</section>
