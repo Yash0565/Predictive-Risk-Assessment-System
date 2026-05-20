@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.5",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "idna",
+        "system": "PYPI",
+        "version": "3.7.0"
+      }
+    }
+  ]
+}

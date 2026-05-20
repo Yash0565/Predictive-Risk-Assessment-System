@@ -1,0 +1,33 @@
+{
+  "_python_requires": ">=3.10",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=3.20",
+      "toNode": 1
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "importlib-metadata",
+        "system": "PYPI",
+        "version": "9.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "zipp",
+        "system": "PYPI",
+        "version": "3.23.0"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "_python_requires": "",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "pyyaml",
+        "system": "PYPI",
+        "version": "5.1.0"
+      }
+    }
+  ]
+}

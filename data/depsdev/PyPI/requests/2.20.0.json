@@ -1,0 +1,78 @@
+{
+  "_python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=2017.4.17",
+      "toNode": 1
+    },
+    {
+      "fromNode": 0,
+      "requirement": "<3.1.0,>=3.0.2",
+      "toNode": 2
+    },
+    {
+      "fromNode": 0,
+      "requirement": "<2.8,>=2.5",
+      "toNode": 3
+    },
+    {
+      "fromNode": 0,
+      "requirement": "<1.25,>=1.21.1",
+      "toNode": 4
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "requests",
+        "system": "PYPI",
+        "version": "2.20.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "certifi",
+        "system": "PYPI",
+        "version": "2026.4.22"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "chardet",
+        "system": "PYPI",
+        "version": "3.0.4"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "idna",
+        "system": "PYPI",
+        "version": "2.7.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "urllib3",
+        "system": "PYPI",
+        "version": "1.24.3"
+      }
+    }
+  ]
+}

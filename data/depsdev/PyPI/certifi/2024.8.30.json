@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.6",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "certifi",
+        "system": "PYPI",
+        "version": "2024.8.30"
+      }
+    }
+  ]
+}

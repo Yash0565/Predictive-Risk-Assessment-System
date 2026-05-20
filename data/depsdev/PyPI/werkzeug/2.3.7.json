@@ -1,0 +1,33 @@
+{
+  "_python_requires": ">=3.8",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=2.1.1",
+      "toNode": 1
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "werkzeug",
+        "system": "PYPI",
+        "version": "2.3.7"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "markupsafe",
+        "system": "PYPI",
+        "version": "3.0.3"
+      }
+    }
+  ]
+}

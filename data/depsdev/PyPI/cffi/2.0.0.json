@@ -1,0 +1,33 @@
+{
+  "_python_requires": ">=3.9",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": "",
+      "toNode": 1
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "cffi",
+        "system": "PYPI",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "pycparser",
+        "system": "PYPI",
+        "version": "3.0.0"
+      }
+    }
+  ]
+}
