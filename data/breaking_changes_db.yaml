@@ -1,0 +1,14 @@
+urllib3:
+  "2.0.0":
+    removed:
+      - "urllib3.contrib.pyopenssl"
+      - "urllib3.util.ssl_.HAS_SNI"
+      - "urllib3.packages.six"
+    renamed:
+      - from: "urllib3.HTTPResponse.getheaders"
+        to: "urllib3.HTTPResponse.headers"
+
+nanoid:
+  "3.0.0":
+    removed:
+      - "nanoid.generate"

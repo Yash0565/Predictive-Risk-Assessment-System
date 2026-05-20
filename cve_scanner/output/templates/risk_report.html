@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVE Pre-Upgrade Risk Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600&family=IBM+Plex+Mono:wght@300;500&family=Syne:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-2: #1c2330;
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --red: #f85149;
+      --amber: #e3b341;
+      --green: #3fb950;
+      --blue: #58a6ff;
+      --mono: "IBM Plex Mono", monospace;
+      --sans: "DM Sans", sans-serif;
+      --display: "Syne", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #152233, #0d1117 45%);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 32px auto 64px;
+      padding: 0 24px;
+    }
+
+    .window-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: 12px 12px 0 0;
+      border: 1px solid #222a36;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.red { background: var(--red); }
+    .dot.yellow { background: var(--amber); }
+    .dot.green { background: var(--green); }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid #222a36;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 28px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--display);
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 32px;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--surface-2);
+      border-radius: 12px;
+    }
+
+    .meta-card {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .meta-card strong {
+      display: block;
+      font-size: 16px;
+      color: var(--text);
+      margin-top: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface-2);
+    }
+
+    .pill.block { border: 1px solid var(--red); color: var(--red); }
+    .pill.review { border: 1px solid var(--amber); color: var(--amber); }
+    .pill.proceed { border: 1px solid var(--green); color: var(--green); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .llm-summary {
+      margin-top: 16px;
+      padding: 16px;
+      background: #0f1623;
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      border: 1px solid #243044;
+    }
+
+    .llm-summary strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .readiness {
+      background: var(--surface-2);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .readiness-score {
+      font-size: 40px;
+      font-family: var(--display);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #202838;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tr + tr td {
+      border-top: 1px solid #283244;
+    }
+
+    .severity {
+      font-weight: 600;
+    }
+
+    .severity.critical { color: var(--red); }
+    .severity.high { color: var(--amber); }
+    .severity.moderate { color: var(--blue); }
+    .severity.low { color: var(--green); }
+
+    .cvss-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: #2c3445;
+      overflow: hidden;
+    }
+
+    .cvss-bar span {
+      display: block;
+      height: 100%;
+      background: var(--red);
+    }
+
+    .call-chain {
+      font-family: var(--mono);
+      background: #0f1623;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .terminal {
+      background: #0f1623;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--green);
+      white-space: pre-wrap;
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .panel { padding: 20px; }
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="window-bar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+    </div>
+    <div class="panel">
+      <h1>{{ repo_name }} risk report</h1>
+      <p>Scan timestamp: {{ scan_timestamp }}</p>
+      {% set verdict_class = 'block' if overall_verdict == 'BLOCK' else 'review' if overall_verdict == 'REVIEW' else 'proceed' %}
+      <span class="pill {{ verdict_class }}">{{ overall_verdict }}</span>
+
+      {% if summary %}
+      <div class="llm-summary">
+        <strong>LLM summary</strong>
+        {{ summary }}
+      </div>
+      {% endif %}
+
+      <div class="meta">
+        <div class="meta-card">Package<strong>{{ meta_package }}</strong></div>
+        <div class="meta-card">Upgrade path<strong>{{ meta_upgrade_path }}</strong></div>
+        <div class="meta-card">Worst CVE<strong>{{ meta_worst_cve }}</strong></div>
+        <div class="meta-card">CVSS score<strong>{{ meta_cvss }}</strong></div>
+        <div class="meta-card">EPSS score<strong>{{ (meta_epss * 100)|round(2) }}%</strong></div>
+        <div class="meta-card">Verdict<strong>{{ meta_verdict }}</strong></div>
+      </div>
+
+      <h2>Executive summary</h2>
+      <div class="summary-grid">
+        <div class="readiness">
+          <div class="readiness-score" style="color: {{ readiness_color }};">{{ readiness_score|round(0) }}</div>
+          <div>Readiness score</div>
+        </div>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for label, value in dimension_scores.items() %}
+              <tr>
+                <td>{{ label }}</td>
+                <td>{{ value|round(1) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2>Vulnerability table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>CVE</th>
+            <th>Package</th>
+            <th>Severity</th>
+            <th>CVSS</th>
+            <th>EPSS</th>
+            <th>KEV</th>
+            <th>Reachability</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for finding in cve_findings %}
+          {% set reach = reachability.get(finding.cve_id) %}
+          {% set sev_class = finding.severity.value|lower %}
+          <tr>
+            <td>{{ finding.cve_id }}</td>
+            <td>{{ finding.package_name }}</td>
+            <td class="severity {{ sev_class }}">{{ finding.severity.value }}</td>
+            <td>
+              <div>{{ finding.cvss_score }}</div>
+              <div class="cvss-bar"><span style="width: {{ finding.cvss_score * 10 }}%;"></span></div>
+            </td>
+            <td>{{ (finding.epss_score * 100)|round(2) }}%</td>
+            <td>{{ 'Yes' if finding.kev_listed else 'No' }}</td>
+            <td>{{ 'Reachable' if reach and reach.reachable else 'Not detected' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2>Reachability detail</h2>
+      {% for package, findings in findings_by_package.items() %}
+        <h3>{{ package }}</h3>
+        {% for finding in findings %}
+          {% set reach = reachability.get(finding.cve_id) %}
+          <div class="call-chain">
+            {% if reach and reach.call_chain %}
+              {{ reach.call_chain | join(' -> ') }}
+            {% else %}
+              No direct reachability detected.
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endfor %}
+
+      <h2>Remediation</h2>
+      <div class="terminal">
+        {% for command in remediation_commands %}
+{{ command }}
+        {% endfor %}
+      </div>
+
+      <h2>Dependency environment</h2>
+      {% if break_checks %}
+        {% for check in break_checks %}
+          <h3>{{ check.package_name }}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Check</th>
+                <th>Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sandbox install</td>
+                <td>{{ 'PASS' if check.sandbox and check.sandbox.success else 'FAIL' }}</td>
+                <td>
+                  {% if check.sandbox %}
+                    exit {{ check.sandbox.exit_code }}
+                    {% if check.sandbox.conflicting_packages %}
+                      | conflicts: {{ check.sandbox.conflicting_packages | join(', ') }}
+                    {% endif %}
+                  {% else %}
+                    skipped
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>API compatibility</td>
+                <td>{{ 'PASS' if check.api_compat and not check.api_compat.api_breaks else 'WARN' }}</td>
+                <td>
+                  {% if check.api_compat and check.api_compat.api_breaks %}
+                    {{ check.api_compat.api_breaks | join('; ') }}
+                  {% elif check.api_compat and check.api_compat.breaking_changes %}
+                    {{ check.api_compat.breaking_changes | join(' | ') }}
+                  {% else %}
+                    no issues detected
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>Test suite</td>
+                <td>
+                  {% if check.tests and check.tests.skipped %}
+                    SKIPPED
+                  {% elif check.tests and check.tests.passed %}
+                    PASS
+                  {% else %}
+                    FAIL
+                  {% endif %}
+                </td>
+                <td>
+                  {% if check.tests and check.tests.failed_tests %}
+                    {{ check.tests.failed_tests | join(', ') }}
+                  {% elif check.tests and check.tests.reason %}
+                    {{ check.tests.reason }}
+                  {% else %}
+                    no tests
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        {% endfor %}
+      {% else %}
+        <p>No sandbox checks executed.</p>
+      {% endif %}
+
+      <footer>
+        CVE Pre-Upgrade Scanner v1.0.0 | Generated {{ generated_at }} | Verdict {{ overall_verdict }}
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

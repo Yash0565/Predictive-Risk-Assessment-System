@@ -1,0 +1,83 @@
+{
+  "repo_path": ".",
+  "scan_timestamp": "2026-05-20T10:35:33.451920+00:00",
+  "cve_findings": [
+    {
+      "cve_id": "CVE-2024-55565",
+      "package_name": "nanoid",
+      "installed_version": "3.3.6",
+      "fixed_version": "3.3.8",
+      "severity": "Moderate",
+      "cvss_score": 5.3,
+      "epss_score": 0.18,
+      "kev_listed": false,
+      "defined_in": "package-lock.json",
+      "description": "Mock vulnerability for UI testing."
+    },
+    {
+      "cve_id": "CVE-2023-99999",
+      "package_name": "requests",
+      "installed_version": "2.28.0",
+      "fixed_version": "2.31.0",
+      "severity": "Critical",
+      "cvss_score": 9.8,
+      "epss_score": 0.72,
+      "kev_listed": true,
+      "defined_in": "requirements.txt",
+      "description": "Mock vulnerability for UI testing."
+    }
+  ],
+  "reachability": [
+    {
+      "cve_id": "CVE-2024-55565",
+      "reachable": true,
+      "call_chain": [
+        "src/utils/id.ts:14",
+        "node_modules/nanoid/index.js:18"
+      ],
+      "sink_label": "nanoid() call",
+      "semgrep_rule_id": "reach-CVE-2024-55565"
+    },
+    {
+      "cve_id": "CVE-2023-99999",
+      "reachable": true,
+      "call_chain": [
+        "src/api/client.py:72",
+        "requests/api.py:58"
+      ],
+      "sink_label": "requests.get() call",
+      "semgrep_rule_id": "reach-CVE-2023-99999"
+    }
+  ],
+  "risk_scores": [
+    {
+      "package_name": "nanoid",
+      "cve_ids": [
+        "CVE-2024-55565"
+      ],
+      "severity_score": 26.5,
+      "exploit_score": 1.7999999999999998,
+      "reachability_score": 20.0,
+      "blast_radius_score": 4.0,
+      "total_score": 52.3,
+      "verdict": "REVIEW",
+      "scoring_version": "v1.0.0"
+    },
+    {
+      "package_name": "requests",
+      "cve_ids": [
+        "CVE-2023-99999"
+      ],
+      "severity_score": 49.0,
+      "exploit_score": 17.2,
+      "reachability_score": 20.0,
+      "blast_radius_score": 4.0,
+      "total_score": 90.2,
+      "verdict": "BLOCK",
+      "scoring_version": "v1.0.0"
+    }
+  ],
+  "overall_verdict": "BLOCK",
+  "summary": "The current project has two vulnerable packages, 'nanoid' and 'requests', with CVEs 'CVE-2024-55565' and 'CVE-2023-99999' respectively. The 'requests' package has a critical severity score and is listed in the KEV list, posing a significant risk. To remediate, upgrade the 'requests' package to version '2.31.0' and 'nanoid' to version '3.3.8'. Critical path: src/api/client.py:72. Recommendation: Run `pip install requests==2.31.0` and `npm install nanoid@3.3.8` to upgrade the vulnerable packages.. Rationale: The 'requests' package has a high total score of 90.2, with a critical severity score of 49.0 and a high exploit score of 17.2, making it a high-risk vulnerability. The 'nanoid' package has a moderate severity score, but its reachability score of 20.0 and blast radius score of 4.0 contribute to its overall risk score of 52.3..",
+  "break_checks": []
+}
