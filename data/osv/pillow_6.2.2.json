@@ -1,0 +1,480 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-3f63-hfp8-52jq",
+      "cvss": 0.0,
+      "note": "Arbitrary Code Execution in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-3wvg-mj6g-m9cv",
+      "cvss": 0.0,
+      "note": "Pillow Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-3xv8-3j54-hgrp",
+      "cvss": 0.0,
+      "note": "Out-of-bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-43fq-w8qq-v88h",
+      "cvss": 0.0,
+      "note": "Out-of-bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-44wm-f244-xhp3",
+      "cvss": 0.0,
+      "note": "Pillow buffer overflow vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-4fx9-vc88-q2xc",
+      "cvss": 0.0,
+      "note": "Infinite loop in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-57h3-9rgr-c24m",
+      "cvss": 0.0,
+      "note": "Out of bounds write in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-7534-mm45-c74v",
+      "cvss": 0.0,
+      "note": "Buffer Overflow in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-77gc-v2xv-rvvh",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-7r7m-5h27-29hp",
+      "cvss": 0.0,
+      "note": "Potential infinite loop in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8843-m7mw-mxqm",
+      "cvss": 0.0,
+      "note": "Buffer overflow in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8ghj-p4vj-mr35",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8vj2-vxx3-667w",
+      "cvss": 0.0,
+      "note": "Arbitrary expression injection in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8xjq-8fcg-g5hw",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Write in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-95q3-8gr9-gm8w",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service by Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-98vv-pw6r-q6q4",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-9hx2-hgq2-2g4f",
+      "cvss": 0.0,
+      "note": "Regular Expression Denial of Service (ReDoS) in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-9j59-75qj-795w",
+      "cvss": 0.0,
+      "note": "Path traversal in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-cqhg-xjhh-p8hf",
+      "cvss": 0.0,
+      "note": "Out-of-bounds reads in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-f4w8-cv6p-x6r5",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service by Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-f5g8-5qq7-938w",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-g6rj-rv7j-xwp4",
+      "cvss": 0.0,
+      "note": "Pillow denial of service",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-hf64-x4gq-p99h",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-hjfx-8p6c-g7gx",
+      "cvss": 0.0,
+      "note": "Insufficient Verification of Data Authenticity in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-j7hp-h8jx-5ppr",
+      "cvss": 0.0,
+      "note": "libwebp: OOB write in BuildHuffmanTable",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-jgpv-4h4c-xhw3",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-m2vv-5vj5-2hm7",
+      "cvss": 0.0,
+      "note": "Pillow vulnerable to Data Amplification attack.",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-mvg9-xffr-p774",
+      "cvss": 0.0,
+      "note": "Out of bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-p43w-g3c5-g5mq",
+      "cvss": 0.0,
+      "note": "Out of bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-pw3c-h7wp-cvhx",
+      "cvss": 0.0,
+      "note": "Improper Initialization in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-q5hq-fp76-qmrc",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-r73j-pqj5-w3x7",
+      "cvss": 0.0,
+      "note": "Pillow has a PDF Parsing Trailer Infinite Loop (DoS)",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-rwv7-3v45-hg29",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-vj42-xq3r-hr3r",
+      "cvss": 0.0,
+      "note": "Out-of-bounds reads in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-vqcj-wrf2-7v73",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Write",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-wjx4-4jcj-g98j",
+      "cvss": 0.0,
+      "note": "Pillow has an integer overflow when processing fonts",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-xrcv-f9gm-v42c",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-76",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-77",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-78",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-79",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-80",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-137",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-138",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-139",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-317",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-331",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-35",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-36",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-37",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-38",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-39",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-40",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-41",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-42",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-69",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-70",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-71",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-92",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-93",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-94",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-10",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-168",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-42979",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-8",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-9",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2023-175",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2023-227",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    }
+  ]
+}

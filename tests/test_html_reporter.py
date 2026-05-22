@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from src.html_reporter import (
+    _escape_script_for_html,
     build_graph_from_cves,
     build_report_data,
     generate_report,
@@ -113,6 +114,24 @@ def test_assemble_demo_from_repo(tmp_path: Path) -> None:
     html = Path(path).read_text(encoding="utf-8")
     assert "TaskFlow" in html or "vulnerable" in html.lower()
     assert html.count('data-tab=') >= 5
+
+
+def test_escape_script_for_html_breaks_premature_close() -> None:
+    escaped = _escape_script_for_html('end:/</script>/')
+    assert "</script>" not in escaped
+    assert r"<\/script>" in escaped
+
+
+def test_offline_report_has_no_raw_script_closer_in_highlight(tmp_path: Path) -> None:
+    """Regenerated offline HTML must not embed literal </script> inside vendor JS."""
+    from src.html_reporter import assemble_and_generate_demo
+
+    out = tmp_path / "report.html"
+    assemble_and_generate_demo(str(out), offline=True)
+    html = out.read_text(encoding="utf-8")
+    # highlight grammar references script tags; must be escaped when inlined
+    assert "end:/<\\/script>/" in html or "end:/<\\/script>" in html
+    assert 'end:/</script>/' not in html
 
 
 def test_inline_vendor_assets_noop_when_online() -> None:

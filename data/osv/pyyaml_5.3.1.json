@@ -1,0 +1,18 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-8q59-q68h-6hv4",
+      "cvss": 0.0,
+      "note": "Improper Input Validation in PyYAML",
+      "package": "pyyaml",
+      "version": "5.3.1"
+    },
+    {
+      "cve": "PYSEC-2021-142",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pyyaml",
+      "version": "5.3.1"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Core Python dependencies: agent, patch fetcher, symbol scanner, upgrade simulator,
+# scorer, HTML report, and pipeline_a (without intentionally-vulnerable demo pins).
+#
+# Minimal install for capstone / CI:
+#   pip install -r requirements-core.txt
+#
+Jinja2>=2.10,<4
+PyYAML>=5.1
+# Lower bounds allow requirements-demo.txt pins (e.g. requests 2.19 / urllib3 1.24) in a full dev install.
+requests>=2.19.0
+urllib3>=1.24.1,<3
+cryptography>=2.3
+pillow>=6.0.0
+unidiff>=0.7.5
+tenacity>=8.2.0
+python-dateutil>=2.8.0
+pytest>=7.0.0
+packaging>=21.0
+rich>=13.0.0
+pydantic>=2.0.0
+python-dotenv>=0.19
+tomli>=2.0.0; python_version < "3.11"

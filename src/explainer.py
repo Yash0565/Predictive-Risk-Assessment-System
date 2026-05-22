@@ -146,7 +146,7 @@ def _explain_with_llm(assessment):
             "Summarize this risk assessment in 2 sentences:\n"
             + str(assessment)[:4000]
         )
-        text = _llm_call(prompt, "ollama", ollama_model="qwen2.5:7b")
+        text = _llm_call(prompt, "ollama", ollama_model="qwen2.5:3b")
         return {"mode": "llm", "executive_summary": text, "per_cve": []}
     except Exception as e:
         mod.EXPLAIN_USE_LLM = False

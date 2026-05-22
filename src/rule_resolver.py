@@ -46,7 +46,7 @@ def _llm_call(prompt, llm_backend, api_key=None, ollama_model=None,
               system_instruction=None, max_tokens=2048):
     """Send a prompt to Gemini or Ollama.  Returns the raw text response."""
     if llm_backend == "ollama":
-        return _ollama_call(prompt, ollama_model or "qwen2.5:7b",
+        return _ollama_call(prompt, ollama_model or "qwen2.5:3b",
                             system_instruction, max_tokens)
     else:
         return _gemini_call(prompt, api_key, system_instruction, max_tokens)
@@ -114,7 +114,7 @@ def _demo_rule_for_family(name, language, cluster):
 
 async def resolve_rules(families, language, registry_index, api_key,
                         rules_dir, max_concurrent=4,
-                        llm_backend="ollama", ollama_model="qwen2.5:7b",
+                        llm_backend="ollama", ollama_model="qwen2.5:3b",
                         skip_llm=False, demo_mode=False):
     """Resolve a rule for every family.  Returns { family: resolved_info }."""
     os.makedirs(rules_dir, exist_ok=True)

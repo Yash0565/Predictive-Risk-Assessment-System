@@ -8,9 +8,10 @@ max-out CPU cores instead of waiting one-by-one.
 import json
 import os
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from src.utils import find_tool
+from src.utils import find_tool, tool_subprocess_env
 
 
 def run_scans(resolved_rules, project_dir, max_workers=4):
@@ -21,6 +22,9 @@ def run_scans(resolved_rules, project_dir, max_workers=4):
     semgrep_exe = _find_semgrep()
     if not semgrep_exe:
         print("  ERROR: semgrep not found.  Install with: pip install semgrep")
+        print("         If already installed, ensure Python Scripts is on PATH:")
+        for d in _semgrep_search_paths():
+            print(f"           {d}")
         return {}
 
     print("\n" + "=" * 60)
@@ -54,13 +58,27 @@ def run_scans(resolved_rules, project_dir, max_workers=4):
 
 # ── Private helpers ─────────────────────────────────────────────────
 
-def _find_semgrep():
-    """Locate the semgrep binary."""
+def _semgrep_search_paths():
+    from src.utils import python_scripts_dirs
+
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return find_tool("semgrep", [
+    return [
         os.path.join(base, "venv", "Scripts", "semgrep.exe"),
         os.path.join(base, "venv", "bin", "semgrep"),
-    ])
+        *python_scripts_dirs(),
+    ]
+
+
+def _find_semgrep():
+    """Locate the semgrep binary."""
+    return find_tool("semgrep", _semgrep_search_paths()[:2])
+
+
+def _semgrep_cmd(semgrep_exe):
+    """Build argv for Semgrep; fall back to ``python -m semgrep`` when needed."""
+    if semgrep_exe:
+        return [semgrep_exe]
+    return [sys.executable, "-m", "semgrep"]
 
 
 def _scan_one(semgrep_exe, family, rule_info, project_dir):
@@ -69,8 +87,14 @@ def _scan_one(semgrep_exe, family, rule_info, project_dir):
     if not rule_path or not os.path.exists(rule_path):
         return []
 
-    cmd = [semgrep_exe, "--config", rule_path, project_dir, "--json", "--quiet"]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    cmd = _semgrep_cmd(semgrep_exe) + ["--config", rule_path, project_dir, "--json", "--quiet"]
+    proc = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        env=tool_subprocess_env(),
+    )
 
     if proc.returncode == 2:
         # Rule parse error — not our fault, skip silently

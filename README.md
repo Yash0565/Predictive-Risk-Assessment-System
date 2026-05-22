@@ -1,41 +1,62 @@
 # Predictive Risk Assessment System
 
-## Prerequisites
+This repository implements a **pre-upgrade risk** workflow for Python projects: discover pinned dependencies, find CVEs, map patches to changed symbols, check whether your code actually reaches those symbols, simulate upgrades, **score risk deterministically** (no LLM in the verdict), and emit a tabbed HTML report.
 
-### Install Ollama
+---
 
-Download and install Ollama from:
-[Ollama Official Website](https://ollama.com)
+## What you need to install
 
-After installation, verify:
+| Goal | Install |
+|------|--------|
+| **Python** | 3.10+ recommended (3.11+ avoids the extra `tomli` wheel for reading `pyproject.toml` / `Pipfile`) |
+| **This project’s libraries** | `pip install -r requirements-core.txt` — enough for the **ReAct agent**, symbol scanner, patch fetcher, upgrade simulator, scorer, HTML report, and `pipeline_a.py` |
+| **Full repo dev install** | `pip install -r requirements.txt` (= core + `requirements-demo.txt`). On **Python 3.11+**, legacy demo pins are skipped automatically; use a **Python 3.10** venv if you need Django 2.1 / Flask 0.12 in the same env. |
+| **Graph phases + newer Jinja** (Neo4j pipeline extras) | `pip install -r requirements-graph.txt` |
+| **Live CVE scan** | [Trivy](https://github.com/aquasecurity/trivy) on your `PATH` as `trivy`. If Trivy is missing, the agent still runs but uses **`data/demo/enriched_trivy_output.json`**, filtered to packages discovered in your project (clearly labeled in the scan step). |
+| **LLM-driven agent steps** | [Ollama](https://ollama.com) running locally; e.g. `ollama pull qwen2.5:3b`. The agent calls Ollama over HTTP (`requests`); no separate `ollama` Python package is required. Use `--no-llm` to skip the model entirely. |
+| **Optional: Gemini in pipeline** | `.env` with `GOOGLE_API_KEY` (see below) |
+| **Offline HTML** | Vendored assets under `static/vendor/` (used when reports are built with `offline=True`) |
+
+---
+
+## What happens when you run the ReAct agent
+
+From the **repository root** (`Predictive-Risk-Assessment-System`):
+
+```powershell
+python -m src.agent --target C:\path\to\your\python\project --verbose
+```
+
+End-to-end flow:
+
+1. **Discover pins** — Reads `requirements.txt`, or else `[project].dependencies` / Poetry in `pyproject.toml`, or pinned `[packages]` in a `Pipfile`. Only **`==`-style pins** (or Poetry/Pipfile equivalents) are used for the upgrade simulator.
+2. **CVE list** — Runs `trivy fs` on the target directory when possible; otherwise loads the **bundled demo CVE JSON** and filters it to packages found in step 1 (mode is stored as `cve_scan_mode` in `collected_data` and echoed in the Rich step summary).
+3. **Patches** — `fetch_patch` per CVE (cached under `data/patches/`).
+4. **Symbol reachability** — AST scan of the target’s `.py` files against vulnerable symbols.
+5. **Upgrade simulation** — Conflict / cascade prediction (deps.dev cache under `data/depsdev/` when populated).
+6. **Scoring** — `scorer.score_cves` only; PROCEED / REVIEW / BLOCK is **not** chosen by the LLM.
+7. **HTML report** — `data/report.html` by default; trace at `data/agent_trace.json`.
+
+With **`--no-llm`**, the same tools run in a fixed order (no Ollama).
+
+---
+
+## Prerequisites (LLM / API)
+
+### Ollama (local, free)
 
 ```bash
 ollama --version
+ollama pull qwen2.5:3b
 ```
 
----
-
-## Pull Required Ollama Model
-
-Example using Qwen 2.5 7B:
-
-```bash
-ollama pull qwen2.5:7b
-```
-
-You can use other Ollama-supported models as well.
-
----
-
-## Create Environment File
+### Gemini (optional, pipeline only)
 
 Create a `.env` file in the project root:
 
 ```env
 GOOGLE_API_KEY=your_gemini_api_key
 ```
-
-This is required only when using the Gemini backend.
 
 ---
 
@@ -46,8 +67,6 @@ This is required only when using the Gemini backend.
 ```powershell
 python -m venv venv
 ```
-
----
 
 ## 2. Activate Virtual Environment
 
@@ -63,31 +82,29 @@ python -m venv venv
 source venv/Scripts/activate
 ```
 
----
-
 ## 3. Install Dependencies
+
+**Recommended (agent + scanners on arbitrary repos):**
+
+```powershell
+pip install -r requirements-core.txt
+```
+
+**Full install (includes legacy vulnerable demo pins):**
 
 ```powershell
 pip install -r requirements.txt
 ```
 
----
+## 4. Generate Enriched Trivy Output (optional)
 
-## 4. Generate Enriched Trivy Output
-
-If you need to regenerate the enriched Trivy output:
+If you need to regenerate the enriched Trivy output at the repo root:
 
 ```powershell
 python trivy_runner.py
 ```
 
-This generates:
-
-```text
-enriched_trivy_output.json
-```
-
-which is used as the input for Pipeline A.
+This generates `enriched_trivy_output.json`, used as legacy input for Pipeline A in some flows.
 
 ---
 
@@ -111,7 +128,7 @@ python pipeline_a.py --input enriched_trivy_output.json --project-dir ./test
 Example using Qwen 2.5 7B:
 
 ```powershell
-python pipeline_a.py --input enriched_trivy_output.json --project-dir ./test --ollama-model qwen2.5:7b
+python pipeline_a.py --input enriched_trivy_output.json --project-dir ./test --ollama-model qwen2.5:3b
 ```
 
 ---
@@ -141,8 +158,8 @@ python pipeline_a.py --demo --project-dir ./test --services services.yaml --outp
 # 4. Open HTML report
 start .\demo_out\risk_report.html
 
-# 5. Future-work agent stub (mocked, no LLM)
-python -m src.agent
+# 5. ReAct agent (scripted tools, no LLM — requires --target)
+python -m src.agent --target .\vulnerable-task-tracker --no-llm --verbose
 
 # 6. Tear down Neo4j
 docker compose down
@@ -190,7 +207,7 @@ Or delete `data/patches/CVE-2023-32681.json` and call `fetch_patch` again.
 ### Tests
 
 ```powershell
-pip install -r requirements.txt
+pip install -r requirements-core.txt
 pytest tests/test_patch_fetcher.py -v
 ```
 
@@ -322,7 +339,9 @@ python -m pytest tests/test_html_reporter.py -v
 
 ## ReAct agent
 
-`src/agent.py` replaces rigid phase-by-phase orchestration with an **LLM-driven ReAct loop** that chooses the next investigation step. The same pipeline modules are exposed as **whitelisted tools**; the LLM never scores risk or writes rules.
+`src/agent.py` runs an **LLM-driven ReAct loop** (or `--no-llm` scripted order) that calls the same pipeline modules through a **fixed tool whitelist**. The LLM plans *which tool to run next*; **PROCEED / REVIEW / BLOCK** always comes from `scorer.score_cves` inside `compute_score`.
+
+**Target repo:** any Python tree the tools can read. Dependency pins are resolved from, in order: `requirements.txt` → `pyproject.toml` → `Pipfile` (see `src/project_deps.py`). **Symbol analysis is Python-only** (`.py` files).
 
 ### Why the LLM is on a leash
 
@@ -337,7 +356,7 @@ python -m pytest tests/test_html_reporter.py -v
 ### Run the agent
 
 ```powershell
-# Live LLM investigation (Ollama + qwen2.5:7b)
+# Live LLM investigation (Ollama + qwen2.5:3b)
 python -m src.agent --target ./vulnerable-task-tracker --verbose
 
 # Scripted fallback only (no Ollama) — same output schema

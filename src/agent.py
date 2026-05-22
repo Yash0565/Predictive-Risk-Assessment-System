@@ -24,6 +24,7 @@ from src.tool_registry import (
     ALLOWED_TOOLS,
     EXEMPT_ENTITY_TOOLS,
     ToolError,
+    apply_target_repo_path,
     execute_tool,
     fetch_patches_batch,
     validate_tool_args,
@@ -67,29 +68,92 @@ def _strip_json_fences(text: str) -> str:
     return text.strip()
 
 
+def _ollama_transport_failure(message: str) -> bool:
+    """True when Ollama is down, overloaded, or returned a server error."""
+    low = message.lower()
+    return any(
+        token in low
+        for token in (
+            "unreachable",
+            "500",
+            "502",
+            "503",
+            "connection",
+            "timeout",
+            "refused",
+            "internal server error",
+        )
+    )
+
+
+def _ollama_post(endpoint: str, payload: dict[str, Any]) -> str:
+    """POST to Ollama and return raw text from the response body."""
+    url = f"http://localhost:11434/api/{endpoint}"
+    try:
+        resp = requests.post(url, json=payload, timeout=_LLM_TIMEOUT_S)
+        resp.raise_for_status()
+    except requests.HTTPError as exc:
+        detail = ""
+        if exc.response is not None and exc.response.text:
+            detail = exc.response.text[:300]
+        raise LLMResponseError(
+            f"Ollama {endpoint} failed: {exc}" + (f" — {detail}" if detail else "")
+        ) from exc
+    except requests.RequestException as exc:
+        raise LLMResponseError(f"Ollama {endpoint} unreachable: {exc}") from exc
+
+    body = resp.json()
+    if endpoint == "chat":
+        return (body.get("message") or {}).get("content") or body.get("response") or ""
+    return body.get("response") or ""
+
+
 def call_llm(prompt: str, model: str, *, provider: str = "ollama") -> dict[str, Any]:
     """Single LLM call. Returns parsed JSON dict or raises LLMResponseError."""
     if provider != "ollama":
         raise LLMResponseError(f"Unsupported provider: {provider}")
 
-    url = "http://localhost:11434/api/chat"
-    payload = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
-        "format": "json",
-        "options": {"num_predict": 768, "temperature": 0.1},
-    }
-    try:
-        resp = requests.post(url, json=payload, timeout=_LLM_TIMEOUT_S)
-        resp.raise_for_status()
-        body = resp.json()
-        raw = (body.get("message") or {}).get("content") or body.get("response") or ""
-    except requests.RequestException as exc:
-        raise LLMResponseError(f"Ollama unreachable: {exc}") from exc
+    options = {"num_predict": 768, "temperature": 0.1}
+    attempts: list[tuple[str, dict[str, Any]]] = [
+        (
+            "chat",
+            {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False,
+                "format": "json",
+                "options": options,
+            },
+        ),
+        (
+            "generate",
+            {
+                "model": model,
+                "prompt": prompt,
+                "stream": False,
+                "format": "json",
+                "options": options,
+            },
+        ),
+    ]
+
+    errors: list[str] = []
+    raw = ""
+    for endpoint, payload in attempts:
+        try:
+            raw = _ollama_post(endpoint, payload)
+            if raw:
+                break
+            errors.append(f"{endpoint}: empty response")
+        except LLMResponseError as exc:
+            errors.append(str(exc))
+            if not _ollama_transport_failure(str(exc)):
+                break
 
     if not raw:
-        raise LLMResponseError("Empty LLM response")
+        raise LLMResponseError(
+            errors[-1] if errors else "Empty LLM response"
+        )
 
     try:
         return json.loads(_strip_json_fences(raw))
@@ -188,12 +252,7 @@ def validate_response(
         return True, ""
 
     known = extract_entities_from_state(state)
-    thought_cves, _, _ = _entities_in_text(parsed.thought)
     arg_cves, arg_pkgs, arg_vers = _entities_in_args(tool, parsed.action.args)
-
-    for cid in thought_cves:
-        if known["cves"] and cid not in known["cves"]:
-            return False, f"Unknown CVE '{cid}' mentioned in thought"
 
     for cid in arg_cves:
         if known["cves"] and cid not in known["cves"]:
@@ -208,11 +267,6 @@ def validate_response(
     for ver in arg_vers:
         if ver not in known["versions"] and known["versions"]:
             return False, f"Unknown version '{ver}'"
-
-    repo = parsed.action.args.get("repo_path")
-    if repo and state.get("target_repo") and str(repo) != str(state["target_repo"]):
-        if Path(repo).resolve() != Path(state["target_repo"]).resolve():
-            return False, f"repo_path must be {state['target_repo']}"
 
     if not scratchpad and tool not in ("list_dependencies", "scan_vulnerabilities", "finish"):
         return False, "Start with list_dependencies or scan_vulnerabilities"
@@ -260,6 +314,70 @@ def _detect_loop(scratchpad: list[dict[str, Any]]) -> Optional[str]:
             f"You already called {tool} with these args. Pick a different action."
         )
     return None
+
+
+def _format_known_cves_hint(state: dict[str, Any], limit: int = 25) -> str:
+    """Short list of CVE IDs from the latest scan for the LLM prompt."""
+    cves = (state.get("collected_data") or {}).get("cves") or []
+    ids = sorted(
+        {
+            str(c.get("cve") or c.get("cve_id", "")).upper()
+            for c in cves
+            if c.get("cve") or c.get("cve_id")
+        }
+    )
+    if not ids:
+        return ""
+    shown = ids[:limit]
+    suffix = f" … ({len(ids)} total)" if len(ids) > limit else ""
+    return (
+        "CVE IDs from scan (use only these in fetch_patch / find_symbol_usage args): "
+        + ", ".join(shown)
+        + suffix
+    )
+
+
+def _workflow_hints(state: dict[str, Any], scratchpad: list[dict[str, Any]]) -> str:
+    """Nudge the LLM after common mistakes (re-scan, wrong next step)."""
+    hints: list[str] = []
+    loop = _detect_loop(scratchpad)
+    if loop:
+        hints.append(loop)
+
+    tools_done = {e["action"]["tool"] for e in scratchpad if e.get("action")}
+    data = state.get("collected_data") or {}
+    cves = data.get("cves") or []
+
+    if cves and "scan_vulnerabilities" in tools_done:
+        if "fetch_patch" not in tools_done and "find_symbol_usage" not in tools_done:
+            sample = [
+                str(c.get("cve") or c.get("cve_id", "")).upper()
+                for c in cves[:5]
+                if c.get("cve") or c.get("cve_id")
+            ]
+            hints.append(
+                f"Scan finished ({len(cves)} CVEs). Do not call scan_vulnerabilities again. "
+                f"Next: fetch_patch(cve_id) for CVEs such as {', '.join(sample)}."
+            )
+
+    cve_hint = _format_known_cves_hint(state)
+    if cve_hint and ("fetch_patch" in tools_done or "find_symbol_usage" in tools_done):
+        hints.append(cve_hint)
+
+    return "\n".join(hints)
+
+
+def _entity_retry_suffix(state: dict[str, Any], last_err: str) -> str:
+    """Extra guidance when the model picks an unknown CVE/package in tool args."""
+    if "Unknown CVE" not in last_err and "not yet discovered" not in last_err:
+        return STRICT_RETRY_SUFFIX
+    cve_hint = _format_known_cves_hint(state, limit=20)
+    extra = f"\n{cve_hint}" if cve_hint else ""
+    return (
+        STRICT_RETRY_SUFFIX
+        + "\nUse a cve_id from the scan results only. Do not invent CVE IDs."
+        + extra
+    )
 
 
 def _run_tool_with_timeout(tool: str, args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
@@ -516,7 +634,7 @@ def scripted_fallback(
 def run_agent(
     target_repo: str,
     llm_provider: str = "ollama",
-    llm_model: str = "qwen2.5:7b",
+    llm_model: str = "qwen2.5:3b",
     max_steps: int = 15,
     verbose: bool = True,
     fallback_on_error: bool = True,
@@ -548,8 +666,14 @@ def run_agent(
         _display_header(target, llm_model, fallback=False)
 
     for step in range(1, max_steps + 1):
-        loop_hint = _detect_loop(scratchpad) or ""
-        prompt = build_user_prompt(compress_scratchpad(scratchpad), loop_hint=loop_hint)
+        workflow_hint = _workflow_hints(state, scratchpad)
+        known_cves = _format_known_cves_hint(state)
+        prompt = build_user_prompt(
+            compress_scratchpad(scratchpad),
+            target_repo=target,
+            loop_hint=workflow_hint,
+            known_cves_hint=known_cves,
+        )
 
         response_raw: Optional[dict[str, Any]] = None
         parsed: Optional[AgentStepResponse] = None
@@ -557,8 +681,11 @@ def run_agent(
 
         for attempt in range(2):
             try:
+                suffix = ""
+                if attempt:
+                    suffix = _entity_retry_suffix(state, last_err)
                 response_raw = call_llm(
-                    prompt + (STRICT_RETRY_SUFFIX if attempt else ""),
+                    prompt + suffix,
                     llm_model,
                     provider=llm_provider,
                 )
@@ -575,7 +702,22 @@ def run_agent(
                 parsed = parse_agent_response(response_raw)
                 consecutive_invalid = 0
                 break
-            except (LLMResponseError, ValidationError) as exc:
+            except LLMResponseError as exc:
+                last_err = str(exc)
+                schema_violations += 1
+                if fallback_on_error and _ollama_transport_failure(last_err):
+                    if verbose:
+                        console.print(
+                            f"[red]Ollama error:[/red] {last_err}\n"
+                            "[yellow]Falling back to scripted pipeline…[/yellow]"
+                        )
+                    fb = scripted_fallback(target, verbose=verbose, output_dir=output_dir)
+                    fb["agent_metadata"]["schema_violations"] = schema_violations
+                    fb["agent_metadata"]["entity_violations"] = entity_violations
+                    fb["agent_metadata"]["llm_model"] = llm_model
+                    fb["status"] = "completed_with_fallback"
+                    return fb
+            except ValidationError as exc:
                 last_err = str(exc)
                 schema_violations += 1
 
@@ -599,9 +741,7 @@ def run_agent(
             continue
 
         tool = parsed.action.tool
-        args = dict(parsed.action.args)
-        if "repo_path" in args and not args["repo_path"]:
-            args["repo_path"] = target
+        args = apply_target_repo_path(tool, dict(parsed.action.args), target)
 
         t0 = time.perf_counter()
         try:
@@ -668,7 +808,7 @@ def main() -> None:
     """CLI entry point for python -m src.agent."""
     parser = argparse.ArgumentParser(description="ReAct security analysis agent")
     parser.add_argument("--target", required=True, help="Path to target repository")
-    parser.add_argument("--model", default="qwen2.5:7b", help="Ollama model name")
+    parser.add_argument("--model", default="qwen2.5:3b", help="Ollama model name")
     parser.add_argument("--provider", default="ollama", choices=["ollama"])
     parser.add_argument("--max-steps", type=int, default=15)
     parser.add_argument("--verbose", action="store_true", default=True)

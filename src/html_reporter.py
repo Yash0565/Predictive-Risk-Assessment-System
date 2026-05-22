@@ -347,6 +347,11 @@ def render_graph_tab(data: dict[str, Any]) -> str:
     return _jinja_env().get_template("tabs/_graph.html.j2").render(**data)
 
 
+def _escape_script_for_html(js: str) -> str:
+    """Prevent inlined JS from closing the HTML script element early (e.g. highlight.js)."""
+    return re.sub(r"</script>", r"<\/script>", js, flags=re.IGNORECASE)
+
+
 def _vendor_inline_blocks() -> str:
     """Build inline style/script blocks from static/vendor/."""
     parts: list[str] = []
@@ -359,7 +364,7 @@ def _vendor_inline_blocks() -> str:
         if asset["kind"] == "css":
             parts.append(f"<style>\n{content}\n</style>")
         else:
-            parts.append(f"<script>\n{content}\n</script>")
+            parts.append(f"<script>\n{_escape_script_for_html(content)}\n</script>")
     return "\n".join(parts)
 
 
@@ -382,11 +387,10 @@ def inline_vendor_assets(html: str, offline: bool = True) -> str:
         if not vendor_path.is_file():
             continue
         content = vendor_path.read_text(encoding="utf-8", errors="replace")
-        inline = (
-            f"<style>\n{content}\n</style>"
-            if asset["kind"] == "css"
-            else f"<script>\n{content}\n</script>"
-        )
+        if asset["kind"] == "css":
+            inline = f"<style>\n{content}\n</style>"
+        else:
+            inline = f"<script>\n{_escape_script_for_html(content)}\n</script>"
         for tag in patterns:
             if tag in html:
                 html = html.replace(tag, inline, 1)

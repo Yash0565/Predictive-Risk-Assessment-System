@@ -16,7 +16,8 @@ from src.html_reporter import build_report_data, generate_report
 from src.patch_fetcher import fetch_patch, fetch_patches_batch
 from src.scorer import score_cves
 from src.symbol_scanner import scan_symbols
-from src.upgrade_simulator import parse_requirements, simulate_upgrade
+from src.project_deps import DependencyDiscoveryError, discover_dependency_pins
+from src.upgrade_simulator import simulate_upgrade
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,26 @@ ALLOWED_TOOLS = frozenset({
 })
 
 EXEMPT_ENTITY_TOOLS = frozenset({"list_dependencies", "scan_vulnerabilities", "finish"})
+
+REPO_SCOPED_TOOLS = frozenset({
+    "list_dependencies",
+    "scan_vulnerabilities",
+    "find_symbol_usage",
+    "simulate_upgrade",
+})
+
+
+def apply_target_repo_path(
+    tool_name: str,
+    args: dict[str, Any],
+    target_repo: str,
+) -> dict[str, Any]:
+    """Force repo_path to the investigation target (LLM cannot point elsewhere)."""
+    if tool_name not in REPO_SCOPED_TOOLS:
+        return args
+    out = dict(args)
+    out["repo_path"] = str(Path(target_repo).resolve())
+    return out
 
 
 class ToolError(Exception):
@@ -126,8 +147,12 @@ def _enrich_trivy_vuln(vuln: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def run_trivy_on_repo(repo_path: str) -> list[dict[str, Any]]:
-    """Run Trivy filesystem scan and return enriched CVE list."""
+def run_trivy_on_repo(repo_path: str) -> tuple[list[dict[str, Any]], str]:
+    """Run Trivy filesystem scan. Returns (enriched_cves, mode_label).
+
+    mode_label is ``trivy`` for a live scan, or ``demo_fallback:...`` when using
+    bundled demo CVE JSON (see README).
+    """
     repo = Path(repo_path).resolve()
     try:
         result = subprocess.run(
@@ -139,8 +164,9 @@ def run_trivy_on_repo(repo_path: str) -> list[dict[str, Any]]:
         )
         output = json.loads(result.stdout)
     except (subprocess.CalledProcessError, FileNotFoundError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
-        logger.warning("Trivy scan failed (%s); using demo cache filtered by requirements", exc)
-        return _fallback_trivy(repo)
+        logger.warning("Trivy scan failed (%s); using demo CVE cache (install Trivy for real scans)", exc)
+        rows, note = _fallback_trivy(repo)
+        return rows, f"demo_fallback:{note}"
 
     enriched: list[dict[str, Any]] = []
     for target in output.get("Results", []):
@@ -149,33 +175,24 @@ def run_trivy_on_repo(repo_path: str) -> list[dict[str, Any]]:
             if row.get("cve"):
                 enriched.append(row)
     if enriched:
-        return enriched
-    return _fallback_trivy(repo)
+        return enriched, "trivy"
+    rows, note = _fallback_trivy(repo)
+    return rows, f"demo_fallback_empty_scan:{note}"
 
 
-def _fallback_trivy(repo: Path) -> list[dict[str, Any]]:
-    """Use cached demo Trivy output when live scan is unavailable."""
+def _fallback_trivy(repo: Path) -> tuple[list[dict[str, Any]], str]:
+    """Use cached demo Trivy output when live scan is unavailable or empty."""
     if not _DEMO_TRIVY.is_file():
-        return []
+        return [], "no_demo_json"
     with _DEMO_TRIVY.open(encoding="utf-8") as fh:
         demo = json.load(fh)
-    req_path = repo / "requirements.txt"
-    if not req_path.is_file():
-        return demo
     try:
-        pins = parse_requirements(str(req_path))
-    except Exception:
-        return demo
-    pkg_set = {k.lower() for k in pins}
-    return [v for v in demo if (v.get("package") or "").lower() in pkg_set] or demo
-
-
-def _requirements_path(repo_path: str) -> Path:
-    repo = Path(repo_path).resolve()
-    req = repo / "requirements.txt"
-    if not req.is_file():
-        raise ToolError(f"No requirements.txt under {repo}")
-    return req
+        deps, src = discover_dependency_pins(repo)
+        pkg_set = {k.lower() for k in deps}
+        filtered = [v for v in demo if (v.get("package") or "").lower() in pkg_set]
+        return (filtered or demo, f"filtered_by_{src}")
+    except DependencyDiscoveryError:
+        return demo, "unfiltered_no_dependency_file"
 
 
 def _symbol_scan_to_graph_evidence(symbol_findings: dict[str, Any]) -> dict[str, Any]:
@@ -231,19 +248,26 @@ def _normalize_vulnerable_symbols(raw: Any, state: dict[str, Any]) -> dict[str, 
 
 def tool_list_dependencies(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
     parsed = RepoPathArgs.model_validate(args)
-    deps = parse_requirements(str(_requirements_path(parsed.repo_path)))
+    try:
+        deps, label = discover_dependency_pins(parsed.repo_path)
+    except DependencyDiscoveryError as exc:
+        raise ToolError(str(exc)) from exc
     state["collected_data"]["dependencies"] = deps
     names = ", ".join(f"{k} {v}" for k, v in list(deps.items())[:6])
     extra = f" (+{len(deps) - 6} more)" if len(deps) > 6 else ""
-    return deps, f"Found {len(deps)} packages: {names}{extra}"
+    return deps, f"Found {len(deps)} packages from {label}: {names}{extra}"
 
 
 def tool_scan_vulnerabilities(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
     parsed = RepoPathArgs.model_validate(args)
-    cves = run_trivy_on_repo(parsed.repo_path)
+    cves, scan_mode = run_trivy_on_repo(parsed.repo_path)
     state["collected_data"]["cves"] = cves
+    state["collected_data"]["cve_scan_mode"] = scan_mode
     sev_high = sum(1 for c in cves if (c.get("severity") or "").upper() in ("HIGH", "CRITICAL"))
-    return cves, f"Found {len(cves)} CVEs ({sev_high} high/critical)"
+    note = ""
+    if scan_mode != "trivy":
+        note = f" — source={scan_mode} (install Trivy CLI for live filesystem CVE data)"
+    return cves, f"Found {len(cves)} CVEs ({sev_high} high/critical){note}"
 
 
 def tool_fetch_patch(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
@@ -290,8 +314,11 @@ def tool_simulate_upgrade(args: dict[str, Any], state: dict[str, Any]) -> tuple[
     parsed = SimulateUpgradeArgs.model_validate(args)
     deps = state["collected_data"].get("dependencies")
     if not deps:
-        deps = parse_requirements(str(_requirements_path(parsed.repo_path)))
-        state["collected_data"]["dependencies"] = deps
+        try:
+            deps, _ = discover_dependency_pins(parsed.repo_path)
+            state["collected_data"]["dependencies"] = deps
+        except DependencyDiscoveryError as exc:
+            raise ToolError(str(exc)) from exc
     pkg = parsed.package
     if pkg.lower() not in {k.lower() for k in deps}:
         raise ToolError(f"Package {pkg} not in dependencies")

@@ -305,6 +305,8 @@ def _find_fn_by_name(fn_index, file_path, qualified_name):
 # ── Neo4j upsert ─────────────────────────────────────────────────────
 
 def _upsert_neo4j(snapshot, uri, user, password):
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
     from neo4j import GraphDatabase
 
     driver = GraphDatabase.driver(uri, auth=(user, password))

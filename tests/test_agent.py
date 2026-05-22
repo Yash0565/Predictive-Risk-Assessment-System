@@ -17,7 +17,7 @@ from src.agent import (
     validate_response,
     _detect_loop,
 )
-from src.tool_registry import ALLOWED_TOOLS, execute_tool
+from src.tool_registry import ALLOWED_TOOLS, apply_target_repo_path, execute_tool
 
 TASKFLOW = Path(__file__).resolve().parent.parent / "vulnerable-task-tracker"
 
@@ -78,6 +78,51 @@ def test_validate_response_entity_whitelist(agent_state: dict) -> None:
     ok, err = validate_response(raw, [{"step": 1}], list(ALLOWED_TOOLS), agent_state)
     assert not ok
     assert "CVE-9999" in err or "Unknown" in err
+
+
+def test_validate_response_ignores_hallucinated_cve_in_thought_only(agent_state: dict) -> None:
+    """Thought text is not entity-checked; only tool args are."""
+    raw = _valid_step(
+        "fetch_patch",
+        {"cve_id": "CVE-2023-32681"},
+        thought="Also consider CVE-2019-1000001 which is not real",
+    )
+    ok, err = validate_response(raw, [{"step": 1}], list(ALLOWED_TOOLS), agent_state)
+    assert ok, err
+
+
+def test_apply_target_repo_path_overrides_placeholder(agent_state: dict) -> None:
+    target = agent_state["target_repo"]
+    fixed = apply_target_repo_path(
+        "list_dependencies",
+        {"repo_path": "path/to/project"},
+        target,
+    )
+    assert Path(fixed["repo_path"]).resolve() == Path(target).resolve()
+
+
+@mock.patch("src.agent.call_llm")
+def test_llm_placeholder_repo_path_still_scans_target(
+    mock_llm: mock.MagicMock,
+    tmp_path: Path,
+) -> None:
+    if not TASKFLOW.is_dir():
+        pytest.skip("TaskFlow demo not present")
+    repo = str(TASKFLOW.resolve())
+    mock_llm.side_effect = [
+        _valid_step("list_dependencies", {"repo_path": "path/to/project"}, "deps"),
+        _valid_step("finish", {"summary": "stop early"}, "done", done=True),
+    ]
+    result = run_agent(
+        repo,
+        verbose=False,
+        fallback_on_error=False,
+        max_steps=5,
+        output_dir=str(tmp_path),
+    )
+    trace = result["trace"]
+    assert trace[0]["action"]["args"]["repo_path"] == repo
+    assert result["collected_data"].get("dependencies")
 
 
 def test_validate_response_allows_exempt_tools(agent_state: dict) -> None:
@@ -169,6 +214,26 @@ def test_mock_llm_complete_loop(mock_llm: mock.MagicMock, tmp_path: Path) -> Non
     assert result["agent_metadata"]["fallback_used"] is False
     assert mock_llm.call_count >= 7
     assert result.get("final_summary")
+
+
+@mock.patch(
+    "src.agent.call_llm",
+    side_effect=LLMResponseError(
+        "Ollama chat failed: 500 Server Error: Internal Server Error for url: "
+        "http://localhost:11434/api/chat"
+    ),
+)
+def test_ollama_500_falls_back_immediately(mock_llm: mock.MagicMock, tmp_path: Path) -> None:
+    if not TASKFLOW.is_dir():
+        pytest.skip("TaskFlow demo not present")
+    result = run_agent(
+        str(TASKFLOW),
+        verbose=False,
+        output_dir=str(tmp_path),
+        max_steps=15,
+    )
+    assert result["agent_metadata"]["fallback_used"] is True
+    assert mock_llm.call_count >= 1
 
 
 @mock.patch("src.agent.call_llm", side_effect=LLMResponseError("down"))

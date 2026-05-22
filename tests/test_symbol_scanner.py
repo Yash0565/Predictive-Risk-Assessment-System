@@ -20,24 +20,45 @@ TASKFLOW = Path(__file__).resolve().parent.parent / "vulnerable-task-tracker"
 GOLDEN = Path(__file__).resolve().parent.parent / "examples" / "symbol_scan_output.json"
 
 
+# CVEs covered by examples/symbol_scan_output.json (stable integration test subset).
+_TASKFLOW_STABLE_CVES = frozenset({
+    "CVE-2018-1000656",
+    "CVE-2019-10906",
+    "CVE-2019-11324",
+    "CVE-2020-1747",
+    "CVE-2020-25659",
+    "CVE-2020-26137",
+    "CVE-2020-5313",
+    "CVE-2023-32681",
+})
+
+
+def _taskflow_test_patches() -> dict:
+    """Limit patch set so integration tests stay stable as data/patches/ grows."""
+    all_p = load_patches_from_cache()
+    missing = _TASKFLOW_STABLE_CVES - set(all_p)
+    assert not missing, f"Missing patch JSON for: {sorted(missing)}"
+    return {k: all_p[k] for k in _TASKFLOW_STABLE_CVES}
+
+
 def _requests_index() -> dict:
-  return {
-    "CVE-TEST": {
-      "package": "requests",
-      "vulnerable_symbols": [
-        {
-          "fully_qualified_name": "requests.utils.rebuild_auth",
-          "short_name": "rebuild_auth",
-          "kind": "function",
-          "change_classification": "HARDENED_ONLY",
+    return {
+        "CVE-TEST": {
+            "package": "requests",
+            "vulnerable_symbols": [
+                {
+                    "fully_qualified_name": "requests.utils.rebuild_auth",
+                    "short_name": "rebuild_auth",
+                    "kind": "function",
+                    "change_classification": "HARDENED_ONLY",
+                }
+            ],
         }
-      ],
     }
-  }
 
 
 def _index():
-  return build_symbol_index(_requests_index())
+    return build_symbol_index(_requests_index())
 
 
 @pytest.mark.parametrize(
@@ -131,7 +152,7 @@ def test_pil_image_open_chain() -> None:
 
 @pytest.mark.skipif(not TASKFLOW.is_dir(), reason="TaskFlow demo not present")
 def test_taskflow_integration() -> None:
-    patches = load_patches_from_cache()
+    patches = _taskflow_test_patches()
     assert len(patches) >= 8
     result = scan_symbols(str(TASKFLOW), patches)
 
@@ -185,7 +206,7 @@ def test_taskflow_integration() -> None:
 
 @pytest.mark.skipif(not GOLDEN.is_file(), reason="golden output missing")
 def test_golden_output_matches_taskflow() -> None:
-    patches = load_patches_from_cache()
+    patches = _taskflow_test_patches()
     result = scan_symbols(str(TASKFLOW), patches)
     with GOLDEN.open(encoding="utf-8") as fh:
         golden = json.load(fh)

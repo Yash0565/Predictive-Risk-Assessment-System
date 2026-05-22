@@ -8,7 +8,7 @@ project to determine if upgrading vulnerable dependencies is safe.
 You have these tools available:
 
 1. list_dependencies(repo_path: str)
-   Lists packages and versions from requirements.txt
+   Lists packages and pinned versions from requirements.txt, pyproject.toml, or Pipfile
 2. scan_vulnerabilities(repo_path: str)
    Runs Trivy to find CVEs. Returns list of CVE objects.
 3. fetch_patch(cve_id: str)
@@ -60,11 +60,22 @@ When you have enough information to finish:
 Respond with the JSON object only. No prose, no markdown, no code fences."""
 
 
-def build_user_prompt(scratchpad_text: str, *, loop_hint: str = "") -> str:
+def build_user_prompt(
+    scratchpad_text: str,
+    *,
+    target_repo: str,
+    loop_hint: str = "",
+    known_cves_hint: str = "",
+) -> str:
     """Build the per-step user prompt with scratchpad and optional loop hint."""
     hint_block = f"\n\nIMPORTANT: {loop_hint}\n" if loop_hint else ""
+    cve_block = f"\n{known_cves_hint}\n" if known_cves_hint else ""
     return f"""{SYSTEM_PROMPT}
 
+Target repository (investigation root — use this exact repo_path for list_dependencies,
+scan_vulnerabilities, find_symbol_usage, and simulate_upgrade):
+{target_repo}
+{cve_block}
 Current investigation state (scratchpad):
 {scratchpad_text}
 {hint_block}
