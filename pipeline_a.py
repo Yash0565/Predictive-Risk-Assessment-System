@@ -8,10 +8,11 @@ and upgrade simulator are wired before graph scoring and the HTML report.
 PIPELINE PHASES
 ───────────────
   Phase 1   Ingestion & Normalization        src/normalizer.py
-  Phase 2   Triple-Check Rule Resolution     src/rule_resolver.py
-  Phase 3   Parallel Semgrep Execution       src/executor.py
-  Phase 4   Reporting (Semgrep side)         src/reporter.py
-  Phase 5   Patch Intelligence               src/patch_fetcher.py
+  Phase 2   Patch Intelligence (preload)     src/patch_fetcher.py
+  Phase 3   Triple-Check Rule Resolution     src/rule_resolver.py
+            + patch-aware sink rules         src/symbol_rule_builder.py
+  Phase 4   Parallel Semgrep Execution       src/executor.py
+  Phase 5   Reporting (Semgrep side)         src/reporter.py
   Phase 6   Symbol Reachability              src/symbol_scanner.py
   Phase 7   Upgrade Simulation               src/upgrade_simulator.py
   Phase 8   Graph Ingestion                  src/graph_builder.py
@@ -73,6 +74,7 @@ from src.registry_matcher import load_registry_index
 from src.reporter import build_report, print_summary, save_report
 from src.rule_resolver import resolve_rules
 from src.scorer import save_assessment, score_cves
+from src.symbol_rule_builder import enrich_rules_with_patch_sinks
 from src.symbol_scanner import save_findings, scan_symbols
 from src.upgrade_simulator import simulate_upgrade
 from src.utils import detect_language
@@ -219,7 +221,26 @@ async def run_pipeline(args: argparse.Namespace) -> None:
         return
     print(f"   → {len(families)} CWE families identified")
 
-    _section("Phase 2   Triple-Check Rule Resolution")
+    with open(input_path, "r", encoding="utf-8") as fh:
+        trivy_vulns = json.load(fh)
+
+    cve_to_pkg = _cve_id_to_package(trivy_vulns)
+    cve_ids = sorted(cve_to_pkg.keys())
+    print(f"   Trivy CVEs available: {len(cve_ids)}")
+
+    _section("Phase 2   Patch Intelligence (preload for sink rules)")
+    print(f"   Loading patches for {len(cve_ids)} CVEs (offline-cached)…")
+    patches = fetch_patches_batch(
+        [{"cve_id": c, "package": cve_to_pkg.get(c)} for c in cve_ids],
+        max_workers=4,
+    )
+    patches_path = os.path.join(output_dir, "patches.json")
+    with open(patches_path, "w", encoding="utf-8") as fh:
+        json.dump(patches, fh, indent=2)
+    n_with_symbols = sum(1 for p in patches.values() if p.get("vulnerable_symbols"))
+    print(f"   → {len(patches)} patches loaded, {n_with_symbols} with vulnerable symbols")
+
+    _section("Phase 3   Triple-Check Rule Resolution")
     language = detect_language(project_dir)
     print(f"   Detected language: {language}")
     registry_index = load_registry_index()
@@ -232,7 +253,11 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     )
     print(f"   → {len(resolved_rules)} rules resolved")
 
-    _section("Phase 3   Parallel Semgrep Execution")
+    resolved_rules = enrich_rules_with_patch_sinks(
+        families, resolved_rules, patches, cve_to_pkg, rules_dir, language,
+    )
+
+    _section("Phase 4   Parallel Semgrep Execution")
     scan_results = run_scans(resolved_rules, project_dir, max_workers=4)
     if demo_mode:
         overlay_path = os.path.join("data", "demo", "semgrep_matches.json")
@@ -245,29 +270,10 @@ async def run_pipeline(args: argparse.Namespace) -> None:
             print("   [demo] Applied pre-computed Semgrep overlay")
     print(f"   → {sum(len(m) for m in scan_results.values())} Semgrep matches")
 
-    _section("Phase 4   Reporting (Semgrep side)")
+    _section("Phase 5   Reporting (Semgrep side)")
     report = build_report(families, resolved_rules, scan_results)
     save_report(report, output_dir)
     print_summary(report)
-
-    with open(input_path, "r", encoding="utf-8") as fh:
-        trivy_vulns = json.load(fh)
-
-    cve_to_pkg = _cve_id_to_package(trivy_vulns)
-    cve_ids = sorted(cve_to_pkg.keys())
-    print(f"   Trivy CVEs available: {len(cve_ids)}")
-
-    _section("Phase 5   Patch Intelligence")
-    print(f"   Fetching patches for {len(cve_ids)} CVEs (offline-cached)…")
-    patches = fetch_patches_batch(
-        [{"cve_id": c, "package": cve_to_pkg.get(c)} for c in cve_ids],
-        max_workers=4,
-    )
-    patches_path = os.path.join(output_dir, "patches.json")
-    with open(patches_path, "w", encoding="utf-8") as fh:
-        json.dump(patches, fh, indent=2)
-    n_with_symbols = sum(1 for p in patches.values() if p.get("vulnerable_symbols"))
-    print(f"   → {len(patches)} patches fetched, {n_with_symbols} with vulnerable symbols")
 
     vulnerable_symbols_by_cve = {
         cve: {

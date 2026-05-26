@@ -17,10 +17,15 @@ import re
 import time
 
 import requests
-import yaml
 
 from src.config import CWE_NAMES
 from src.registry_matcher import find_best_rule_for_family
+from src.semgrep_tools import (
+    check_semgrep_available,
+    semgrep_example_template,
+    validate_rule_file,
+    validate_rule_yaml,
+)
 
 # ── Cache I/O ───────────────────────────────────────────────────────
 
@@ -137,10 +142,14 @@ async def resolve_rules(families, language, registry_index, api_key,
 
         # ── Step A: local cache ─────────────────────────────────
         cached = db.get(name)
-        if cached and os.path.exists(cached.get("rule_path", "")):
-            print(f"  [A] CACHE  hit  → {name}")
-            resolved[name] = cached
-            continue
+        cached_path = cached.get("rule_path", "") if cached else ""
+        if cached and cached_path and os.path.exists(cached_path):
+            ok, err = validate_rule_file(cached_path)
+            if ok:
+                print(f"  [A] CACHE  hit  → {name}")
+                resolved[name] = cached
+                continue
+            print(f"  [A] CACHE  stale → {name} ({err}); re-resolving...")
 
         # ── Step B: official registry ───────────────────────────
         match = find_best_rule_for_family(cluster.cwe_ids, language,
@@ -279,19 +288,30 @@ def _deep_gen(name, cluster, language, rules_dir,
     pkgs = ", ".join(sorted(cluster.packages))
     rule_id = f"detect-{name}-{language}"
 
+    ok, semgrep_detail, _ = check_semgrep_available()
+    if not ok:
+        print(f"  [!] Semgrep unavailable for rule validation: {semgrep_detail}")
+
     system = (
-        "You are a static analysis expert.  Output ONLY raw "
-        "Semgrep YAML.  No markdown.  No commentary."
+        "You are a static analysis expert. Output ONLY raw Semgrep YAML. "
+        "The document MUST have a top-level 'rules:' list. Each rule MUST "
+        "include id, languages, message, severity, and pattern (or patterns). "
+        "No markdown. No commentary."
     )
+    example = semgrep_example_template(rule_id, language)
     prompt = (
         f"Generate a Semgrep rule to detect the '{name}' vulnerability family.\n"
         f"CWEs covered: {cwe_desc}\n"
         f"Packages: {pkgs}\n"
         f"Language: {language}\n"
         f"Rule ID: {rule_id}\n"
-        f"Focus on common sinks and patterns for these CWEs in {pkgs}.\n"
-        f"Output ONLY valid Semgrep YAML.  No explanation.  No markdown fences."
+        f"Focus on common sinks and patterns for these CWEs in {pkgs}.\n\n"
+        f"Use exactly this structure (replace pattern with a real sink):\n"
+        f"{example}\n"
+        f"Output ONLY valid Semgrep YAML. No explanation. No markdown fences."
     )
+
+    path = os.path.join(rules_dir, f"{name}_{language}.yaml")
 
     for attempt in range(retries):
         try:
@@ -299,14 +319,17 @@ def _deep_gen(name, cluster, language, rules_dir,
                             system_instruction=system, max_tokens=2048)
             raw = _strip_markdown_fences(raw)
 
-            # Validate YAML
-            parsed = yaml.safe_load(raw)
-            if not parsed:
-                raise ValueError("Empty YAML output")
+            ok, err = validate_rule_yaml(raw)
+            if not ok:
+                raise ValueError(err)
 
-            path = os.path.join(rules_dir, f"{name}_{language}.yaml")
             with open(path, "w", encoding="utf-8") as f:
                 f.write(raw)
+
+            ok, err = validate_rule_file(path)
+            if not ok:
+                raise ValueError(err)
+
             return path
 
         except Exception as e:

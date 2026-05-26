@@ -103,3 +103,13 @@ LANG_MAP = {
 
 # Directories to skip when detecting project language
 SKIP_DIRS = {"venv", "node_modules", ".git", "codeql", "__pycache__", "semgrep-rules"}
+
+# ── Package → common application-level Semgrep sink patterns ───────
+# Registry rules often miss bare calls like yaml.load(x) without Loader=.
+PACKAGE_APP_SINKS: dict[str, tuple[str, ...]] = {
+    "pyyaml": ("yaml.load(...)",),
+    "requests": ("rebuild_auth(...)",),
+    "pillow": ("Image.open(...)",),
+    "jinja2": ("render_template_string(...)",),
+    "flask": ("request.get_json(...)", "render_template_string(...)"),
+}

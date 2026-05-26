@@ -3565,6 +3565,14 @@
       "severity": "ERROR"
     },
     {
+      "rule_id": "gha-curl-pipe-shell",
+      "path": "semgrep-rules\\yaml\\github-actions\\security\\gha-curl-pipe-shell.yaml",
+      "languages": [
+        "yaml"
+      ],
+      "severity": "ERROR"
+    },
+    {
       "rule_id": "run-shell-injection",
       "path": "semgrep-rules\\yaml\\github-actions\\security\\run-shell-injection.yaml",
       "languages": [
@@ -13403,6 +13411,14 @@
     {
       "rule_id": "writable-filesystem-service",
       "path": "semgrep-rules\\yaml\\docker-compose\\security\\writable-filesystem-service.yaml",
+      "languages": [
+        "yaml"
+      ],
+      "severity": "WARNING"
+    },
+    {
+      "rule_id": "gha-workflow-env-secret",
+      "path": "semgrep-rules\\yaml\\github-actions\\security\\gha-workflow-env-secret.yaml",
       "languages": [
         "yaml"
       ],

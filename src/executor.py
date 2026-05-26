@@ -8,10 +8,14 @@ max-out CPU cores instead of waiting one-by-one.
 import json
 import os
 import subprocess
-import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from src.utils import find_tool, tool_subprocess_env
+from src.semgrep_tools import (
+    check_semgrep_available,
+    semgrep_cmd,
+    validate_rule_file,
+)
+from src.utils import tool_subprocess_env
 
 
 def run_scans(resolved_rules, project_dir, max_workers=4):
@@ -19,33 +23,54 @@ def run_scans(resolved_rules, project_dir, max_workers=4):
 
     Returns { family_name: [match_dict, ...] }.
     """
-    semgrep_exe = _find_semgrep()
-    if not semgrep_exe:
-        print("  ERROR: semgrep not found.  Install with: pip install semgrep")
-        print("         If already installed, ensure Python Scripts is on PATH:")
-        for d in _semgrep_search_paths():
-            print(f"           {d}")
+    ok, detail, semgrep_exe = check_semgrep_available()
+    if not ok:
+        print(f"  ERROR: {detail}")
         return {}
 
     print("\n" + "=" * 60)
     print("PHASE 3: Parallel Semgrep Execution")
     print("=" * 60)
+    print(f"  Semgrep: {detail}")
 
-    print(f"  Scanning {len(resolved_rules)} families across {max_workers} threads...")
+    scannable = {}
+    skipped = 0
+    for family, info in resolved_rules.items():
+        rule_path = info.get("rule_path", "")
+        if not rule_path:
+            skipped += 1
+            continue
+        valid, err = validate_rule_file(rule_path, semgrep_exe=semgrep_exe)
+        if not valid:
+            print(f"  [!] Skipping {family}: invalid rule — {err}")
+            skipped += 1
+            continue
+        scannable[family] = info
+
+    if skipped:
+        print(f"  {skipped} famil{'y' if skipped == 1 else 'ies'} skipped (missing/invalid rules)")
+
+    if not scannable:
+        print("  No valid Semgrep rules to scan.")
+        return {}
+
+    print(f"  Scanning {len(scannable)} families across {max_workers} threads...")
     results = {}
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         future_map = {}
-        for family, info in resolved_rules.items():
-            print(f"  [>] Queued: {family} ({os.path.basename(info.get('rule_path','?'))})")
+        for family, info in scannable.items():
+            print(f"  [>] Queued: {family} ({os.path.basename(info.get('rule_path', '?'))})")
             future_map[pool.submit(_scan_one, semgrep_exe, family, info, project_dir)] = family
 
         for future in as_completed(future_map):
             family = future_map[future]
             try:
-                matches = future.result()
+                matches, warning = future.result()
                 results[family] = matches
-                if matches:
+                if warning:
+                    print(f"  ✗ {family}: {warning}")
+                elif matches:
                     print(f"  ✓ {family}: {len(matches)} match(es)")
                 else:
                     print(f"  ○ {family}: no matches")
@@ -56,38 +81,11 @@ def run_scans(resolved_rules, project_dir, max_workers=4):
     return results
 
 
-# ── Private helpers ─────────────────────────────────────────────────
-
-def _semgrep_search_paths():
-    from src.utils import python_scripts_dirs
-
-    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return [
-        os.path.join(base, "venv", "Scripts", "semgrep.exe"),
-        os.path.join(base, "venv", "bin", "semgrep"),
-        *python_scripts_dirs(),
-    ]
-
-
-def _find_semgrep():
-    """Locate the semgrep binary."""
-    return find_tool("semgrep", _semgrep_search_paths()[:2])
-
-
-def _semgrep_cmd(semgrep_exe):
-    """Build argv for Semgrep; fall back to ``python -m semgrep`` when needed."""
-    if semgrep_exe:
-        return [semgrep_exe]
-    return [sys.executable, "-m", "semgrep"]
-
-
 def _scan_one(semgrep_exe, family, rule_info, project_dir):
-    """Run a single Semgrep scan and return a list of match dicts."""
+    """Run a single Semgrep scan and return (matches, warning_or_none)."""
     rule_path = rule_info.get("rule_path", "")
-    if not rule_path or not os.path.exists(rule_path):
-        return []
 
-    cmd = _semgrep_cmd(semgrep_exe) + ["--config", rule_path, project_dir, "--json", "--quiet"]
+    cmd = semgrep_cmd(semgrep_exe) + ["--config", rule_path, project_dir, "--json", "--quiet"]
     proc = subprocess.run(
         cmd,
         capture_output=True,
@@ -97,11 +95,16 @@ def _scan_one(semgrep_exe, family, rule_info, project_dir):
     )
 
     if proc.returncode == 2:
-        # Rule parse error — not our fault, skip silently
-        return []
+        detail = (proc.stderr or proc.stdout or "").strip()
+        first_lines = "\n".join(detail.splitlines()[:3])
+        return [], f"rule/scan error — {first_lines or 'semgrep exit 2'}"
+
+    if proc.returncode not in (0, 1):
+        detail = (proc.stderr or proc.stdout or "").strip()
+        return [], f"semgrep failed (exit {proc.returncode}): {detail[:200]}"
 
     output = json.loads(proc.stdout) if proc.stdout.strip() else {}
-    return [
+    matches = [
         {
             "file":       r.get("path", ""),
             "line_start": r.get("start", {}).get("line", 0),
@@ -111,3 +114,4 @@ def _scan_one(semgrep_exe, family, rule_info, project_dir):
         }
         for r in output.get("results", [])
     ]
+    return matches, None

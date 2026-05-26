@@ -1,0 +1,1102 @@
+{
+  "simulated_at": "2026-05-22T17:36:01+00:00",
+  "status": "ok",
+  "python_version": "3.14.0",
+  "current_tree": {
+    "asn1crypto": {
+      "version": "1.5.1",
+      "requires": {}
+    },
+    "boto3": {
+      "version": "1.10.0",
+      "requires": {
+        "botocore": ">=1.13.0,<1.14.0",
+        "jmespath": ">=0.7.1,<1.0.0",
+        "s3transfer": ">=0.2.0,<0.3.0"
+      }
+    },
+    "botocore": {
+      "version": "1.13.50",
+      "requires": {
+        "docutils": ">=0.10,<0.16",
+        "jmespath": ">=0.7.1,<1.0.0",
+        "python-dateutil": ">=2.1,<3.0.0",
+        "urllib3": ">=1.20,<1.26"
+      }
+    },
+    "certifi": {
+      "version": "2026.4.22",
+      "requires": {},
+      "python_requires": ">=3.7"
+    },
+    "cffi": {
+      "version": "2.0.0",
+      "requires": {
+        "pycparser": "==3.0.0"
+      },
+      "python_requires": ">=3.9"
+    },
+    "chardet": {
+      "version": "3.0.4",
+      "requires": {}
+    },
+    "click": {
+      "version": "8.4.0",
+      "requires": {},
+      "python_requires": ">=3.10"
+    },
+    "cryptography": {
+      "version": "2.3",
+      "requires": {
+        "asn1crypto": ">=0.21.0",
+        "cffi": "!=1.11.3,>=1.7",
+        "idna": ">=2.1",
+        "six": ">=1.4.1"
+      }
+    },
+    "docutils": {
+      "version": "0.15.2",
+      "requires": {},
+      "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+    },
+    "flask": {
+      "version": "0.12",
+      "requires": {
+        "click": ">=2.0",
+        "itsdangerous": ">=0.21",
+        "jinja2": ">=2.4",
+        "werkzeug": ">=0.7"
+      }
+    },
+    "idna": {
+      "version": "3.15.0",
+      "requires": {},
+      "python_requires": ">=3.8"
+    },
+    "itsdangerous": {
+      "version": "2.2.0",
+      "requires": {},
+      "python_requires": ">=3.8"
+    },
+    "jinja2": {
+      "version": "2.10",
+      "requires": {
+        "markupsafe": ">=0.23"
+      }
+    },
+    "jmespath": {
+      "version": "0.10.0",
+      "requires": {},
+      "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+    },
+    "markupsafe": {
+      "version": "3.0.3",
+      "requires": {},
+      "python_requires": ">=3.9"
+    },
+    "pillow": {
+      "version": "6.0.0",
+      "requires": {}
+    },
+    "pycparser": {
+      "version": "3.0.0",
+      "requires": {},
+      "python_requires": ">=3.10"
+    },
+    "python-dateutil": {
+      "version": "2.9.0.post0",
+      "requires": {
+        "six": ">=1.5"
+      },
+      "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+    },
+    "pyyaml": {
+      "version": "5.1",
+      "requires": {}
+    },
+    "requests": {
+      "version": "2.20.0",
+      "requires": {
+        "certifi": ">=2017.4.17",
+        "chardet": "<3.1.0,>=3.0.2",
+        "idna": "<2.8,>=2.5",
+        "urllib3": "<1.25,>=1.21.1"
+      }
+    },
+    "s3transfer": {
+      "version": "0.2.1",
+      "requires": {
+        "botocore": ">=1.12.36,<2.0.0"
+      }
+    },
+    "six": {
+      "version": "1.17.0",
+      "requires": {},
+      "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+    },
+    "sqlalchemy": {
+      "version": "1.3.0",
+      "requires": {}
+    },
+    "urllib3": {
+      "version": "1.24.1",
+      "requires": {},
+      "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+    },
+    "werkzeug": {
+      "version": "3.1.8",
+      "requires": {
+        "markupsafe": ">=2.1.1"
+      },
+      "python_requires": ">=3.9"
+    }
+  },
+  "target_tree": {
+    "asn1crypto": {
+      "version": "1.5.1",
+      "requires": {}
+    },
+    "boto3": {
+      "version": "1.10.0",
+      "requires": {
+        "botocore": ">=1.13.0,<1.14.0",
+        "jmespath": ">=0.7.1,<1.0.0",
+        "s3transfer": ">=0.2.0,<0.3.0"
+      }
+    },
+    "botocore": {
+      "version": "1.13.50",
+      "requires": {
+        "docutils": ">=0.10,<0.16",
+        "jmespath": ">=0.7.1,<1.0.0",
+        "python-dateutil": ">=2.1,<3.0.0",
+        "urllib3": ">=1.20,<1.26"
+      }
+    },
+    "certifi": {
+      "version": "2026.4.22",
+      "requires": {},
+      "python_requires": ">=3.7"
+    },
+    "cffi": {
+      "version": "2.0.0",
+      "requires": {
+        "pycparser": "==3.0.0"
+      },
+      "python_requires": ">=3.9"
+    },
+    "charset-normalizer": {
+      "version": "3.4.7",
+      "requires": {},
+      "python_requires": ">=3.7"
+    },
+    "click": {
+      "version": "8.4.0",
+      "requires": {},
+      "python_requires": ">=3.10"
+    },
+    "cryptography": {
+      "version": "2.3",
+      "requires": {
+        "asn1crypto": ">=0.21.0",
+        "cffi": "!=1.11.3,>=1.7",
+        "idna": ">=2.1",
+        "six": ">=1.4.1"
+      }
+    },
+    "docutils": {
+      "version": "0.15.2",
+      "requires": {},
+      "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+    },
+    "flask": {
+      "version": "0.12.3",
+      "requires": {
+        "click": ">=2.0",
+        "itsdangerous": ">=0.21",
+        "jinja2": ">=2.4",
+        "werkzeug": ">=0.7"
+      }
+    },
+    "idna": {
+      "version": "3.15.0",
+      "requires": {},
+      "python_requires": ">=3.8"
+    },
+    "itsdangerous": {
+      "version": "2.2.0",
+      "requires": {},
+      "python_requires": ">=3.8"
+    },
+    "jinja2": {
+      "version": "3.1.6",
+      "requires": {
+        "markupsafe": ">=2.0"
+      },
+      "python_requires": ">=3.7"
+    },
+    "jmespath": {
+      "version": "0.10.0",
+      "requires": {},
+      "python_requires": ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+    },
+    "markupsafe": {
+      "version": "3.0.3",
+      "requires": {},
+      "python_requires": ">=3.9"
+    },
+    "pillow": {
+      "version": "6.2.2",
+      "requires": {}
+    },
+    "pycparser": {
+      "version": "3.0.0",
+      "requires": {},
+      "python_requires": ">=3.10"
+    },
+    "python-dateutil": {
+      "version": "2.9.0.post0",
+      "requires": {
+        "six": ">=1.5"
+      },
+      "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+    },
+    "pyyaml": {
+      "version": "5.3.1",
+      "requires": {}
+    },
+    "requests": {
+      "version": "2.31.0",
+      "requires": {
+        "certifi": ">=2017.4.17",
+        "charset-normalizer": "<4,>=2",
+        "idna": "<4,>=2.5",
+        "urllib3": "<3,>=1.21.1"
+      }
+    },
+    "s3transfer": {
+      "version": "0.2.1",
+      "requires": {
+        "botocore": ">=1.12.36,<2.0.0"
+      }
+    },
+    "six": {
+      "version": "1.17.0",
+      "requires": {},
+      "python_requires": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+    },
+    "sqlalchemy": {
+      "version": "1.3.0",
+      "requires": {}
+    },
+    "urllib3": {
+      "version": "2.6.0",
+      "requires": {},
+      "python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+    },
+    "werkzeug": {
+      "version": "3.1.8",
+      "requires": {
+        "markupsafe": ">=2.1.1"
+      },
+      "python_requires": ">=3.9"
+    }
+  },
+  "tree_diff": {
+    "bumped": [
+      {
+        "package": "flask",
+        "from": "0.12",
+        "to": "0.12.3"
+      },
+      {
+        "package": "jinja2",
+        "from": "2.10",
+        "to": "3.1.6"
+      },
+      {
+        "package": "pillow",
+        "from": "6.0.0",
+        "to": "6.2.2"
+      },
+      {
+        "package": "pyyaml",
+        "from": "5.1",
+        "to": "5.3.1"
+      },
+      {
+        "package": "requests",
+        "from": "2.20.0",
+        "to": "2.31.0"
+      },
+      {
+        "package": "urllib3",
+        "from": "1.24.1",
+        "to": "2.6.0"
+      }
+    ],
+    "added": [
+      {
+        "package": "charset-normalizer",
+        "version": "3.4.7"
+      }
+    ],
+    "removed": [
+      {
+        "package": "chardet",
+        "version": "3.0.4"
+      }
+    ]
+  },
+  "conflicts": [
+    {
+      "id": "C1",
+      "class": "DIRECT_CONFLICT",
+      "severity": "BLOCK",
+      "shared_dependency": "urllib3",
+      "conflicting_packages": [
+        {
+          "package": "botocore",
+          "version": "1.13.50",
+          "constraint": ">=1.20,<1.26",
+          "satisfied_by": [
+            "1.21.1",
+            "1.22.0",
+            "1.23.0",
+            "1.24.1",
+            "1.25.2"
+          ]
+        },
+        {
+          "package": "requests",
+          "version": "2.31.0",
+          "constraint": "<3,>=1.21.1",
+          "satisfied_by": [
+            "1.21.1",
+            "1.22.0",
+            "1.23.0",
+            "1.24.1",
+            "1.25.2",
+            "1.26.20",
+            "2.0.7",
+            "2.7.0"
+          ]
+        }
+      ],
+      "intersection": [
+        "1.21.1",
+        "1.22.0",
+        "1.23.0",
+        "1.24.1",
+        "1.25.2"
+      ],
+      "would_break_build": true,
+      "human_explanation": "Packages botocore, requests impose incompatible version ranges on urllib3; resolved urllib3 2.6.0 violates at least one constraint."
+    }
+  ],
+  "cascade": {
+    "trigger": "flask 0.12 -> 0.12.3",
+    "chain": [
+      {
+        "package": "urllib3",
+        "from": "1.24.1",
+        "to": "2.6.0",
+        "forced_by": "boto3"
+      },
+      {
+        "package": "jinja2",
+        "from": "2.10",
+        "to": "3.1.6",
+        "forced_by": "flask"
+      },
+      {
+        "package": "pillow",
+        "from": "6.0.0",
+        "to": "6.2.2",
+        "forced_by": "flask"
+      },
+      {
+        "package": "pyyaml",
+        "from": "5.1",
+        "to": "5.3.1",
+        "forced_by": "flask"
+      },
+      {
+        "package": "requests",
+        "from": "2.20.0",
+        "to": "2.31.0",
+        "forced_by": "flask"
+      },
+      {
+        "package": "botocore",
+        "from": "1.13.50",
+        "to": "1.13.50",
+        "forced_by": "urllib3"
+      },
+      {
+        "package": "boto3",
+        "from": "1.10.0",
+        "to": "1.28.0",
+        "forced_by": "botocore"
+      }
+    ],
+    "total_packages_affected": 8
+  },
+  "runtime_conflicts": [
+    {
+      "package": "jinja2",
+      "version": "3.1.6",
+      "requires_python": ">=3.7",
+      "project_python": "3.14.0",
+      "compatible": true
+    },
+    {
+      "package": "urllib3",
+      "version": "2.6.0",
+      "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4",
+      "project_python": "3.14.0",
+      "compatible": true
+    }
+  ],
+  "target_introduces_cves": [
+    {
+      "cve": "GHSA-38jv-5279-wg99",
+      "cvss": 0.0,
+      "note": "Decompression-bomb safeguards bypassed when following HTTP redirects (streaming API)",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "GHSA-3f63-hfp8-52jq",
+      "cvss": 0.0,
+      "note": "Arbitrary Code Execution in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-3wvg-mj6g-m9cv",
+      "cvss": 0.0,
+      "note": "Pillow Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-3xv8-3j54-hgrp",
+      "cvss": 0.0,
+      "note": "Out-of-bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-43fq-w8qq-v88h",
+      "cvss": 0.0,
+      "note": "Out-of-bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-44wm-f244-xhp3",
+      "cvss": 0.0,
+      "note": "Pillow buffer overflow vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-4fx9-vc88-q2xc",
+      "cvss": 0.0,
+      "note": "Infinite loop in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-57h3-9rgr-c24m",
+      "cvss": 0.0,
+      "note": "Out of bounds write in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-5wv5-4vpf-pj6m",
+      "cvss": 0.0,
+      "note": "Pallets Project Flask is vulnerable to Denial of Service via Unexpected memory usage",
+      "package": "flask",
+      "version": "0.12.3"
+    },
+    {
+      "cve": "GHSA-68rp-wp8r-4726",
+      "cvss": 0.0,
+      "note": "Flask session does not add `Vary: Cookie` header when accessed in some ways",
+      "package": "flask",
+      "version": "0.12.3"
+    },
+    {
+      "cve": "GHSA-7534-mm45-c74v",
+      "cvss": 0.0,
+      "note": "Buffer Overflow in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-77gc-v2xv-rvvh",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-7r7m-5h27-29hp",
+      "cvss": 0.0,
+      "note": "Potential infinite loop in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8843-m7mw-mxqm",
+      "cvss": 0.0,
+      "note": "Buffer overflow in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8ghj-p4vj-mr35",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8q59-q68h-6hv4",
+      "cvss": 0.0,
+      "note": "Improper Input Validation in PyYAML",
+      "package": "pyyaml",
+      "version": "5.3.1"
+    },
+    {
+      "cve": "GHSA-8vj2-vxx3-667w",
+      "cvss": 0.0,
+      "note": "Arbitrary expression injection in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-8xjq-8fcg-g5hw",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Write in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-95q3-8gr9-gm8w",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service by Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-98vv-pw6r-q6q4",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-9hjg-9r4m-mvj7",
+      "cvss": 0.0,
+      "note": "Requests vulnerable to .netrc credentials leak via malicious URLs",
+      "package": "requests",
+      "version": "2.31.0"
+    },
+    {
+      "cve": "GHSA-9hx2-hgq2-2g4f",
+      "cvss": 0.0,
+      "note": "Regular Expression Denial of Service (ReDoS) in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-9j59-75qj-795w",
+      "cvss": 0.0,
+      "note": "Path traversal in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-9wx4-h78v-vm56",
+      "cvss": 0.0,
+      "note": "Requests `Session` object does not verify requests after making first request with verify=False",
+      "package": "requests",
+      "version": "2.31.0"
+    },
+    {
+      "cve": "GHSA-cqhg-xjhh-p8hf",
+      "cvss": 0.0,
+      "note": "Out-of-bounds reads in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-f4w8-cv6p-x6r5",
+      "cvss": 0.0,
+      "note": "Pillow Denial of Service by Uncontrolled Resource Consumption",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-f5g8-5qq7-938w",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-g6rj-rv7j-xwp4",
+      "cvss": 0.0,
+      "note": "Pillow denial of service",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-gc5v-m9x4-r6x2",
+      "cvss": 0.0,
+      "note": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+      "package": "requests",
+      "version": "2.31.0"
+    },
+    {
+      "cve": "GHSA-hf64-x4gq-p99h",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-hjfx-8p6c-g7gx",
+      "cvss": 0.0,
+      "note": "Insufficient Verification of Data Authenticity in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-j7hp-h8jx-5ppr",
+      "cvss": 0.0,
+      "note": "libwebp: OOB write in BuildHuffmanTable",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-jgpv-4h4c-xhw3",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-m2qf-hxjv-5gpq",
+      "cvss": 0.0,
+      "note": "Flask vulnerable to possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+      "package": "flask",
+      "version": "0.12.3"
+    },
+    {
+      "cve": "GHSA-m2vv-5vj5-2hm7",
+      "cvss": 0.0,
+      "note": "Pillow vulnerable to Data Amplification attack.",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-mf9v-mfxr-j63j",
+      "cvss": 0.0,
+      "note": "urllib3: Decompression-bomb safeguards bypassed in parts of the streaming API",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "GHSA-mvg9-xffr-p774",
+      "cvss": 0.0,
+      "note": "Out of bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-p43w-g3c5-g5mq",
+      "cvss": 0.0,
+      "note": "Out of bounds read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-pw3c-h7wp-cvhx",
+      "cvss": 0.0,
+      "note": "Improper Initialization in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-q5hq-fp76-qmrc",
+      "cvss": 0.0,
+      "note": "Uncontrolled Resource Consumption in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-qccp-gfcp-xxvc",
+      "cvss": 0.0,
+      "note": "urllib3: Sensitive headers forwarded across origins in proxied low-level redirects",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "GHSA-r73j-pqj5-w3x7",
+      "cvss": 0.0,
+      "note": "Pillow has a PDF Parsing Trailer Infinite Loop (DoS)",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-rwv7-3v45-hg29",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Read vulnerability",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-vj42-xq3r-hr3r",
+      "cvss": 0.0,
+      "note": "Out-of-bounds reads in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-vqcj-wrf2-7v73",
+      "cvss": 0.0,
+      "note": "Pillow Out-of-bounds Write",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-wjx4-4jcj-g98j",
+      "cvss": 0.0,
+      "note": "Pillow has an integer overflow when processing fonts",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-xrcv-f9gm-v42c",
+      "cvss": 0.0,
+      "note": "Out-of-bounds Read in Pillow",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2019-179",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "0.12.3"
+    },
+    {
+      "cve": "PYSEC-2020-76",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-77",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-78",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-79",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2020-80",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-137",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-138",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-139",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-142",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pyyaml",
+      "version": "5.3.1"
+    },
+    {
+      "cve": "PYSEC-2021-317",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-331",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-35",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-36",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-37",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-38",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-39",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-40",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-41",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-42",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-69",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-70",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-71",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-92",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-93",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2021-94",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-10",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-168",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-42979",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-8",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2022-9",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2023-175",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2023-227",
+      "cvss": 0.0,
+      "note": "",
+      "package": "pillow",
+      "version": "6.2.2"
+    },
+    {
+      "cve": "PYSEC-2023-62",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "0.12.3"
+    },
+    {
+      "cve": "PYSEC-2026-141",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "PYSEC-2026-142",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "2.6.0"
+    }
+  ],
+  "resolution_plan": {
+    "feasible": true,
+    "steps": [
+      {
+        "order": 1,
+        "package": "boto3",
+        "from": "1.10.0",
+        "to": "1.26.0",
+        "reason": "Latest version that relaxes shared-deps before flask upgrade."
+      },
+      {
+        "order": 2,
+        "package": "requests",
+        "from": "2.20.0",
+        "to": "2.31.0",
+        "reason": "Latest version that relaxes shared-deps before flask upgrade."
+      },
+      {
+        "order": 3,
+        "package": "flask",
+        "from": "0.12",
+        "to": "0.12.3",
+        "reason": "Primary upgrade target."
+      },
+      {
+        "order": 4,
+        "package": "pillow",
+        "from": "6.0.0",
+        "to": "6.2.2",
+        "reason": "Primary upgrade target."
+      },
+      {
+        "order": 5,
+        "package": "pyyaml",
+        "from": "5.1",
+        "to": "5.3.1",
+        "reason": "Primary upgrade target."
+      },
+      {
+        "order": 6,
+        "package": "urllib3",
+        "from": "1.24.1",
+        "to": "2.6.0",
+        "reason": "Primary upgrade target."
+      }
+    ],
+    "estimated_test_surface": {
+      "packages_changed": 13,
+      "transitive_packages_touched": 8,
+      "recommendation": "Run integration tests for code paths using upgraded packages and shared dependencies (e.g. urllib3, boto3 sessions)."
+    }
+  },
+  "unresolved_packages": [],
+  "summary": {
+    "verdict": "PROCEED_AFTER_RESOLUTION",
+    "headline": "Upgrade blocked as requested: requires upgrading boto3 first.",
+    "one_line": "BLOCKED. Cascade required: 8 packages must be upgraded in order."
+  }
+}

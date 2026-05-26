@@ -1,0 +1,638 @@
+{
+  "findings_by_cve": {
+    "CVE-2018-1000656": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "flask",
+      "reference_count": 4,
+      "references": [
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "auth_login",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/auth/login"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).get_json",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 23,
+          "source": "payload = request.get_json() or {}"
+        },
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "tasks_create",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/tasks"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).get_json",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 41,
+          "source": "payload = request.get_json() or {}"
+        },
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "webhook_notify",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/webhook/notify"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).get_json",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 62,
+          "source": "payload = request.get_json() or {}"
+        },
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "admin_config",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/admin/config"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).get_json",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 86,
+          "source": "payload = request.get_json() or {}"
+        }
+      ],
+      "vulnerable_symbol": "flask.wrappers.get_json"
+    },
+    "CVE-2018-25091": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.poolmanager.urlopen"
+    },
+    "CVE-2019-10906": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.sandbox.SandboxedEnvironment"
+    },
+    "CVE-2019-11324": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode"
+    },
+    "CVE-2019-19911": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.FpxImagePlugin._open_index"
+    },
+    "CVE-2020-14343": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pyyaml",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "yaml.lib.yaml.constructor.construct_python_object_new"
+    },
+    "CVE-2020-1747": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "pyyaml",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 13,
+          "confidence": "HIGH",
+          "enclosing_function": "load_admin_config",
+          "file": "config_loader.py",
+          "import_chain": "yaml (import yaml).load",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 21,
+          "source": "parsed = yaml.load(yaml_content)"
+        }
+      ],
+      "vulnerable_symbol": "yaml.load"
+    },
+    "CVE-2020-25659": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "cryptography",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey.decrypt"
+    },
+    "CVE-2020-26137": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "urllib3",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 8,
+          "confidence": "HIGH",
+          "enclosing_function": "_conn",
+          "file": "db.py",
+          "import_chain": "sqlite3 (import sqlite3).connect",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 12,
+          "source": "c = sqlite3.connect(DB_PATH)"
+        }
+      ],
+      "vulnerable_symbol": "urllib3.src.urllib3.connection.connect"
+    },
+    "CVE-2020-28493": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.src.jinja2.utils.urlize"
+    },
+    "CVE-2020-35653": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.PcxImagePlugin._open"
+    },
+    "CVE-2020-35655": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.PcxImagePlugin._open"
+    },
+    "CVE-2020-5313": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "pillow",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 10,
+          "confidence": "HIGH",
+          "enclosing_function": "_generate_thumbnail",
+          "file": "uploads.py",
+          "import_chain": "Image (from PIL import Image).open",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 59,
+          "source": "img = Image.open(BytesIO(data))"
+        }
+      ],
+      "vulnerable_symbol": "PIL.Image.open"
+    },
+    "CVE-2021-23437": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageColor.getrgb"
+    },
+    "CVE-2021-25292": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.PdfParser.next_object_id"
+    },
+    "CVE-2021-27921": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.BlpImagePlugin._decode_jpeg_stream"
+    },
+    "CVE-2021-27922": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.BlpImagePlugin._decode_jpeg_stream"
+    },
+    "CVE-2021-27923": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.BlpImagePlugin._decode_jpeg_stream"
+    },
+    "CVE-2021-28675": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageFile._safe_read"
+    },
+    "CVE-2021-28677": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.EpsImagePlugin.readline"
+    },
+    "CVE-2021-28678": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.BlpImagePlugin._load"
+    },
+    "CVE-2022-22817": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageMath.eval"
+    },
+    "CVE-2022-24303": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageShow.show_file"
+    },
+    "CVE-2023-23931": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "cryptography",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "cryptography.src.cryptography.hazmat.backends.openssl.ciphers.update_into"
+    },
+    "CVE-2023-30861": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "flask",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "flask.src.flask.sessions.save_session"
+    },
+    "CVE-2023-32681": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "requests",
+      "reference_count": 2,
+      "references": [
+        {
+          "col": 0,
+          "confidence": "HIGH",
+          "enclosing_function": null,
+          "file": "auth.py",
+          "import_chain": "requests.utils.rebuild_auth",
+          "in_entry_point": false,
+          "kind": "import",
+          "line": 11,
+          "source": "from requests.utils import rebuild_auth"
+        },
+        {
+          "col": 27,
+          "confidence": "HIGH",
+          "enclosing_function": "login_user",
+          "file": "auth.py",
+          "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 41,
+          "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
+        }
+      ],
+      "vulnerable_symbol": "requests.sessions.Session.rebuild_auth"
+    },
+    "CVE-2023-43804": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.util.retry.Retry"
+    },
+    "CVE-2023-44271": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageFont.Layout"
+    },
+    "CVE-2023-45803": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3._collections.getlist"
+    },
+    "CVE-2023-50447": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.ImageMath.eval"
+    },
+    "CVE-2024-22195": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.src.jinja2.filters.do_items"
+    },
+    "CVE-2024-34064": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.src.jinja2.filters.do_items"
+    },
+    "CVE-2024-35195": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "requests",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "requests.src.requests.adapters.SOCKSProxyManager"
+    },
+    "CVE-2024-37891": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.util.retry.Retry"
+    },
+    "CVE-2024-47081": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "requests",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "requests.src.requests.utils.get_netrc_auth"
+    },
+    "CVE-2024-56326": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.src.jinja2.sandbox.call"
+    },
+    "CVE-2025-27516": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "jinja2",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "jinja2.src.jinja2.filters.do_reverse"
+    },
+    "CVE-2025-50181": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.poolmanager.__init__"
+    },
+    "CVE-2025-66418": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.response.MultiDecoder"
+    },
+    "CVE-2025-66471": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "urllib3",
+      "reference_count": 3,
+      "references": [
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "tasks_list",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/tasks"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).args.get",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 34,
+          "source": "project = request.args.get(\"project\", \"\")"
+        },
+        {
+          "col": 10,
+          "confidence": "HIGH",
+          "enclosing_function": "reports_export",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/reports/export"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).args.get",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 77,
+          "source": "fmt = request.args.get(\"format\", \"html\")"
+        },
+        {
+          "col": 11,
+          "confidence": "HIGH",
+          "enclosing_function": "current_user_id",
+          "file": "auth.py",
+          "import_chain": "session (from flask import session).get",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 74,
+          "source": "return session.get(\"user_id\")"
+        }
+      ],
+      "vulnerable_symbol": "urllib3.src.urllib3.response.get"
+    },
+    "CVE-2026-21441": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.response.drain_conn"
+    },
+    "CVE-2026-25645": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "requests",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "requests.src.requests.utils.extract_zipped_paths"
+    },
+    "CVE-2026-26007": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "cryptography",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "cryptography.src.cryptography.hazmat.primitives.asymmetric.ec.get_curve_for_oid"
+    },
+    "CVE-2026-27205": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "flask",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "flask.src.flask.app.process_response"
+    },
+    "CVE-2026-42310": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "pillow",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "PIL.src.PIL.PdfParser.read_prev_trailer"
+    }
+  },
+  "scanned_at": "2026-05-22T17:36:01+00:00",
+  "stats": {
+    "duration_ms": 17,
+    "files_failed": 0,
+    "files_parsed_ok": 9,
+    "files_scanned": 9,
+    "total_findings": 12
+  },
+  "summary": {
+    "noise_reduction_percent": 86.7,
+    "reachable_cves": [
+      "CVE-2018-1000656",
+      "CVE-2020-1747",
+      "CVE-2020-26137",
+      "CVE-2020-5313",
+      "CVE-2023-32681",
+      "CVE-2025-66471"
+    ],
+    "unreachable_cves": [
+      "CVE-2018-25091",
+      "CVE-2019-10906",
+      "CVE-2019-11324",
+      "CVE-2019-19911",
+      "CVE-2020-14343",
+      "CVE-2020-25659",
+      "CVE-2020-28493",
+      "CVE-2020-35653",
+      "CVE-2020-35655",
+      "CVE-2021-23437",
+      "CVE-2021-25292",
+      "CVE-2021-27921",
+      "CVE-2021-27922",
+      "CVE-2021-27923",
+      "CVE-2021-28675",
+      "CVE-2021-28677",
+      "CVE-2021-28678",
+      "CVE-2022-22817",
+      "CVE-2022-24303",
+      "CVE-2023-23931",
+      "CVE-2023-30861",
+      "CVE-2023-43804",
+      "CVE-2023-44271",
+      "CVE-2023-45803",
+      "CVE-2023-50447",
+      "CVE-2024-22195",
+      "CVE-2024-34064",
+      "CVE-2024-35195",
+      "CVE-2024-37891",
+      "CVE-2024-47081",
+      "CVE-2024-56326",
+      "CVE-2025-27516",
+      "CVE-2025-50181",
+      "CVE-2025-66418",
+      "CVE-2026-21441",
+      "CVE-2026-25645",
+      "CVE-2026-26007",
+      "CVE-2026-27205",
+      "CVE-2026-42310"
+    ]
+  },
+  "target_dir": "D:\\vulnerable-task-tracker"
+}
