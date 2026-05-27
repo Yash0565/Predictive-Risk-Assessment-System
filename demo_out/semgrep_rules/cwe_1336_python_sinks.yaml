@@ -1,0 +1,9 @@
+rules:
+  - id: symbol-cwe_1336-python
+    languages: [python]
+    message: Patch-aware sink for cwe_1336
+    severity: ERROR
+    pattern-either:
+      - pattern: do_reverse(...)
+      - pattern: filters(...)
+      - pattern: render_template_string(...)

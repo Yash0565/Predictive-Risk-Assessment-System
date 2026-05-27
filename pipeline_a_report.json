@@ -1,0 +1,545 @@
+[
+  {
+    "family": "buffer_overflow",
+    "cwe_ids": [
+      "CWE-120",
+      "CWE-125",
+      "CWE-787"
+    ],
+    "cves": [
+      "CVE-2020-11538",
+      "CVE-2020-5311",
+      "CVE-2020-5312",
+      "CVE-2021-25289",
+      "CVE-2021-34552",
+      "CVE-2020-10177",
+      "CVE-2020-10378",
+      "CVE-2020-10379",
+      "CVE-2020-10994",
+      "CVE-2020-35653",
+      "CVE-2020-35654",
+      "CVE-2020-5313",
+      "CVE-2021-23437",
+      "CVE-2021-25287",
+      "CVE-2021-25288",
+      "CVE-2021-25290",
+      "CVE-2021-25291",
+      "CVE-2021-25293",
+      "CVE-2023-4863",
+      "CVE-2020-35655",
+      "CVE-2022-22816"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\buffer_overflow_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "code_injection",
+    "cwe_ids": [
+      "CWE-94"
+    ],
+    "cves": [
+      "CVE-2023-50447"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\code_injection_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_1333",
+    "cwe_ids": [
+      "CWE-1333"
+    ],
+    "cves": [
+      "CVE-2021-25292"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_1333_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_1336",
+    "cwe_ids": [
+      "CWE-1336"
+    ],
+    "cves": [
+      "CVE-2025-27516"
+    ],
+    "packages": [
+      "Jinja2"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_1336_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_200",
+    "cwe_ids": [
+      "CWE-200"
+    ],
+    "cves": [
+      "CVE-2023-32681",
+      "CVE-2023-43804",
+      "CVE-2026-44431",
+      "CVE-2023-45803"
+    ],
+    "packages": [
+      "requests",
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_200_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_252",
+    "cwe_ids": [
+      "CWE-252"
+    ],
+    "cves": [
+      "CVE-2021-28675"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_252_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_295",
+    "cwe_ids": [
+      "CWE-295"
+    ],
+    "cves": [
+      "CVE-2019-11324"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_295_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_345",
+    "cwe_ids": [
+      "CWE-345"
+    ],
+    "cves": [
+      "CVE-2021-28678",
+      "CVE-2026-26007"
+    ],
+    "packages": [
+      "Pillow",
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_345_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_377",
+    "cwe_ids": [
+      "CWE-377"
+    ],
+    "cves": [
+      "CVE-2026-25645"
+    ],
+    "packages": [
+      "requests"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_377_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_409",
+    "cwe_ids": [
+      "CWE-409"
+    ],
+    "cves": [
+      "CVE-2025-66471",
+      "CVE-2026-21441"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_409_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_601",
+    "cwe_ids": [
+      "CWE-601"
+    ],
+    "cves": [
+      "CVE-2018-25091",
+      "CVE-2025-50181"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_601_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_665",
+    "cwe_ids": [
+      "CWE-665"
+    ],
+    "cves": [
+      "CVE-2022-22815"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_665_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_669",
+    "cwe_ids": [
+      "CWE-669"
+    ],
+    "cves": [
+      "CVE-2024-37891"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_669_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_670",
+    "cwe_ids": [
+      "CWE-670"
+    ],
+    "cves": [
+      "CVE-2024-35195"
+    ],
+    "packages": [
+      "requests"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_670_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_680",
+    "cwe_ids": [
+      "CWE-680"
+    ],
+    "cves": [
+      "CVE-2024-28219"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_680_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_693",
+    "cwe_ids": [
+      "CWE-693"
+    ],
+    "cves": [
+      "CVE-2024-56326"
+    ],
+    "packages": [
+      "Jinja2"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_693_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_754",
+    "cwe_ids": [
+      "CWE-754"
+    ],
+    "cves": [
+      "CVE-2023-23931"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_754_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_835",
+    "cwe_ids": [
+      "CWE-835"
+    ],
+    "cves": [
+      "CVE-2021-28676",
+      "CVE-2026-42310"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_835_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "cwe_93",
+    "cwe_ids": [
+      "CWE-93"
+    ],
+    "cves": [
+      "CVE-2019-11236"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\cwe_93_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "deserialization",
+    "cwe_ids": [
+      "CWE-502"
+    ],
+    "cves": [
+      "CVE-2019-20477"
+    ],
+    "packages": [
+      "PyYAML"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\deserialization_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "information_exposure",
+    "cwe_ids": [
+      "CWE-203"
+    ],
+    "cves": [
+      "CVE-2023-50782"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\information_exposure_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "injection",
+    "cwe_ids": [
+      "CWE-74"
+    ],
+    "cves": [
+      "CVE-2020-26137"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\injection_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "input_validation",
+    "cwe_ids": [
+      "CWE-20"
+    ],
+    "cves": [
+      "CVE-2018-1000656",
+      "CVE-2021-27921",
+      "CVE-2021-27922",
+      "CVE-2021-27923",
+      "CVE-2020-14343",
+      "CVE-2020-1747"
+    ],
+    "packages": [
+      "Flask",
+      "Pillow",
+      "PyYAML"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\input_validation_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "integer_overflow",
+    "cwe_ids": [
+      "CWE-190"
+    ],
+    "cves": [
+      "CVE-2020-5310",
+      "CVE-2019-19911",
+      "CVE-2026-42308"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\integer_overflow_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "null_dereference",
+    "cwe_ids": [
+      "CWE-476"
+    ],
+    "cves": [
+      "CVE-2024-0727"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\null_dereference_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "resource_exhaustion",
+    "cwe_ids": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "cves": [
+      "CVE-2020-28493",
+      "CVE-2019-16865",
+      "CVE-2023-44271",
+      "CVE-2025-66418"
+    ],
+    "packages": [
+      "Jinja2",
+      "Pillow",
+      "urllib3"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\resource_exhaustion_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "session_management",
+    "cwe_ids": [
+      "CWE-539"
+    ],
+    "cves": [
+      "CVE-2023-30861"
+    ],
+    "packages": [
+      "Flask"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\session_management_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "timing_attack",
+    "cwe_ids": [
+      "CWE-385"
+    ],
+    "cves": [
+      "CVE-2020-25659"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\timing_attack_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "type_confusion",
+    "cwe_ids": [
+      "CWE-843"
+    ],
+    "cves": [
+      "CVE-2023-0286"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\type_confusion_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "weak_credentials",
+    "cwe_ids": [
+      "CWE-522"
+    ],
+    "cves": [
+      "CVE-2024-47081"
+    ],
+    "packages": [
+      "requests"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\weak_credentials_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  },
+  {
+    "family": "xss",
+    "cwe_ids": [
+      "CWE-79"
+    ],
+    "cves": [
+      "CVE-2024-22195",
+      "CVE-2024-34064"
+    ],
+    "packages": [
+      "Jinja2"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\demo_out\\semgrep_rules\\xss_python.yaml",
+    "semgrep_matches": [],
+    "ready_for_codeql": false
+  }
+]

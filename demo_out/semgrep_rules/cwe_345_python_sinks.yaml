@@ -1,0 +1,14 @@
+rules:
+  - id: symbol-cwe_345-python
+    languages: [python]
+    message: Patch-aware sink for cwe_345
+    severity: ERROR
+    pattern-either:
+      - pattern: BlpImagePlugin(...)
+      - pattern: CryptographyDeprecationWarning(...)
+      - pattern: Image.open(...)
+      - pattern: _load(...)
+      - pattern: decode(...)
+      - pattern: ec(...)
+      - pattern: get_curve_for_oid(...)
+      - pattern: utils(...)
