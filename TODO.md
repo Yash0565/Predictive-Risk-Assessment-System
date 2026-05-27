@@ -19,23 +19,22 @@ Shared backlog for the Predictive Risk Assessment System. Update this file when 
 
 ## P0 — Do first
 
-### 1. Integrate HTML report v2 into Pipeline A and agent
+### 1. Integrate HTML report new version into Pipeline A and agent
 
 **Status:** Not started  
 **Owner:** _unassigned_
 
-v2 is implemented (`src/html_reporter_v2.py`, `templates/report_v2.html.j2`) and tested, but production still uses v1.
+Production still uses the v1 report; the new version (`src/html_reporter_v2.py`, `templates/report_v2.html.j2`) is implemented and tested but not wired to the pipeline or agent.
 
 **Tasks:**
 
-- [ ] Add `--report-version {v1,v2}` to `pipeline_a.py` (default `v1` until QA, then flip to `v2`)
-- [ ] Switch `tool_registry.generate_report` to support v2
+- [ ] Add `--report-version {new version}` to `pipeline_a.py` (default `v1`)
+- [ ] Switch `tool_registry.generate_report` to support new version
 - [ ] Pass `graph_snapshot.json` into `build_report_data(..., graph=snapshot)` when available
 - [ ] Unify output filename (`risk_report.html`) for agent and pipeline
 - [ ] Update README quick start to mention v2
 - [ ] Run `pytest tests/test_html_reporter_v2.py` in CI
 
-**Files:** `pipeline_a.py`, `src/tool_registry.py`, `src/html_reporter_v2.py`
 
 ---
 
