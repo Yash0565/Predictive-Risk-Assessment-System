@@ -24,7 +24,7 @@ Shared backlog for the Predictive Risk Assessment System. Update this file when 
 **Status:** Not started  
 **Owner:** _unassigned_
 
-Production still uses the v1 report; the new version (`src/html_reporter_v2.py`, `templates/report_v2.html.j2`) is implemented and tested but not wired to the pipeline or agent.
+
 
 **Tasks:**
 
