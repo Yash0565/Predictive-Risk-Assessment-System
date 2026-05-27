@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ metadata.target_repo }} — Pre-Upgrade Risk Report</title>
+{% if not offline %}
+{% for a in cdn_assets %}{% if a.kind == 'css' %}<link rel="stylesheet" href="{{ a.href }}">{% endif %}{% endfor %}
+{% for a in cdn_assets %}{% if a.kind == 'js' %}<script src="{{ a.src }}" defer></script>{% endif %}{% endfor %}
+{% endif %}
+<style>
+:root {
+  --color-primary:#1F4E79; --color-accent:#2E75B6; --color-danger:#C53030;
+  --color-warning:#D69E2E; --color-success:#38A169; --color-surface:#F8FAFC;
+  --color-card:#FFFFFF; --color-text:#1A202C; --color-muted:#718096; --color-border:#E2E8F0;
+  --radius-sm:6px; --radius-md:12px; --radius-lg:16px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05); --shadow-md:0 4px 6px rgba(0,0,0,.07);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.1);
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Consolas',monospace;
+  --text-xs:12px; --text-sm:14px; --text-base:16px; --text-lg:20px;
+  --text-xl:25px; --text-2xl:32px; --text-3xl:40px; --text-hero:96px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-6:24px; --space-8:32px; --space-12:48px; --space-16:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-surface);color:var(--color-text);line-height:1.55;font-size:var(--text-base)}
+a{color:var(--color-accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.site-header{background:var(--color-card);border-bottom:1px solid var(--color-border);padding:var(--space-4) var(--space-6);position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm)}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.header-title h1{font-size:var(--text-lg);font-weight:700;color:var(--color-primary)}
+.header-meta{font-size:var(--text-sm);color:var(--color-muted);margin-top:var(--space-1)}
+.header-actions{display:flex;align-items:center;gap:var(--space-3)}
+.verdict-badge{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);color:#fff;font-weight:700;font-size:var(--text-sm);text-align:center;min-width:120px}
+.verdict-badge .score{font-size:var(--text-xs);font-weight:500;opacity:.95;display:block;margin-top:2px}
+.verdict-BLOCK{background:var(--color-danger)}
+.verdict-REVIEW{background:var(--color-warning);color:var(--color-text)}
+.verdict-PROCEED{background:var(--color-success)}
+.btn-pdf{padding:var(--space-2) var(--space-4);border:1px solid var(--color-border);background:var(--color-card);border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-sm);color:var(--color-text)}
+.btn-pdf:hover{background:var(--color-surface)}
+.tab-bar{background:var(--color-card);border-bottom:1px solid var(--color-border);position:sticky;top:72px;z-index:190}
+.tab-inner{max-width:1280px;margin:0 auto;padding:var(--space-2) var(--space-6);display:flex;gap:var(--space-2);flex-wrap:wrap}
+.tab-btn{border:1px solid transparent;background:transparent;color:var(--color-muted);padding:var(--space-2) var(--space-4);border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-sm);font-weight:500;transition:background .15s,color .15s}
+.tab-btn:hover{background:var(--color-surface);color:var(--color-text)}
+.tab-btn[aria-selected="true"]{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}
+.tab-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.tab-select{display:none;width:100%;padding:var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:var(--text-base);margin:var(--space-2) var(--space-6)}
+main{max-width:1280px;margin:0 auto;padding:var(--space-6) var(--space-6) var(--space-16)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.tab-panel[hidden]{display:none!important}
+/* Overview */
+.hero{text-align:center;padding:var(--space-12) var(--space-6);background:var(--color-card);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);margin-bottom:var(--space-8)}
+.hero-fraction{line-height:1;margin-bottom:var(--space-4)}
+.hero-num{font-size:var(--text-hero);font-weight:800;color:var(--color-primary);letter-spacing:-2px}
+.hero-of{font-size:var(--text-2xl);font-weight:400;color:var(--color-muted);margin-left:var(--space-2)}
+.hero-sub{font-size:var(--text-lg);color:var(--color-muted);margin-top:var(--space-2)}
+.hero-narrative{font-size:var(--text-lg);color:var(--color-text);max-width:640px;margin:var(--space-6) auto 0;line-height:1.6}
+.action-card{background:linear-gradient(135deg,#f0f7ff 0%,#fff 100%);border:1px solid var(--color-border);border-left:4px solid var(--color-primary);border-radius:var(--radius-md);padding:var(--space-6);margin:var(--space-8) 0;box-shadow:var(--shadow-sm)}
+.action-card h2{font-size:var(--text-sm);text-transform:uppercase;letter-spacing:.08em;color:var(--color-primary);margin-bottom:var(--space-4)}
+.action-list{list-style:none}
+.action-list li{display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:1px solid var(--color-border);font-size:var(--text-sm)}
+.action-list li:last-child{border-bottom:none}
+.action-num{font-weight:700;color:var(--color-primary);min-width:24px}
+.action-cmd{flex:1;font-family:var(--font-mono);font-size:var(--text-xs);background:#fff;padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);border:1px solid var(--color-border)}
+.btn-copy{padding:var(--space-1) var(--space-3);border:1px solid var(--color-border);background:#fff;border-radius:var(--radius-sm);cursor:pointer;font-size:var(--text-xs);white-space:nowrap}
+.btn-copy:hover{background:var(--color-surface)}
+.btn-copy.copied{border-color:var(--color-success);color:var(--color-success)}
+.secondary-stats{display:flex;justify-content:center;gap:var(--space-8);flex-wrap:wrap;margin-top:var(--space-8)}
+.stat-secondary{text-align:center;color:var(--color-muted)}
+.stat-secondary .num{font-size:var(--text-xl);font-weight:600;color:var(--color-muted)}
+.stat-secondary .lbl{font-size:var(--text-xs);margin-top:var(--space-1)}
+/* Cards & badges */
+.card{background:var(--color-card);border-radius:var(--radius-md);padding:var(--space-6);box-shadow:var(--shadow-sm);border:1px solid var(--color-border);margin-bottom:var(--space-6)}
+.card h2{font-size:var(--text-lg);color:var(--color-primary);margin-bottom:var(--space-4)}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:var(--text-xs);font-weight:600;color:#fff}
+.badge-BLOCK{background:var(--color-danger)}
+.badge-REVIEW{background:var(--color-warning);color:var(--color-text)}
+.badge-PROCEED{background:var(--color-success)}
+.badge-HARDENED_ONLY,.badge-INTERNAL_CHANGE,.badge-ADDED,.badge-REMOVED{background:#A0AEC0;color:#fff}
+.badge-SIGNATURE_CHANGED,.badge-RENAMED{background:var(--color-danger)}
+.badge-RETURN_CHANGED{background:var(--color-warning);color:var(--color-text)}
+.badge-HIGH{background:var(--color-accent)}
+.badge-MEDIUM{background:var(--color-warning);color:var(--color-text)}
+.badge-LOW{background:#A0AEC0}
+/* Risks tab */
+.toolbar{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center;margin-bottom:var(--space-4);padding:var(--space-4);background:var(--color-card);border-radius:var(--radius-md);border:1px solid var(--color-border)}
+.toolbar label{font-size:var(--text-sm);color:var(--color-muted);display:flex;align-items:center;gap:var(--space-2)}
+.toolbar input[type=search],.toolbar select{padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:var(--text-sm)}
+.risks-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);background:var(--color-card);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm)}
+.risks-table th,.risks-table td{padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-border);text-align:left}
+.risks-table th{background:#EDF2F7;font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+.risks-table th:hover{background:#E2E8F0}
+.risks-table tbody tr.main-row{cursor:pointer;transition:background .1s}
+.risks-table tbody tr.main-row:hover{background:#F7FAFC}
+.risks-table tbody tr.main-row.expanded{background:#EBF4FF}
+.detail-row td{padding:0;background:#F7FAFC}
+.detail-panel{padding:var(--space-6);border-top:2px solid var(--color-accent)}
+.detail-panel h4{font-size:var(--text-sm);color:var(--color-primary);margin:var(--space-4) 0 var(--space-2)}
+.detail-panel h4:first-child{margin-top:0}
+.score-bars{margin:var(--space-3) 0}
+.score-bar-row{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-2) 0;font-size:var(--text-xs)}
+.score-bar-row span:first-child{width:110px;color:var(--color-muted)}
+.bar-track{flex:1;height:8px;background:var(--color-border);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-sev{background:var(--color-danger)}.bar-exp{background:#DD6B20}.bar-reach{background:var(--color-warning)}.bar-blast{background:#805AD5}
+.ref-list{list-style:none;font-size:var(--text-sm)}
+.ref-list li{padding:var(--space-2) 0;border-bottom:1px solid var(--color-border)}
+.link-tab{color:var(--color-accent);cursor:pointer;font-size:var(--text-xs);border:none;background:none;text-decoration:underline}
+.empty-state{text-align:center;padding:var(--space-12);color:var(--color-muted)}
+.hidden{display:none!important}
+.empty-state h3{font-size:var(--text-lg);margin-bottom:var(--space-2);color:var(--color-text)}
+/* Fix plan */
+.step-card{border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-6);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);transition:box-shadow .15s}
+.step-card:hover{box-shadow:var(--shadow-md)}
+.step-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)}
+.step-label{font-size:var(--text-xs);font-weight:700;color:var(--color-primary);text-transform:uppercase;letter-spacing:.06em}
+.step-time{font-size:var(--text-xs);color:var(--color-muted)}
+.step-title{font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-3)}
+.step-reason{font-size:var(--text-sm);color:var(--color-muted);margin-bottom:var(--space-4);line-height:1.6}
+.cmd-block{display:flex;align-items:center;gap:var(--space-2);background:#1A202C;color:#E2E8F0;padding:var(--space-3) var(--space-4);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--text-sm)}
+.step-tests{font-size:var(--text-sm);color:var(--color-muted);margin-top:var(--space-3)}
+.step-tests strong{color:var(--color-text)}
+.collapsible{margin-top:var(--space-6);border:1px solid var(--color-border);border-radius:var(--radius-md);overflow:hidden}
+.collapsible summary{padding:var(--space-4) var(--space-6);cursor:pointer;font-weight:600;background:#EDF2F7;list-style:none;display:flex;justify-content:space-between}
+.collapsible summary::-webkit-details-marker{display:none}
+.collapsible-body{padding:var(--space-6);font-size:var(--text-sm)}
+.conflict-item{padding:var(--space-4);background:#FFF5F5;border-radius:var(--radius-sm);margin-bottom:var(--space-3);border-left:3px solid var(--color-danger)}
+.cascade-chain{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center;font-size:var(--text-sm);margin-top:var(--space-3)}
+.cascade-arrow{color:var(--color-muted)}
+/* Patches */
+.patch-select{width:100%;max-width:480px;padding:var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:var(--text-base);margin-bottom:var(--space-6)}
+.patch-header{margin-bottom:var(--space-4)}
+.patch-header h2{font-size:var(--text-lg);margin-bottom:var(--space-2)}
+.patch-meta{font-size:var(--text-sm);color:var(--color-muted)}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-6)}
+.diff-panel{border:1px solid var(--color-border);border-radius:var(--radius-md);overflow:hidden}
+.diff-panel h3{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em;padding:var(--space-3) var(--space-4);background:#EDF2F7;color:var(--color-muted)}
+.diff-panel.before h3{background:#FFF5F5;color:var(--color-danger)}
+.diff-panel.after h3{background:#F0FFF4;color:var(--color-success)}
+.diff-panel pre{margin:0;padding:var(--space-4);overflow:auto;max-height:320px;font-size:var(--text-xs);font-family:var(--font-mono)}
+.usage-section{background:#FFFAF0;border:1px solid #FEEBC8;border-radius:var(--radius-md);padding:var(--space-6)}
+.usage-section h3{font-size:var(--text-sm);color:var(--color-primary);margin-bottom:var(--space-4)}
+.usage-site{margin-bottom:var(--space-4);padding-bottom:var(--space-4);border-bottom:1px solid #FEEBC8}
+.usage-site:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.usage-loc{font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-2)}
+.usage-code{background:#1A202C;color:#E2E8F0;padding:var(--space-3);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--text-xs);overflow:auto}
+/* Graph */
+.graph-wrap{position:relative;border:1px solid var(--color-border);border-radius:var(--radius-md);background:#fff;min-height:520px}
+#graph-canvas{width:100%;height:520px}
+.graph-controls{position:absolute;top:var(--space-3);right:var(--space-3);display:flex;gap:var(--space-2);z-index:10}
+.graph-controls button,.graph-controls select{padding:var(--space-1) var(--space-3);font-size:var(--text-xs);border:1px solid var(--color-border);border-radius:var(--radius-sm);background:#fff;cursor:pointer}
+.graph-legend{position:absolute;bottom:var(--space-3);left:var(--space-3);background:rgba(255,255,255,.95);padding:var(--space-3) var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--color-border);font-size:var(--text-xs);max-width:360px}
+.legend-row{display:flex;align-items:center;gap:var(--space-2);margin:var(--space-1) 0}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* Audit */
+.formula-block{background:#1A202C;color:#E2E8F0;padding:var(--space-6);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:var(--text-sm);white-space:pre-wrap;line-height:1.7;margin:var(--space-4) 0}
+.audit-table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+.audit-table th,.audit-table td{padding:var(--space-3);border-bottom:1px solid var(--color-border);text-align:left;vertical-align:top}
+.audit-table th{background:#EDF2F7}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-4);font-size:var(--text-sm)}
+.meta-item{padding:var(--space-4);background:var(--color-surface);border-radius:var(--radius-sm);border:1px solid var(--color-border)}
+.meta-item .k{color:var(--color-muted);font-size:var(--text-xs);display:block;margin-bottom:var(--space-1)}
+.site-footer{text-align:center;padding:var(--space-8);color:var(--color-muted);font-size:var(--text-xs)}
+@media(max-width:768px){
+  :root{--text-hero:64px}
+  .tab-inner{display:none}
+  .tab-select{display:block;max-width:1280px;margin:0 auto}
+  .tab-bar{top:56px}
+  .diff-grid{grid-template-columns:1fr}
+  .header-inner{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  .site-header,.tab-bar,.toolbar,.btn-copy,.btn-pdf,.graph-controls,.tab-select{display:none!important}
+  .tab-panel,.tab-panel[hidden]{display:block!important;page-break-after:always}
+  body{background:#fff;color:#000}
+  .hero-num{color:#000}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      <h1>{{ metadata.target_repo }} — Pre-Upgrade Risk Report</h1>
+      <p class="header-meta">Generated {{ metadata.generated_at }} · Scorer v{{ metadata.scorer_version }}</p>
+    </div>
+    <div class="header-actions">
+      <div class="verdict-badge verdict-{{ overall.recommendation|rec_class }}" aria-label="Overall recommendation">
+        {{ overall.recommendation }}
+        <span class="score">{{ overall.raw_risk|fmt_num(0) }}/100</span>
+      </div>
+      <button type="button" class="btn-pdf" onclick="window.print()" aria-label="Print or save as PDF">↓ PDF</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tab-bar" aria-label="Report sections">
+  <div class="tab-inner" role="tablist" id="tablist">
+    <button role="tab" id="tab-overview" class="tab-btn" aria-selected="true" aria-controls="panel-overview" data-tab="overview">Overview</button>
+    <button role="tab" id="tab-risks" class="tab-btn" aria-selected="false" aria-controls="panel-risks" data-tab="risks">Risks</button>
+    <button role="tab" id="tab-fixplan" class="tab-btn" aria-selected="false" aria-controls="panel-fixplan" data-tab="fixplan">Fix Plan</button>
+    <button role="tab" id="tab-patches" class="tab-btn" aria-selected="false" aria-controls="panel-patches" data-tab="patches">Patches</button>
+    <button role="tab" id="tab-graph" class="tab-btn" aria-selected="false" aria-controls="panel-graph" data-tab="graph">Graph</button>
+    <button role="tab" id="tab-audit" class="tab-btn" aria-selected="false" aria-controls="panel-audit" data-tab="audit">Audit</button>
+  </div>
+  <select class="tab-select" id="tab-select-mobile" aria-label="Select report section">
+    <option value="overview">Overview</option>
+    <option value="risks">Risks</option>
+    <option value="fixplan">Fix Plan</option>
+    <option value="patches">Patches</option>
+    <option value="graph">Graph</option>
+    <option value="audit">Audit</option>
+  </select>
+</nav>
+
+<main>
+
+<!-- TAB 1: OVERVIEW -->
+<section id="panel-overview" class="tab-panel active" role="tabpanel" aria-labelledby="tab-overview">
+  <div class="hero">
+    <div class="hero-fraction" aria-label="{{ summary_stats.reachable_cves }} of {{ summary_stats.total_cves }} CVEs reachable">
+      <span class="hero-num">{{ summary_stats.reachable_cves }}</span>
+      <span class="hero-of">of {{ summary_stats.total_cves }}</span>
+    </div>
+    <p class="hero-sub">CVEs actually reachable in your code</p>
+    <p class="hero-narrative">{{ overall.headline or "Review the findings below before upgrading dependencies." }}</p>
+  </div>
+
+  {% if fix_plan.steps %}
+  <div class="action-card">
+    <h2>Recommended Action</h2>
+    <ol class="action-list">
+      {% for step in fix_plan.steps[:3] %}
+      <li>
+        <span class="action-num">{{ step.order }}.</span>
+        <span>Upgrade <strong>{{ step.package }}</strong> → {{ step.to_version }}</span>
+        {% if step.command %}
+        <code class="action-cmd">{{ step.command }}</code>
+        <button type="button" class="btn-copy" data-copy="{{ step.command }}" aria-label="Copy command">Copy</button>
+        {% endif %}
+      </li>
+      {% endfor %}
+      {% if fix_plan.steps|length > 3 %}
+      <li><span class="action-num">…</span><span>See <button type="button" class="link-tab" data-goto="fixplan">Fix Plan</button> for full sequence ({{ fix_plan.steps|length }} steps)</span></li>
+      {% endif %}
+    </ol>
+    {% if fix_plan.total_estimated_minutes %}
+    <p style="margin-top:var(--space-4);font-size:var(--text-sm);color:var(--color-muted)">Estimated effort: {{ (fix_plan.total_estimated_minutes / 60)|round(1) }} hour(s)</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="secondary-stats">
+    <div class="stat-secondary"><div class="num">{{ summary_stats.noise_filtered|fmt_num(0) }}</div><div class="lbl">Noise filtered</div></div>
+    <div class="stat-secondary"><div class="num">{{ summary_stats.build_blockers|fmt_num(0) }}</div><div class="lbl">Build blockers</div></div>
+    <div class="stat-secondary"><div class="num">v{{ metadata.scorer_version }}</div><div class="lbl">Scorer</div></div>
+  </div>
+</section>
+
+<!-- TAB 2: RISKS -->
+<section id="panel-risks" class="tab-panel" role="tabpanel" aria-labelledby="tab-risks" hidden>
+  <div class="toolbar">
+    <label><input type="checkbox" id="filter-reachable" checked> Show only reachable</label>
+    <select id="filter-verdict" aria-label="Filter by verdict">
+      <option value="">All verdicts</option>
+      <option value="BLOCK">BLOCK</option>
+      <option value="REVIEW">REVIEW</option>
+      <option value="PROCEED">PROCEED</option>
+    </select>
+    <input type="search" id="risk-search" placeholder="Search CVE or package…" aria-label="Search CVEs">
+  </div>
+  <div id="risks-empty" class="empty-state hidden">
+    <h3>No CVEs match your filters</h3>
+    <p>Try turning off "Show only reachable" or clearing the search box.</p>
+  </div>
+  <table class="risks-table" id="risks-table" aria-label="CVE evidence table">
+    <thead>
+      <tr>
+        <th data-sort="cve_id">CVE ID</th>
+        <th data-sort="package">Package</th>
+        <th data-sort="cvss">CVSS</th>
+        <th data-sort="epss">EPSS</th>
+        <th>KEV</th>
+        <th data-sort="reachable">Reachable</th>
+        <th data-sort="raw_risk">Score</th>
+        <th data-sort="recommendation">Verdict</th>
+      </tr>
+    </thead>
+    <tbody id="risks-tbody"></tbody>
+  </table>
+</section>
+
+<!-- TAB 3: FIX PLAN -->
+<section id="panel-fixplan" class="tab-panel" role="tabpanel" aria-labelledby="tab-fixplan" hidden>
+  <div class="card">
+    <h2>Recommended fix sequence <span style="font-weight:400;font-size:var(--text-sm);color:var(--color-muted)">(apply in order)</span></h2>
+    {% if fix_plan.steps %}
+    {% for step in fix_plan.steps %}
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-label">Step {{ step.order }} of {{ fix_plan.steps|length }}</span>
+        <span class="step-time">~{{ step.estimated_minutes }} min</span>
+      </div>
+      <div class="step-title">Upgrade {{ step.package }} to {{ step.to_version }}</div>
+      {% if step.reason %}<p class="step-reason"><strong>Why:</strong> {{ step.reason }}</p>{% endif %}
+      {% if step.command %}
+      <div class="cmd-block">
+        <code>{{ step.command }}</code>
+        <button type="button" class="btn-copy" data-copy="{{ step.command }}" aria-label="Copy pip command">📋 Copy</button>
+      </div>
+      {% endif %}
+      {% if step.tests_to_run %}
+      <p class="step-tests"><strong>Test:</strong> {{ step.tests_to_run|join(', ') }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state"><h3>No upgrade steps required</h3><p>Dependency resolution found no ordered fix sequence.</p></div>
+    {% endif %}
+
+    <details class="collapsible">
+      <summary>Conflict details <span>▼</span></summary>
+      <div class="collapsible-body">
+        {% if conflicts %}
+        {% for c in conflicts %}
+        <div class="conflict-item">
+          <strong>{{ c.shared_dependency }}</strong> conflict
+          {% if c.would_break_build %}<span class="badge badge-BLOCK">Would break build</span>{% endif %}
+          <p style="margin-top:var(--space-2)">{{ c.human_explanation }}</p>
+          <ul style="margin-top:var(--space-2);padding-left:var(--space-6)">
+            {% for p in c.conflicting_packages %}
+            <li>{{ p.package }}: {{ p.constraint }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No build blockers detected in dependency simulation.</p>
+        {% endif %}
+        {% if cascade.chain %}
+        <h4 style="margin-top:var(--space-4)">Cascade chain</h4>
+        <p style="color:var(--color-muted);font-size:var(--text-sm)">Trigger: {{ cascade.trigger }}</p>
+        <div class="cascade-chain">
+          {% for link in cascade.chain %}
+          {% if not loop.first %}<span class="cascade-arrow">→</span>{% endif %}
+          <span>{{ link.package }} {{ link.from }} → {{ link.to }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- TAB 4: PATCHES -->
+<section id="panel-patches" class="tab-panel" role="tabpanel" aria-labelledby="tab-patches" hidden>
+  <div class="card">
+    <label for="patch-cve-select" class="sr-only" style="position:absolute;left:-9999px">Select CVE</label>
+    <select id="patch-cve-select" class="patch-select" aria-label="Select CVE to inspect patch">
+      <option value="">— Select a CVE —</option>
+    </select>
+    <div id="patch-content">
+      <div class="empty-state"><h3>Select a CVE</h3><p>Choose a CVE from the dropdown to view patch diff and your code usage.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 5: GRAPH -->
+<section id="panel-graph" class="tab-panel" role="tabpanel" aria-labelledby="tab-graph" hidden>
+  <div class="card">
+    <h2>Reachability graph</h2>
+    <p style="font-size:var(--text-sm);color:var(--color-muted);margin-bottom:var(--space-4)">How your code reaches vulnerable functions. Click a CVE node to highlight paths from entry points.</p>
+    <div id="graph-empty" class="empty-state hidden">
+      <h3>No graph data available</h3>
+      <p>Run the symbol scanner with reachable CVE references to populate the graph.</p>
+    </div>
+    <div class="graph-wrap" id="graph-wrap">
+      <div class="graph-controls">
+        <button type="button" id="graph-reset">Reset view</button>
+        <button type="button" id="graph-show-all">Show all</button>
+        <select id="graph-filter" aria-label="Filter by recommendation">
+          <option value="">All CVEs</option>
+          <option value="BLOCK">BLOCK only</option>
+          <option value="REVIEW">REVIEW only</option>
+        </select>
+      </div>
+      <div id="graph-canvas"></div>
+      <div class="graph-legend" aria-hidden="true">
+        <div class="legend-row"><span class="legend-dot" style="background:#2E75B6"></span> Entry point (route)</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#A0AEC0"></span> Internal function</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#C53030"></span> Vulnerable (BLOCK)</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#D69E2E"></span> Vulnerable (REVIEW)</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#38A169"></span> Vulnerable (PROCEED)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 6: AUDIT -->
+<section id="panel-audit" class="tab-panel" role="tabpanel" aria-labelledby="tab-audit" hidden>
+  <div class="card">
+    <h2>Scorer formula (v{{ metadata.scorer_version }})</h2>
+    <pre class="formula-block">{{ audit.formula }}</pre>
+    <p style="font-size:var(--text-sm);color:var(--color-muted)">Thresholds: BLOCK ≥ {{ audit.thresholds.BLOCK|default(70) }}, REVIEW ≥ {{ audit.thresholds.REVIEW|default(40) }}</p>
+  </div>
+
+  <div class="card">
+    <h2>Per-CVE evidence</h2>
+    <table class="audit-table">
+      <thead><tr><th>CVE</th><th>Score breakdown</th><th>Sources</th><th>Reachability</th><th>Confidence</th></tr></thead>
+      <tbody>
+        {% for c in cves %}
+        <tr>
+          <td><strong>{{ c.cve_id }}</strong><br><span style="color:var(--color-muted);font-size:var(--text-xs)">{{ c.package }}</span></td>
+          <td>
+            Severity {{ c.scores.severity_score|fmt_num(0) }} ·
+            Exploit {{ c.scores.exploit_score|fmt_num(0) }} ·
+            Reach {{ c.scores.reachability_score|fmt_num(0) }} ·
+            Blast {{ c.scores.blast_radius_score|fmt_num(0) }}
+            <br><strong>Raw {{ c.raw_risk|fmt_num(0) }}/100</strong>
+          </td>
+          <td style="font-size:var(--text-xs)">{{ c.evidence_sources|join(', ') if c.evidence_sources else 'Trivy, Scorer' }}</td>
+          <td style="font-size:var(--text-xs)">
+            {% if c.references %}
+            {% for ref in c.references %}
+            {{ ref.file }}:{{ ref.line }}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+            {% else %}Not referenced{% endif %}
+          </td>
+          <td><span class="badge badge-{{ c.confidence }}">{{ c.confidence }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty-state">No CVEs scored.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Metadata &amp; data sources</h2>
+    <div class="meta-grid">
+      <div class="meta-item"><span class="k">Pipeline</span>{{ metadata.pipeline_version }}</div>
+      <div class="meta-item"><span class="k">Reproducibility hash</span><code>{{ metadata.reproducibility_hash }}</code></div>
+      <div class="meta-item"><span class="k">Trivy DB</span>{{ metadata.data_sources.trivy_db_date }}</div>
+      <div class="meta-item"><span class="k">EPSS snapshot</span>{{ metadata.data_sources.epss_snapshot }}</div>
+      <div class="meta-item"><span class="k">KEV snapshot</span>{{ metadata.data_sources.kev_snapshot }}</div>
+      <div class="meta-item"><span class="k">Patches cached</span>{{ metadata.data_sources.patches_cached }}</div>
+      <div class="meta-item"><span class="k">deps.dev cached</span>{{ metadata.data_sources.depsdev_cached }}</div>
+      <div class="meta-item"><span class="k">Assessment at</span>{{ metadata.phase_timestamps.assessment }}</div>
+      <div class="meta-item"><span class="k">Symbol scan at</span>{{ metadata.phase_timestamps.symbol_scan or '—' }}</div>
+      <div class="meta-item"><span class="k">Upgrade sim at</span>{{ metadata.phase_timestamps.upgrade_simulation or '—' }}</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  Pre-Upgrade Risk Detection · Scorer v{{ metadata.scorer_version }} · {{ metadata.pipeline_version }}
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  const CVES = {{ cves_json|safe }};
+  const GRAPH = {{ graph_json|safe }};
+  const TAB_IDS = ['overview','risks','fixplan','patches','graph','audit'];
+
+  /* ── Tabs ── */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  const mobileSelect = document.getElementById('tab-select-mobile');
+
+  function activateTab(id) {
+    tabBtns.forEach(btn => {
+      const on = btn.dataset.tab === id;
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(p => {
+      const on = p.id === 'panel-' + id;
+      p.classList.toggle('active', on);
+      p.hidden = !on;
+    });
+    if (mobileSelect) mobileSelect.value = id;
+    if (id === 'graph' && !graphInitialized) initGraph();
+    if (id === 'patches' && !patchesInitialized) initPatches();
+    if (id === 'risks' && !risksInitialized) renderRisksTable();
+    history.replaceState(null, '', '#' + id);
+  }
+
+  tabBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); tabBtns[(i+1)%tabBtns.length].focus(); tabBtns[(i+1)%tabBtns.length].click(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); tabBtns[(i-1+tabBtns.length)%tabBtns.length].focus(); tabBtns[(i-1+tabBtns.length)%tabBtns.length].click(); }
+    });
+  });
+  if (mobileSelect) mobileSelect.addEventListener('change', () => activateTab(mobileSelect.value));
+  document.querySelectorAll('.link-tab,[data-goto]').forEach(el => {
+    el.addEventListener('click', () => activateTab(el.dataset.goto || 'fixplan'));
+  });
+  const hash = location.hash.replace('#','');
+  if (TAB_IDS.includes(hash)) activateTab(hash);
+
+  /* ── Clipboard ── */
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-copy');
+    if (!btn) return;
+    const text = btn.dataset.copy || '';
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+    }).catch(() => alert('Copy failed — select text manually'));
+  });
+
+  /* ── Risks table ── */
+  let risksInitialized = false;
+  let sortKey = 'raw_risk';
+  let sortAsc = false;
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  function renderRisksTable() {
+    risksInitialized = true;
+    const tbody = document.getElementById('risks-tbody');
+    const onlyReach = document.getElementById('filter-reachable').checked;
+    const verdict = document.getElementById('filter-verdict').value;
+    const q = (document.getElementById('risk-search').value || '').toLowerCase();
+    let rows = CVES.filter(c => {
+      if (onlyReach && !c.is_reachable) return false;
+      if (verdict && c.recommendation !== verdict) return false;
+      if (q && !(c.cve_id+c.package).toLowerCase().includes(q)) return false;
+      return true;
+    });
+    rows.sort((a,b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (sortKey === 'reachable') { va = a.is_reachable?1:0; vb = b.is_reachable?1:0; }
+      if (va < vb) return sortAsc ? -1 : 1;
+      if (va > vb) return sortAsc ? 1 : -1;
+      return 0;
+    });
+    const empty = document.getElementById('risks-empty');
+    const table = document.getElementById('risks-table');
+    if (!rows.length) { empty.classList.remove('hidden'); table.style.display = 'none'; tbody.innerHTML = ''; return; }
+    empty.classList.add('hidden'); table.style.display = '';
+    tbody.innerHTML = rows.map(c => {
+      const refs = (c.references||[]).map(r => {
+        const ep = r.entry_point_info||{};
+        const route = ep.route ? ` (${ep.method||'GET'} ${ep.route})` : '';
+        return `<li><code>${esc(r.file)}:${r.line||'?'}</code> in <em>${esc(r.enclosing_function||'?')}</em>${esc(route)}</li>`;
+      }).join('');
+      const bars = ['severity_score','exploit_score','reachability_score','blast_radius_score'].map((k,i) => {
+        const labels = ['Severity','Exploit','Reachability','Blast radius'];
+        const cls = ['bar-sev','bar-exp','bar-reach','bar-blast'][i];
+        const v = (c.scores||{})[k]||0;
+        const max = [40,20,25,15][i];
+        return `<div class="score-bar-row"><span>${labels[i]}</span><div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.min(100,v/max*100)}%"></div></div><span>${v}</span></div>`;
+      }).join('');
+      const snippet = (c.references&&c.references[0]) ? (c.references[0].source||c.references[0].code_snippet||'') : '';
+      return `<tr class="main-row" data-cve="${esc(c.cve_id)}" tabindex="0" aria-expanded="false">
+        <td><strong>${esc(c.cve_id)}</strong></td>
+        <td>${esc(c.package)}</td>
+        <td>${esc(c.cvss)}</td>
+        <td>${(c.epss*100).toFixed(1)}%</td>
+        <td>${c.in_kev?'<span style="color:var(--color-danger);font-weight:700">YES</span>':'—'}</td>
+        <td>${c.is_reachable?'✓':'—'}</td>
+        <td><strong>${c.raw_risk||0}</strong></td>
+        <td><span class="badge badge-${c.recommendation}">${c.recommendation}</span></td>
+      </tr>
+      <tr class="detail-row hidden" data-detail="${esc(c.cve_id)}"><td colspan="8"><div class="detail-panel">
+        <h4>Locations in your code</h4><ul class="ref-list">${refs||'<li>Not directly referenced</li>'}</ul>
+        ${snippet?`<h4>Code snippet</h4><pre class="usage-code"><code class="language-python">${esc(snippet)}</code></pre>`:''}
+        ${c.explanation?`<h4>Summary</h4><p style="font-size:var(--text-sm)">${esc(c.explanation)}</p>`:''}
+        <h4>Score breakdown</h4><div class="score-bars">${bars}</div>
+        <button type="button" class="link-tab" data-goto="patches" data-cve="${esc(c.cve_id)}">View patch diff →</button>
+      </div></td></tr>`;
+    }).join('');
+  }
+
+  document.getElementById('filter-reachable').addEventListener('change', renderRisksTable);
+  document.getElementById('filter-verdict').addEventListener('change', renderRisksTable);
+  document.getElementById('risk-search').addEventListener('input', renderRisksTable);
+  document.querySelectorAll('#risks-table th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if (sortKey === k) sortAsc = !sortAsc; else { sortKey = k; sortAsc = false; }
+      renderRisksTable();
+    });
+  });
+  document.getElementById('risks-tbody').addEventListener('click', e => {
+    const row = e.target.closest('.main-row');
+    if (!row || e.target.closest('.link-tab')) {
+      const link = e.target.closest('[data-cve]');
+      if (link && link.dataset.cve) { activateTab('patches'); setTimeout(() => selectPatchCve(link.dataset.cve), 50); }
+      return;
+    }
+    const cve = row.dataset.cve;
+    const detail = document.querySelector(`tr.detail-row[data-detail="${cve}"]`);
+    const open = detail.classList.toggle('hidden') === false;
+    row.classList.toggle('expanded', open);
+    row.setAttribute('aria-expanded', open);
+    if (open && window.hljs) detail.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+  });
+
+  /* ── Patches ── */
+  let patchesInitialized = false;
+  const patchSelect = document.getElementById('patch-cve-select');
+  const patchContent = document.getElementById('patch-content');
+
+  function initPatches() {
+    patchesInitialized = true;
+    const withPatch = CVES.filter(c => c.patch && (c.patch.before_code || c.references));
+    withPatch.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.cve_id;
+      opt.textContent = `${c.cve_id} — ${c.vulnerable_symbol || c.package}`;
+      patchSelect.appendChild(opt);
+    });
+    patchSelect.addEventListener('change', () => selectPatchCve(patchSelect.value));
+    if (withPatch.length) { patchSelect.value = withPatch[0].cve_id; selectPatchCve(withPatch[0].cve_id); }
+  }
+
+  function selectPatchCve(cveId) {
+    if (!cveId) return;
+    patchSelect.value = cveId;
+    const c = CVES.find(x => x.cve_id === cveId);
+    if (!c) { patchContent.innerHTML = '<div class="empty-state"><h3>Patch unavailable</h3></div>'; return; }
+    const p = c.patch||{};
+    const cls = (c.change_classification||'INTERNAL_CHANGE').replace(/[^A-Z_]/g,'');
+    const usages = (c.references||[]).map(r => {
+      const ep = r.entry_point_info||{};
+      const ctx = ep.route ? `route ${ep.method||'GET'} ${ep.route}` : esc(r.enclosing_function||'');
+      const code = r.source||r.code_snippet||'';
+      return `<div class="usage-site"><div class="usage-loc">${esc(r.file)}:${r.line||'?'} ${ctx?('('+ctx+')'):''}</div><pre class="usage-code"><code class="language-python">${esc(code)}</code></pre></div>`;
+    }).join('');
+    patchContent.innerHTML = `
+      <div class="patch-header">
+        <h2>${esc(c.cve_id)} — ${esc(c.vulnerable_symbol||c.package)}</h2>
+        <p class="patch-meta">Change type: <span class="badge badge-${cls}">${esc(c.change_classification||'UNKNOWN')}</span>
+        ${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">Commit ${esc(p.commit_sha||'view')}</a>`:''}</p>
+      </div>
+      <div class="diff-grid">
+        <div class="diff-panel before"><h3>Before (vulnerable)</h3><pre><code class="language-python">${esc(p.before_code||'# Patch unavailable')}</code></pre></div>
+        <div class="diff-panel after"><h3>After (patched)</h3><pre><code class="language-python">${esc(p.after_code||'# Patch unavailable')}</code></pre></div>
+      </div>
+      <div class="usage-section"><h3>Your code that calls this function</h3>${usages||'<p>No direct usage found in scanned code.</p>'}</div>`;
+    if (window.hljs) patchContent.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+  }
+  window.selectPatchCve = selectPatchCve;
+
+  /* ── Graph (vis-network, force-directed) ── */
+  let graphInitialized = false;
+  let network = null;
+  let allNodes = null;
+  let allEdges = null;
+
+  function nodeColor(n) {
+    if (n.type === 'entry_point') return { background:'#2E75B6', border:'#1F4E79' };
+    if (n.type === 'vulnerable') {
+      const r = (n.recommendation||'REVIEW').toUpperCase();
+      if (r==='BLOCK') return { background:'#C53030', border:'#9B2C2C' };
+      if (r==='PROCEED') return { background:'#38A169', border:'#276749' };
+      return { background:'#D69E2E', border:'#B7791F' };
+    }
+    return { background:'#A0AEC0', border:'#718096' };
+  }
+
+  function initGraph() {
+    graphInitialized = true;
+    const nodesIn = GRAPH.nodes||[];
+    const edgesIn = GRAPH.edges||[];
+    if (!nodesIn.length) {
+      document.getElementById('graph-empty').classList.remove('hidden');
+      document.getElementById('graph-wrap').style.display = 'none';
+      return;
+    }
+    if (typeof vis === 'undefined') {
+      document.getElementById('graph-empty').classList.remove('hidden');
+      document.getElementById('graph-empty').innerHTML = '<h3>Graph library not loaded</h3><p>Run with offline=True to inline vis-network.</p>';
+      return;
+    }
+    allNodes = new vis.DataSet(nodesIn.map(n => ({
+      id: n.id, label: n.label, title: tooltip(n),
+      color: nodeColor(n), font: { color: '#1A202C', size: 14 },
+      _meta: n
+    })));
+    allEdges = new vis.DataSet(edgesIn.map((e,i) => ({
+      id: 'e'+i, from: e.source, to: e.target,
+      dashes: e.kind === 'vulnerable_in' || e.kind === 'VULNERABLE_IN',
+      color: { color: e.kind==='exposes'||e.kind==='EXPOSES' ? '#2E75B6' : '#CBD5E0' },
+      arrows: 'to', width: e.kind==='calls'||e.kind==='CALLS' ? 1.5 : 2
+    })));
+    const container = document.getElementById('graph-canvas');
+    network = new vis.Network(container, { nodes: allNodes, edges: allEdges }, {
+      physics: { enabled: true, barnesHut: { gravitationalConstant: -8000, springLength: 120 } },
+      interaction: { hover: true, tooltipDelay: 100 },
+      layout: { improvedLayout: true }
+    });
+    network.on('click', params => {
+      if (!params.nodes.length) { resetHighlight(); return; }
+      const nodeId = params.nodes[0];
+      const meta = allNodes.get(nodeId)._meta;
+      if (meta && meta.type === 'vulnerable' && meta.cve) highlightPathsToCve(nodeId);
+      else resetHighlight();
+    });
+    document.getElementById('graph-reset').onclick = () => network.fit();
+    document.getElementById('graph-show-all').onclick = () => resetHighlight();
+    document.getElementById('graph-filter').onchange = function() {
+      const v = this.value;
+      allNodes.forEach(n => {
+        const m = n._meta;
+        if (!v) { allNodes.update({ id: n.id, hidden: false }); return; }
+        const show = m.type !== 'vulnerable' || (m.recommendation||'').toUpperCase() === v;
+        allNodes.update({ id: n.id, hidden: !show });
+      });
+    };
+  }
+
+  function tooltip(n) {
+    const parts = [n.label];
+    if (n.file) parts.push(n.file + (n.line?':'+n.line:''));
+    if (n.cve) parts.push(n.cve);
+    if (n.framework) parts.push(n.framework + ' ' + (n.method||''));
+    return parts.join('\\n');
+  }
+
+  function highlightPathsToCve(targetId) {
+    const preds = {};
+    allEdges.forEach(e => { if (!preds[e.to]) preds[e.to]=[]; preds[e.to].push(e.from); });
+    const keep = new Set([targetId]);
+    const stack = [targetId];
+    while (stack.length) {
+      const id = stack.pop();
+      (preds[id]||[]).forEach(p => { if (!keep.has(p)) { keep.add(p); stack.push(p); } });
+    }
+    allNodes.forEach(n => allNodes.update({ id: n.id, opacity: keep.has(n.id) ? 1 : 0.25 }));
+    allEdges.forEach(e => allEdges.update({ id: e.id, color: { opacity: keep.has(e.from)&&keep.has(e.to) ? 1 : 0.15 } }));
+  }
+
+  function resetHighlight() {
+    if (!allNodes) return;
+    allNodes.forEach(n => allNodes.update({ id: n.id, opacity: 1, hidden: false }));
+    allEdges.forEach(e => allEdges.update({ id: e.id, color: { opacity: 1 } }));
+  }
+
+  /* Pre-render risks if landing on #risks */
+  if (location.hash === '#risks') renderRisksTable();
+})();
+</script>
+</body>
+</html>

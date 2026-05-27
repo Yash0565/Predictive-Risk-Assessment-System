@@ -463,18 +463,53 @@ def render_html(
     return generate_report(data, output_path=out_path, offline=offline)
 
 
-def assemble_and_generate_demo(
+def assemble_sample_report(
     output_path: str,
     *,
     offline: bool = True,
 ) -> str:
-    """Build TaskFlow demo report from repo artifacts."""
-    demo = _REPO_ROOT / "demo_out"
-    assessment = _load_json(demo / "risk_assessment.json") or {"cves": [], "summary": {}}
-    explanations = _load_json(demo / "explanations.json") or {}
-    scan = _load_json(_REPO_ROOT / "examples" / "symbol_scan_output.json")
-    if not scan:
-        scan = _load_json(demo / "symbol_scan.json")
+    """Build sample HTML report from repo test fixtures (no pipeline run required)."""
+    fixtures = _REPO_ROOT / "tests" / "fixtures"
+    scan = _load_json(fixtures / "symbol_scan_output.json")
+    assessment = {
+        "generated_at": "2026-05-19T12:00:00Z",
+        "scorer_version": "1.0.0",
+        "summary": {
+            "overall_recommendation": "REVIEW",
+            "overall_raw_risk": 69,
+            "total_cves_scored": 81,
+            "block_count": 0,
+            "review_count": 47,
+        },
+        "cves": [
+            {
+                "cve_id": "CVE-2018-1000656",
+                "package": "flask",
+                "installed_version": "0.12",
+                "fixed_version": "0.12.3",
+                "cvss_score": 7.5,
+                "recommendation": "REVIEW",
+                "evidence": {"epss": 0.02, "in_kev": False},
+                "scores": {"raw_risk": 63, "severity_score": 20, "exploit_score": 8,
+                           "reachability_score": 25, "blast_radius_score": 10},
+            },
+            {
+                "cve_id": "CVE-2020-1747",
+                "package": "pyyaml",
+                "installed_version": "5.1",
+                "fixed_version": "5.3.1",
+                "cvss_score": 9.8,
+                "recommendation": "REVIEW",
+                "evidence": {"epss": 0.01, "in_kev": False},
+                "scores": {"raw_risk": 64, "severity_score": 25, "exploit_score": 5,
+                           "reachability_score": 25, "blast_radius_score": 9},
+            },
+        ],
+    }
+    explanations = {
+        "per_cve": [],
+        "executive_summary": "Sample report built from tests/fixtures for offline preview.",
+    }
 
     upgrade = None
     try:
@@ -496,7 +531,11 @@ def assemble_and_generate_demo(
         explanations,
         symbol_scan=scan,
         upgrade_simulation=upgrade,
-        target_repo="TaskFlow (vulnerable-task-tracker)",
+        target_repo="vulnerable-task-tracker",
         project_dir=str(_REPO_ROOT / "vulnerable-task-tracker"),
     )
     return generate_report(data, output_path=output_path, offline=offline)
+
+
+# Backward-compatible alias
+assemble_and_generate_demo = assemble_sample_report
