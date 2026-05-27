@@ -37,12 +37,24 @@ def save_report(report, output_dir):
     path = os.path.join(output_dir, "pipeline_a_report.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
-    print(f"\n  [+] Report saved to: {path}")
+    try:
+        from src.pipeline_console import get_console
+        get_console().print(f"  [green]✓[/green] Report saved → [dim]{path}[/dim]")
+    except Exception:
+        print(f"\n  [+] Report saved to: {path}")
     return path
 
 
-def print_summary(report):
+def print_summary(report, *, use_rich: bool = True, hits_only: bool = False):
     """Print a compact console summary table."""
+    if use_rich:
+        try:
+            from src.pipeline_console import print_semgrep_report_table
+            print_semgrep_report_table(report, hits_only=hits_only)
+            return
+        except Exception:
+            pass
+
     print("\n" + "=" * 60)
     print("PHASE 4: Summary Report")
     print("=" * 60)

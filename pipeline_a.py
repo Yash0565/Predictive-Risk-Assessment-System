@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Pipeline A — Pre-Upgrade Risk Detection (fully integrated).
 
-Every phase produces real data from the target project (except ``--demo``,
-which uses frozen Trivy + Semgrep overlay). Patch fetcher, symbol scanner,
-and upgrade simulator are wired before graph scoring and the HTML report.
+Patch fetcher, symbol scanner, and upgrade simulator are wired before
+graph scoring and the HTML report.
 
 PIPELINE PHASES
 ───────────────
@@ -26,13 +25,8 @@ USAGE
   python pipeline_a.py \\
       --project-dir ./vulnerable-task-tracker \\
       --services services.yaml \\
-      --output-dir ./demo_out \\
-      --offline
-
-  python pipeline_a.py --demo \\
-      --project-dir ./vulnerable-task-tracker \\
-      --output-dir ./demo_out \\
-      --offline
+      --output-dir ./output \\
+      --skip-llm --present --offline
 """
 
 from __future__ import annotations
@@ -43,6 +37,7 @@ import json
 import logging
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -70,6 +65,21 @@ from src.graph_queries import get_neo4j_driver, run_all_queries
 from src.html_reporter import render_html
 from src.normalizer import normalize
 from src.patch_fetcher import fetch_patches_batch
+from src.pipeline_console import (
+    configure as configure_console,
+    print_banner,
+    print_families_table,
+    print_final_story,
+    print_graph_stats,
+    print_hero_fraction,
+    print_outputs_table,
+    print_phase,
+    print_reachable_cves,
+    print_risk_summary,
+    print_stat_row,
+    print_stats_table,
+    print_upgrade_table,
+)
 from src.registry_matcher import load_registry_index
 from src.reporter import build_report, print_summary, save_report
 from src.rule_resolver import resolve_rules
@@ -79,10 +89,6 @@ from src.symbol_scanner import save_findings, scan_symbols
 from src.upgrade_simulator import simulate_upgrade
 from src.utils import detect_language
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
 log = logging.getLogger("pipeline_a")
 
 
@@ -91,8 +97,18 @@ def _utc_iso() -> str:
 
 
 def _section(title: str) -> None:
-    bar = "═" * 70
-    print(f"\n{bar}\n   {title}\n{bar}")
+    """Legacy wrapper — parse 'Phase N   Title' into print_phase."""
+    parts = title.split("  ", 1)
+    phase = parts[0].strip() if parts else title
+    subtitle = parts[1].strip() if len(parts) > 1 else ""
+    print_phase(phase, subtitle)
+
+
+def _configure_logging(verbose: bool, quiet: bool) -> None:
+    level = logging.DEBUG if verbose else (logging.WARNING if quiet else logging.INFO)
+    logging.basicConfig(level=level, format="%(message)s", force=True)
+    if quiet:
+        logging.getLogger("src.patch_fetcher").setLevel(logging.WARNING)
 
 
 def _resolve_input(raw: str, project_dir: str) -> str:
@@ -107,18 +123,20 @@ def _ensure_trivy_input(
     input_path: str,
     project_dir: str,
     output_dir: str,
-    *,
-    demo_mode: bool,
 ) -> str:
-    """Return path to enriched Trivy JSON; run live scan when not in demo and missing."""
-    if demo_mode:
-        return input_path
+    """Return path to enriched Trivy JSON; run live scan when missing."""
     if os.path.isfile(input_path):
         return input_path
     from src.tool_registry import run_trivy_on_repo
 
     print(f"   No Trivy JSON at {input_path}; running live scan on {project_dir}…")
     cves, mode = run_trivy_on_repo(project_dir)
+    if not cves and mode.startswith("trivy_unavailable"):
+        raise SystemExit(
+            "Trivy scan failed and no CVE input file was found. "
+            "Install Trivy (https://github.com/aquasecurity/trivy) or pass "
+            "--input path/to/enriched_trivy_output.json"
+        )
     out = os.path.join(output_dir, "enriched_trivy_output.json")
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(cves, fh, indent=2)
@@ -182,54 +200,60 @@ def _merge_symbol_reachability(
 
 
 async def run_pipeline(args: argparse.Namespace) -> None:
+    plain = getattr(args, "plain", False)
+    quiet = getattr(args, "quiet", False)
+    configure_console(plain=plain)
+    _configure_logging(args.verbose, quiet)
+
     project_dir = os.path.abspath(args.project_dir)
     output_dir = os.path.abspath(args.output_dir) if args.output_dir else os.getcwd()
     os.makedirs(output_dir, exist_ok=True)
 
-    demo_mode = args.demo
-    skip_llm = args.skip_llm or demo_mode
+    skip_llm = args.skip_llm
     use_graph = not args.no_graph
     use_neo4j = args.neo4j and use_graph
 
-    if demo_mode:
-        input_path = os.path.join("data", "demo", "enriched_trivy_output.json")
-    else:
-        input_path = _resolve_input(args.input, project_dir)
+    input_path = _resolve_input(args.input, project_dir)
 
-    input_path = _ensure_trivy_input(
-        input_path, project_dir, output_dir, demo_mode=demo_mode,
-    )
+    input_path = _ensure_trivy_input(input_path, project_dir, output_dir)
 
     api_key = args.api_key or os.environ.get("GOOGLE_API_KEY")
     rules_dir = os.path.join(output_dir, "semgrep_rules")
     services_path = args.services or "services.yaml"
 
-    print("\n  Pre-Upgrade Risk Detection — Pipeline A")
-    print(f"  Started at:    {_utc_iso()}")
-    print(f"  Project dir:   {project_dir}")
-    print(f"  Trivy input:   {input_path}")
-    print(f"  Output dir:    {output_dir}")
-    print(f"  Demo mode:     {demo_mode}")
-    print(f"  Graph phases:  {'enabled' if use_graph else 'skipped'}")
-    print(f"  Neo4j:         {'connecting' if use_neo4j else 'in-memory only'}")
-    print(f"  LLM backend:   {args.llm} ({'skipped' if skip_llm else 'enabled'})")
+    started_at = _utc_iso()
+    t0 = time.perf_counter()
+    print_banner(
+        project_dir=project_dir,
+        output_dir=output_dir,
+        started_at=started_at,
+        use_graph=use_graph,
+        use_neo4j=use_neo4j,
+        llm_backend=args.llm,
+        skip_llm=skip_llm,
+        input_path=input_path,
+    )
 
     _section("Phase 1   Ingestion & Normalization")
-    families = normalize(input_path, include_low=args.include_low)
+    families = normalize(input_path, include_low=args.include_low, quiet=True)
     if not families:
         log.warning("No vulnerability families to process. Exiting.")
         return
-    print(f"   → {len(families)} CWE families identified")
-
     with open(input_path, "r", encoding="utf-8") as fh:
         trivy_vulns = json.load(fh)
+    total_vulns = len(trivy_vulns)
+    print_stats_table([
+        ("Total CVEs (Trivy)", total_vulns, "white"),
+        ("CWE families", len(families), "green"),
+    ])
+    print_families_table(families)
 
     cve_to_pkg = _cve_id_to_package(trivy_vulns)
     cve_ids = sorted(cve_to_pkg.keys())
-    print(f"   Trivy CVEs available: {len(cve_ids)}")
 
     _section("Phase 2   Patch Intelligence (preload for sink rules)")
-    print(f"   Loading patches for {len(cve_ids)} CVEs (offline-cached)…")
+    if not quiet:
+        print_stat_row("Loading patches", f"{len(cve_ids)} CVEs (cached)…", style="cyan")
     patches = fetch_patches_batch(
         [{"cve_id": c, "package": cve_to_pkg.get(c)} for c in cve_ids],
         max_workers=4,
@@ -238,42 +262,40 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     with open(patches_path, "w", encoding="utf-8") as fh:
         json.dump(patches, fh, indent=2)
     n_with_symbols = sum(1 for p in patches.values() if p.get("vulnerable_symbols"))
-    print(f"   → {len(patches)} patches loaded, {n_with_symbols} with vulnerable symbols")
+    print_stats_table([
+        ("Patches loaded", len(patches), "green"),
+        ("With vulnerable symbols", n_with_symbols, "yellow"),
+    ])
 
     _section("Phase 3   Triple-Check Rule Resolution")
     language = detect_language(project_dir)
-    print(f"   Detected language: {language}")
     registry_index = load_registry_index()
-    print(f"   Registry loaded:   {len(registry_index)} CWEs indexed")
+    print_stat_row("Language", language, style="white")
+    print_stat_row("Registry CWEs indexed", len(registry_index), style="dim")
     resolved_rules = await resolve_rules(
         families, language, registry_index, api_key,
         rules_dir, max_concurrent=4,
         llm_backend=args.llm, ollama_model=args.ollama_model,
-        skip_llm=skip_llm, demo_mode=demo_mode,
+        skip_llm=skip_llm, quiet=quiet,
     )
-    print(f"   → {len(resolved_rules)} rules resolved")
+    print_stat_row("Rules resolved", len(resolved_rules), style="green")
 
     resolved_rules = enrich_rules_with_patch_sinks(
         families, resolved_rules, patches, cve_to_pkg, rules_dir, language,
+        quiet=quiet,
     )
 
     _section("Phase 4   Parallel Semgrep Execution")
-    scan_results = run_scans(resolved_rules, project_dir, max_workers=4)
-    if demo_mode:
-        overlay_path = os.path.join("data", "demo", "semgrep_matches.json")
-        if os.path.exists(overlay_path):
-            with open(overlay_path, "r", encoding="utf-8") as fh:
-                overlay = json.load(fh)
-            for family, matches in overlay.items():
-                if matches:
-                    scan_results[family] = matches
-            print("   [demo] Applied pre-computed Semgrep overlay")
-    print(f"   → {sum(len(m) for m in scan_results.values())} Semgrep matches")
+    scan_results = run_scans(
+        resolved_rules, project_dir, max_workers=4,
+        quiet=quiet, use_rich=not plain,
+    )
+    semgrep_total = sum(len(m) for m in scan_results.values())
 
     _section("Phase 5   Reporting (Semgrep side)")
     report = build_report(families, resolved_rules, scan_results)
     save_report(report, output_dir)
-    print_summary(report)
+    print_summary(report, use_rich=not plain, hits_only=quiet)
 
     vulnerable_symbols_by_cve = {
         cve: {
@@ -287,7 +309,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     _section("Phase 6   Symbol Reachability Scan")
     symbol_path = os.path.join(output_dir, "symbol_scan.json")
     if not vulnerable_symbols_by_cve:
-        print("   (no vulnerable symbols extracted; skipping)")
+        print_stat_row("Symbol scan", "skipped (no symbols)", style="dim")
         symbol_findings = {
             "scanned_at": _utc_iso(),
             "target_dir": project_dir,
@@ -304,11 +326,17 @@ async def run_pipeline(args: argparse.Namespace) -> None:
         save_findings(symbol_findings, symbol_path)
         stats = symbol_findings.get("stats", {})
         summary = symbol_findings.get("summary", {})
-        print(f"   Files scanned:           {stats.get('files_scanned', 0)}")
-        print(f"   Total findings:          {stats.get('total_findings', 0)}")
-        print(f"   Reachable CVEs:          {len(summary.get('reachable_cves', []))}")
-        print(f"   Unreachable (filtered):  {len(summary.get('unreachable_cves', []))}")
-        print(f"   Noise reduction:         {summary.get('noise_reduction_percent', 0):.1f}%")
+        reachable_n = len(summary.get("reachable_cves", []))
+        unreachable_n = len(summary.get("unreachable_cves", []))
+        noise_pct = summary.get("noise_reduction_percent", 0.0)
+        print_hero_fraction(reachable_n, total_vulns, noise_pct=noise_pct)
+        print_stats_table([
+            ("Files scanned", stats.get("files_scanned", 0), "white"),
+            ("Code references found", stats.get("total_findings", 0), "yellow"),
+            ("Reachable CVEs", reachable_n, "green"),
+            ("Filtered (noise)", unreachable_n, "dim"),
+            ("Noise reduction", f"{noise_pct:.1f}%", "green"),
+        ])
 
     reachable_cves = set(symbol_findings.get("summary", {}).get("reachable_cves", []))
 
@@ -316,7 +344,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     upgrade_sim: Optional[dict[str, Any]] = None
     upgrade_sim_path: Optional[str] = None
     if not reachable_cves:
-        print("   (no reachable CVEs; nothing to upgrade)")
+        print_stat_row("Upgrade sim", "skipped (no reachable CVEs)", style="dim")
     else:
         try:
             from src.project_deps import DependencyDiscoveryError, discover_dependency_pins
@@ -327,14 +355,11 @@ async def run_pipeline(args: argparse.Namespace) -> None:
                 print(f"   ({exc}; skipping)")
                 current_reqs = None
             if current_reqs:
-                print(f"   Parsed {len(current_reqs)} pinned packages from {dep_label}")
+                print_stat_row("Pinned packages", f"{len(current_reqs)} from {dep_label}", style="white")
                 targets = _pick_upgrade_targets(trivy_vulns, reachable_cves)
                 if not targets:
-                    print("   (no fixed_versions available for reachable CVEs)")
+                    print_stat_row("Upgrade sim", "no fixed versions for reachable CVEs", style="yellow")
                 else:
-                    print(f"   Simulating {len(targets)} upgrade(s):")
-                    for t in targets:
-                        print(f"     - {t['package']} → {t['target_version']}")
                     upgrade_sim = simulate_upgrade(
                         current_requirements=current_reqs,
                         target_upgrades=targets,
@@ -343,13 +368,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
                     upgrade_sim_path = os.path.join(output_dir, "upgrade_simulation.json")
                     with open(upgrade_sim_path, "w", encoding="utf-8") as fh:
                         json.dump(upgrade_sim, fh, indent=2)
-                    up_summary = upgrade_sim.get("summary", {})
-                    print(f"   → Verdict: {up_summary.get('verdict', '?')}")
-                    print(f"   → Conflicts detected: {len(upgrade_sim.get('conflicts', []))}")
-                    print(
-                        f"   → Cascade length: "
-                        f"{len(upgrade_sim.get('cascade', {}).get('chain', []))}"
-                    )
+                    print_upgrade_table(upgrade_sim)
         except Exception as exc:
             log.exception("Upgrade simulation failed: %s", exc)
             print(f"   (failed: {exc})")
@@ -376,15 +395,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
             snapshot_path=snapshot_path,
         )
         graph_meta["neo4j_connected"] = graph_summary.get("neo4j_connected", False)
-        print(f"   Packages:  {graph_summary['packages']}")
-        print(f"   CVEs:      {graph_summary['cves']}")
-        print(f"   Functions: {graph_summary['functions']}")
-        print(f"   Services:  {graph_summary['services']}")
-        print(f"   Edges:     {graph_summary['edges']}")
-        print(
-            f"   Neo4j:     "
-            f"{'connected' if graph_meta['neo4j_connected'] else 'in-memory only'}"
-        )
+        print_graph_stats(graph_summary, neo4j=graph_meta["neo4j_connected"])
 
         _section("Phase 9   Graph Queries (reachability, blast radius)")
         if use_neo4j:
@@ -393,33 +404,35 @@ async def run_pipeline(args: argparse.Namespace) -> None:
             driver = get_neo4j_driver()
         svc_names = [s["name"] for s in snapshot.get("nodes", {}).get("services", [])]
         graph_evidence = run_all_queries(driver, snapshot, cve_ids, svc_names)
-        print(f"   Reachability rows:  {len(graph_evidence['reachability'])}")
-        print(f"   Dependency chains:  {len(graph_evidence['dependency_chains'])}")
-        print(f"   Blast-radius keys:  {len(graph_evidence['blast_radius'])}")
+        print_stats_table([
+            ("Reachability paths", len(graph_evidence["reachability"]), "green"),
+            ("Dependency chains", len(graph_evidence["dependency_chains"]), "white"),
+            ("Blast-radius keys", len(graph_evidence["blast_radius"]), "yellow"),
+        ])
     else:
-        print("\n   (Graph phases 8–9 skipped: --no-graph)")
+        print_stat_row("Graph", "phases 8–9 skipped (--no-graph)", style="dim")
 
     _merge_symbol_reachability(graph_evidence, symbol_findings, reachable_cves)
 
     _section("Phase 10  Risk Scoring (deterministic v1.0.0)")
     assessment = score_cves(trivy_vulns, graph_evidence)
     save_assessment(assessment, output_dir)
-    summary = assessment["summary"]
-    print(f"   Overall recommendation: {summary['overall_recommendation']}")
-    print(f"   Overall risk score:     {summary['overall_raw_risk']}/100")
-    print(f"   CVEs analyzed:          {len(assessment.get('cves', []))}")
+    print_risk_summary(assessment)
 
     _section("Phase 11  Template Explanations")
     explanations = explain_risk(assessment)
     save_explanations(explanations, output_dir)
-    print(f"   Generated {len(explanations.get('per_cve', []))} per-CVE summaries")
+    print_stat_row("CVE summaries", len(explanations.get("per_cve", [])), style="green")
+
+    # Show reachable CVE table now that we have verdicts
+    print_reachable_cves(symbol_findings, assessment)
 
     _section("Phase 12  Tabbed HTML Report")
     symbol_scan_path = args.symbol_scan or (
         symbol_path if os.path.exists(symbol_path) else None
     )
     upgrade_path = args.upgrade_sim or upgrade_sim_path
-    render_html(
+    report_path = render_html(
         assessment,
         explanations,
         graph_meta,
@@ -434,22 +447,22 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     if driver:
         driver.close()
 
+    summary = assessment["summary"]
+    sym_summary = symbol_findings.get("summary") or {}
+    reachable_n = len(sym_summary.get("reachable_cves") or [])
+    elapsed = time.perf_counter() - t0
+    print_final_story(
+        total_cves=total_vulns,
+        reachable=reachable_n,
+        noise_pct=float(sym_summary.get("noise_reduction_percent") or 0),
+        recommendation=summary.get("overall_recommendation", "PROCEED"),
+        risk_score=int(summary.get("overall_raw_risk") or 0),
+        semgrep_hits=semgrep_total,
+        elapsed_sec=elapsed,
+    )
+
     _section("Pipeline Complete")
-    print(f"   Outputs in {output_dir}:")
-    for name in (
-        "pipeline_a_report.json",
-        "patches.json",
-        "symbol_scan.json",
-        "upgrade_simulation.json",
-        "graph_snapshot.json",
-        "risk_assessment.json",
-        "explanations.json",
-        "risk_report.html",
-    ):
-        p = os.path.join(output_dir, name)
-        marker = "✓" if os.path.exists(p) else "·"
-        print(f"     [{marker}] {name}")
-    print(f"\n   Open the HTML report:\n     {os.path.join(output_dir, 'risk_report.html')}\n")
+    print_outputs_table(output_dir, report_path)
 
 
 def main() -> None:
@@ -459,7 +472,7 @@ def main() -> None:
         epilog=__doc__,
     )
     p.add_argument("--input", default="enriched_trivy_output.json",
-                   help="Trivy enriched JSON (ignored when --demo; live scan if missing)")
+                   help="Trivy enriched JSON (live Trivy scan if missing)")
     p.add_argument("--project-dir", default=".", help="Target project to analyze")
     p.add_argument("--output-dir", default=None, help="Artifact output directory (default: cwd)")
     p.add_argument("--services", default="services.yaml", help="Service entry-points YAML")
@@ -467,9 +480,7 @@ def main() -> None:
     p.add_argument("--llm", default="ollama", choices=["gemini", "ollama"])
     p.add_argument("--ollama-model", default="qwen2.5:3b")
     p.add_argument("--include-low", action="store_true", help="Include LOW severity CVEs")
-    p.add_argument("--skip-llm", action="store_true", help="Skip LLM rule generation (Phase 2)")
-    p.add_argument("--demo", action="store_true",
-                   help="Demo mode: frozen Trivy input, skip LLM, overlay Semgrep matches")
+    p.add_argument("--skip-llm", action="store_true", help="Skip LLM rule generation (Phase 3)")
     p.add_argument("--no-graph", action="store_true", help="Skip graph phases 8–9")
     p.add_argument("--neo4j", action="store_true",
                    help="Connect to Neo4j at bolt://localhost:7687")
@@ -478,7 +489,17 @@ def main() -> None:
     p.add_argument("--symbol-scan", default=None, help="Override symbol_scan.json for HTML report")
     p.add_argument("--upgrade-sim", default=None, help="Override upgrade_simulation.json for HTML")
     p.add_argument("--verbose", action="store_true")
+    p.add_argument("--quiet", action="store_true",
+                   help="Compact tables; suppress patch-fetcher logs and per-family chatter")
+    p.add_argument("--present", action="store_true",
+                   help="Presentation mode: same as --quiet --no-graph (colored tables, no graph phases)")
+    p.add_argument("--plain", action="store_true",
+                   help="Disable colors (plain terminal output)")
     args = p.parse_args()
+
+    if args.present:
+        args.quiet = True
+        args.no_graph = True
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)

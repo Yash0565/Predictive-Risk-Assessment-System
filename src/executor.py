@@ -18,20 +18,26 @@ from src.semgrep_tools import (
 from src.utils import tool_subprocess_env
 
 
-def run_scans(resolved_rules, project_dir, max_workers=4):
+def run_scans(
+    resolved_rules,
+    project_dir,
+    max_workers=4,
+    *,
+    quiet: bool = False,
+    use_rich: bool = True,
+):
     """Run Semgrep for all families in parallel.
 
     Returns { family_name: [match_dict, ...] }.
     """
     ok, detail, semgrep_exe = check_semgrep_available()
     if not ok:
-        print(f"  ERROR: {detail}")
+        if use_rich and not quiet:
+            from src.pipeline_console import get_console
+            get_console().print(f"[bold red]ERROR:[/bold red] {detail}")
+        else:
+            print(f"  ERROR: {detail}")
         return {}
-
-    print("\n" + "=" * 60)
-    print("PHASE 3: Parallel Semgrep Execution")
-    print("=" * 60)
-    print(f"  Semgrep: {detail}")
 
     scannable = {}
     skipped = 0
@@ -42,41 +48,75 @@ def run_scans(resolved_rules, project_dir, max_workers=4):
             continue
         valid, err = validate_rule_file(rule_path, semgrep_exe=semgrep_exe)
         if not valid:
-            print(f"  [!] Skipping {family}: invalid rule — {err}")
+            if not quiet:
+                if use_rich:
+                    from src.pipeline_console import get_console
+                    get_console().print(f"  [yellow]skip[/yellow] {family}: {err[:80]}")
+                else:
+                    print(f"  [!] Skipping {family}: invalid rule — {err}")
             skipped += 1
             continue
         scannable[family] = info
 
-    if skipped:
-        print(f"  {skipped} famil{'y' if skipped == 1 else 'ies'} skipped (missing/invalid rules)")
-
     if not scannable:
-        print("  No valid Semgrep rules to scan.")
+        if use_rich:
+            from src.pipeline_console import get_console
+            get_console().print("  [yellow]No valid Semgrep rules to scan.[/yellow]")
+        else:
+            print("  No valid Semgrep rules to scan.")
         return {}
 
-    print(f"  Scanning {len(scannable)} families across {max_workers} threads...")
     results = {}
+    if not quiet:
+        if use_rich:
+            from src.pipeline_console import get_console
+            get_console().print(
+                f"  Scanning [bold]{len(scannable)}[/bold] families "
+                f"({max_workers} threads)…"
+            )
+        else:
+            print(f"  Scanning {len(scannable)} families across {max_workers} threads...")
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        future_map = {}
-        for family, info in scannable.items():
-            print(f"  [>] Queued: {family} ({os.path.basename(info.get('rule_path', '?'))})")
-            future_map[pool.submit(_scan_one, semgrep_exe, family, info, project_dir)] = family
-
+        future_map = {
+            pool.submit(_scan_one, semgrep_exe, family, info, project_dir): family
+            for family, info in scannable.items()
+        }
         for future in as_completed(future_map):
             family = future_map[future]
             try:
                 matches, warning = future.result()
                 results[family] = matches
-                if warning:
-                    print(f"  ✗ {family}: {warning}")
-                elif matches:
-                    print(f"  ✓ {family}: {len(matches)} match(es)")
-                else:
-                    print(f"  ○ {family}: no matches")
+                if warning and not quiet:
+                    if use_rich:
+                        from src.pipeline_console import get_console
+                        get_console().print(f"  [red]✗[/red] {family}: {warning[:120]}")
+                    else:
+                        print(f"  ✗ {family}: {warning}")
             except Exception as e:
-                print(f"  ✗ {family}: error — {e}")
                 results[family] = []
+                if not quiet:
+                    msg = f"  ✗ {family}: error — {e}"
+                    if use_rich:
+                        from src.pipeline_console import get_console
+                        get_console().print(f"[red]{msg}[/red]")
+                    else:
+                        print(msg)
+
+    if use_rich:
+        from src.pipeline_console import print_semgrep_scan_results
+        print_semgrep_scan_results(
+            results,
+            semgrep_version=detail.splitlines()[0] if detail else "?",
+            skipped=skipped,
+            scanned=len(scannable),
+            quiet=quiet,
+        )
+    elif not quiet:
+        for family, matches in sorted(results.items()):
+            if matches:
+                print(f"  ✓ {family}: {len(matches)} match(es)")
+        print(f"  → {sum(len(m) for m in results.values())} Semgrep matches")
 
     return results
 

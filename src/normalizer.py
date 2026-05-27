@@ -25,7 +25,7 @@ class FamilyCluster:
 
 # ── Public API ──────────────────────────────────────────────────────
 
-def normalize(input_path, include_low=False):
+def normalize(input_path, include_low=False, quiet=False):
     """Main entry point for Phase 1.
 
     Returns { family_name: FamilyCluster }.
@@ -33,7 +33,8 @@ def normalize(input_path, include_low=False):
     vulns = _load(input_path)
     filtered = _filter(vulns, include_low)
     families = _cluster(filtered)
-    _print_stats(len(vulns), len(filtered), families)
+    if not quiet:
+        _print_stats(len(vulns), len(filtered), families)
     return families
 
 

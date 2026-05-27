@@ -86,7 +86,11 @@ def save_explanations(explanations, output_dir):
     path = os.path.join(output_dir, "explanations.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(explanations, f, indent=2)
-    print(f"  [+] Explanations saved to: {path}")
+    try:
+        from src.pipeline_console import print_artifact_saved
+        print_artifact_saved("Explanations saved", path)
+    except Exception:
+        print(f"  [+] Explanations saved to: {path}")
     return path
 
 

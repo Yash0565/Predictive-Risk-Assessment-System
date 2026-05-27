@@ -123,7 +123,11 @@ def save_assessment(assessment, output_dir):
     path = os.path.join(output_dir, "risk_assessment.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(assessment, f, indent=2)
-    print(f"  [+] Risk assessment saved to: {path}")
+    try:
+        from src.pipeline_console import print_artifact_saved
+        print_artifact_saved("Risk assessment saved", path)
+    except Exception:
+        print(f"  [+] Risk assessment saved to: {path}")
     return path
 
 
