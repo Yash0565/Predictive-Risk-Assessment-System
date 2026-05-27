@@ -316,7 +316,7 @@ data/                   Offline caches (patches, deps.dev, osv, epss)
 
 ---
 
-## Recommended reading order for new teammates
+## Recommended reading order
 
 1. [README.md](README.md) — install and run Pipeline A on `vulnerable-task-tracker`
 2. This file — understand both pipelines and gaps
