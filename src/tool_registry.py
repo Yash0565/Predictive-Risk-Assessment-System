@@ -22,7 +22,6 @@ from src.upgrade_simulator import simulate_upgrade
 logger = logging.getLogger(__name__)
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-_DEMO_TRIVY = _REPO_ROOT / "data" / "demo" / "enriched_trivy_output.json"
 _CVE_RE = re.compile(r"CVE-\d{4}-\d+", re.IGNORECASE)
 
 ALLOWED_TOOLS = frozenset({
@@ -150,8 +149,8 @@ def _enrich_trivy_vuln(vuln: dict[str, Any]) -> dict[str, Any]:
 def run_trivy_on_repo(repo_path: str) -> tuple[list[dict[str, Any]], str]:
     """Run Trivy filesystem scan. Returns (enriched_cves, mode_label).
 
-    mode_label is ``trivy`` for a live scan, or ``demo_fallback:...`` when using
-    bundled demo CVE JSON (see README).
+    mode_label is ``trivy`` for a live scan, or ``trivy_unavailable`` /
+    ``trivy_empty`` when the scan cannot produce CVE rows.
     """
     repo = Path(repo_path).resolve()
     try:
@@ -164,9 +163,8 @@ def run_trivy_on_repo(repo_path: str) -> tuple[list[dict[str, Any]], str]:
         )
         output = json.loads(result.stdout)
     except (subprocess.CalledProcessError, FileNotFoundError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
-        logger.warning("Trivy scan failed (%s); using demo CVE cache (install Trivy for real scans)", exc)
-        rows, note = _fallback_trivy(repo)
-        return rows, f"demo_fallback:{note}"
+        logger.warning("Trivy scan failed (%s); install Trivy for live CVE discovery", exc)
+        return [], "trivy_unavailable"
 
     enriched: list[dict[str, Any]] = []
     for target in output.get("Results", []):
@@ -176,23 +174,7 @@ def run_trivy_on_repo(repo_path: str) -> tuple[list[dict[str, Any]], str]:
                 enriched.append(row)
     if enriched:
         return enriched, "trivy"
-    rows, note = _fallback_trivy(repo)
-    return rows, f"demo_fallback_empty_scan:{note}"
-
-
-def _fallback_trivy(repo: Path) -> tuple[list[dict[str, Any]], str]:
-    """Use cached demo Trivy output when live scan is unavailable or empty."""
-    if not _DEMO_TRIVY.is_file():
-        return [], "no_demo_json"
-    with _DEMO_TRIVY.open(encoding="utf-8") as fh:
-        demo = json.load(fh)
-    try:
-        deps, src = discover_dependency_pins(repo)
-        pkg_set = {k.lower() for k in deps}
-        filtered = [v for v in demo if (v.get("package") or "").lower() in pkg_set]
-        return (filtered or demo, f"filtered_by_{src}")
-    except DependencyDiscoveryError:
-        return demo, "unfiltered_no_dependency_file"
+    return [], "trivy_empty"
 
 
 def _symbol_scan_to_graph_evidence(symbol_findings: dict[str, Any]) -> dict[str, Any]:

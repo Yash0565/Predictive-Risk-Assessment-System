@@ -16,7 +16,6 @@ from src.html_reporter import (
 )
 
 _REPO = Path(__file__).resolve().parent.parent
-_DEMO = _REPO / "demo_out"
 _VENDOR = _REPO / "static" / "vendor"
 
 
@@ -104,15 +103,13 @@ def test_generate_report_offline_inlines_vendor(minimal_assessment: dict, tmp_pa
     assert out.stat().st_size < 2_000_000
 
 
-def test_assemble_demo_from_repo(tmp_path: Path) -> None:
-    if not (_DEMO / "risk_assessment.json").is_file():
-        pytest.skip("demo_out not present")
-    from src.html_reporter import assemble_and_generate_demo
+def test_assemble_sample_report(tmp_path: Path) -> None:
+    from src.html_reporter import assemble_sample_report
 
     out = tmp_path / "sample_report.html"
-    path = assemble_and_generate_demo(str(out), offline=True)
+    path = assemble_sample_report(str(out), offline=True)
     html = Path(path).read_text(encoding="utf-8")
-    assert "TaskFlow" in html or "vulnerable" in html.lower()
+    assert "vulnerable" in html.lower()
     assert html.count('data-tab=') >= 5
 
 
@@ -124,10 +121,10 @@ def test_escape_script_for_html_breaks_premature_close() -> None:
 
 def test_offline_report_has_no_raw_script_closer_in_highlight(tmp_path: Path) -> None:
     """Regenerated offline HTML must not embed literal </script> inside vendor JS."""
-    from src.html_reporter import assemble_and_generate_demo
+    from src.html_reporter import assemble_sample_report
 
     out = tmp_path / "report.html"
-    assemble_and_generate_demo(str(out), offline=True)
+    assemble_sample_report(str(out), offline=True)
     html = out.read_text(encoding="utf-8")
     # highlight grammar references script tags; must be escaped when inlined
     assert "end:/<\\/script>/" in html or "end:/<\\/script>" in html

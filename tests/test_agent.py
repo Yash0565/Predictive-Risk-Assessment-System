@@ -107,7 +107,7 @@ def test_llm_placeholder_repo_path_still_scans_target(
     tmp_path: Path,
 ) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     repo = str(TASKFLOW.resolve())
     mock_llm.side_effect = [
         _valid_step("list_dependencies", {"repo_path": "path/to/project"}, "deps"),
@@ -157,7 +157,7 @@ def test_detect_loop() -> None:
 
 def test_list_dependencies_tool(agent_state: dict) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     _, summary = execute_tool(
         "list_dependencies",
         {"repo_path": str(TASKFLOW)},
@@ -169,7 +169,7 @@ def test_list_dependencies_tool(agent_state: dict) -> None:
 
 def test_scripted_fallback_produces_report(tmp_path: Path) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     result = scripted_fallback(str(TASKFLOW), verbose=False, output_dir=str(tmp_path))
     assert result["agent_metadata"]["fallback_used"] is True
     assert result["status"] == "completed_with_fallback"
@@ -182,7 +182,7 @@ def test_scripted_fallback_produces_report(tmp_path: Path) -> None:
 @mock.patch("src.agent.call_llm")
 def test_mock_llm_complete_loop(mock_llm: mock.MagicMock, tmp_path: Path) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     repo = str(TASKFLOW.resolve())
     sequence = [
         _valid_step("list_dependencies", {"repo_path": repo}, "Need deps"),
@@ -225,7 +225,7 @@ def test_mock_llm_complete_loop(mock_llm: mock.MagicMock, tmp_path: Path) -> Non
 )
 def test_ollama_500_falls_back_immediately(mock_llm: mock.MagicMock, tmp_path: Path) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     result = run_agent(
         str(TASKFLOW),
         verbose=False,
@@ -239,7 +239,7 @@ def test_ollama_500_falls_back_immediately(mock_llm: mock.MagicMock, tmp_path: P
 @mock.patch("src.agent.call_llm", side_effect=LLMResponseError("down"))
 def test_llm_unreachable_falls_back(mock_llm: mock.MagicMock, tmp_path: Path) -> None:
     if not TASKFLOW.is_dir():
-        pytest.skip("TaskFlow demo not present")
+        pytest.skip("vulnerable-task-tracker sample app not present")
     result = run_agent(
         str(TASKFLOW),
         verbose=False,

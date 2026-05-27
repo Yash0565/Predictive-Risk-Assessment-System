@@ -1,38 +1,25 @@
-# Manual service entry points for graph reachability analysis.
-# Use file: test.py when running with --project-dir ./test
+# Service entry points for graph reachability (vulnerable-task-tracker sample app).
 services:
-  - name: login
-    route: /login
-    method: GET
-    file: test.py
+  - name: auth_login
+    route: /auth/login
+    method: POST
+    file: auth.py
     handler: login
 
-  - name: search
-    route: /search
+  - name: admin_config
+    route: /admin/config
     method: GET
-    file: test.py
-    handler: search
+    file: config_loader.py
+    handler: load_config
 
-  - name: read_file
-    route: /read
-    method: GET
-    file: test.py
-    handler: read_file
-
-  - name: ping
-    route: /ping
-    method: GET
-    file: test.py
-    handler: ping
-
-  - name: deserialize
-    route: /deserialize
+  - name: task_upload
+    route: /tasks/<id>/upload
     method: POST
-    file: test.py
-    handler: deserialize
+    file: uploads.py
+    handler: upload_task_file
 
-  - name: token
-    route: /token
-    method: GET
-    file: test.py
-    handler: token
+  - name: api_data
+    route: /api/data
+    method: POST
+    file: app.py
+    handler: api_data

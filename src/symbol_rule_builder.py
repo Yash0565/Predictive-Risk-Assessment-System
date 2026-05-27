@@ -160,12 +160,14 @@ def enrich_rules_with_patch_sinks(
     cve_to_pkg: dict[str, str],
     rules_dir: str,
     language: str,
+    quiet: bool = False,
 ) -> dict[str, dict[str, Any]]:
     """Replace or add symbol-based rules where patch/package sinks are known."""
     enriched = dict(resolved_rules)
     symbol_n = 0
 
-    print("\n  [*] Enriching rules with patch-aware application sinks...")
+    if not quiet:
+        print("\n  [*] Enriching rules with patch-aware application sinks...")
     for name, cluster in families.items():
         patterns = collect_sink_patterns(cluster, patches, cve_to_pkg)
         if not patterns:
@@ -173,7 +175,8 @@ def enrich_rules_with_patch_sinks(
 
         path = write_symbol_rule(name, language, patterns, rules_dir)
         if not path:
-            print(f"  [S] SYMBOL skip → {name} (could not validate sink rule)")
+            if not quiet:
+                print(f"  [S] SYMBOL skip → {name} (could not validate sink rule)")
             continue
 
         enriched[name] = {
@@ -183,9 +186,13 @@ def enrich_rules_with_patch_sinks(
             "sink_patterns": patterns,
         }
         symbol_n += 1
-        print(f"  [S] SYMBOL hit  → {name} ({len(patterns)} pattern(s))")
+        if not quiet:
+            print(f"  [S] SYMBOL hit  → {name} ({len(patterns)} pattern(s))")
 
-    if symbol_n:
+    if quiet:
+        from src.pipeline_console import print_symbol_enrichment
+        print_symbol_enrichment(symbol_n)
+    elif symbol_n:
         print(f"  → {symbol_n} families using patch-aware sink rules")
     else:
         print("  → No patch-aware sink rules generated")

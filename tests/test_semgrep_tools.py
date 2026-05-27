@@ -72,16 +72,13 @@ def test_validate_rule_yaml_good_and_bad() -> None:
     assert not ok
 
 
-def test_validate_rule_file_demo_rule(tmp_path: Path) -> None:
+def test_validate_rule_file_fixture_rule() -> None:
     ok, _, semgrep_exe = check_semgrep_available()
     if not semgrep_exe:
         pytest.skip("semgrep not installed")
 
-    demo_rule = Path("demo_rules/deserialization_python.yaml")
-    if not demo_rule.exists():
-        pytest.skip("demo_rules/deserialization_python.yaml missing")
-
-    ok, err = validate_rule_file(str(demo_rule), semgrep_exe=semgrep_exe)
+    rule = Path("tests/fixtures/semgrep/valid_rule.yaml")
+    ok, err = validate_rule_file(str(rule), semgrep_exe=semgrep_exe)
     assert ok, err
 
 

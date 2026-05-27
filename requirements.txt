@@ -1,5 +1,2 @@
-# Full developer install (core + vulnerable demo stack).
-# Agent-only / arbitrary-repo scans:  pip install -r requirements-core.txt
-#
+# Core dependencies for pipeline, agent, scanners, and HTML reports.
 -r requirements-core.txt
--r requirements-demo.txt

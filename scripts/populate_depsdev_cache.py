@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Populate data/depsdev/PyPI cache for offline TaskFlow upgrade demos."""
+"""Populate data/depsdev/PyPI cache for offline upgrade simulation."""
 
 from __future__ import annotations
 

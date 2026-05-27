@@ -27,8 +27,8 @@ DEMO_CVES = [
 
 
 @pytest.mark.parametrize("cve_id,package", DEMO_CVES)
-def test_demo_cve_status_ok_or_partial(cve_id: str, package: str) -> None:
-    """Each demo CVE must resolve to ok or partial (never crash)."""
+def test_sample_cve_status_ok_or_partial(cve_id: str, package: str) -> None:
+    """Each sample CVE must resolve to ok or partial (never crash)."""
     result = fetch_patch(cve_id, package=package, force_refresh=False)
     assert result["cve_id"] == cve_id
     assert result["status"] in ("ok", "partial")

@@ -102,54 +102,34 @@ def _strip_markdown_fences(text):
 
 # ── Public API ──────────────────────────────────────────────────────
 
-_DEMO_RULES_DIR = os.path.join("demo_rules")
-
-
-def _demo_rule_for_family(name, language, cluster):
-    """Return demo rule info if a handcrafted rule exists."""
-    path = os.path.join(_DEMO_RULES_DIR, f"{name}_{language}.yaml")
-    if os.path.exists(path):
-        return {
-            "source": "demo",
-            "rule_path": os.path.abspath(path),
-            "cwe_ids": sorted(cluster.cwe_ids),
-        }
-    return None
-
-
 async def resolve_rules(families, language, registry_index, api_key,
                         rules_dir, max_concurrent=4,
                         llm_backend="ollama", ollama_model="qwen2.5:3b",
-                        skip_llm=False, demo_mode=False):
+                        skip_llm=False, quiet=False):
     """Resolve a rule for every family.  Returns { family: resolved_info }."""
     os.makedirs(rules_dir, exist_ok=True)
     db = _load_db()
     resolved = {}
     needs_llm = []
 
-    print("\n" + "=" * 60)
-    print("PHASE 2: Triple-Check Rule Strategy")
-    print("=" * 60)
+    if not quiet:
+        print("\n" + "=" * 60)
+        print("PHASE 2: Triple-Check Rule Strategy")
+        print("=" * 60)
 
     for name, cluster in families.items():
-        # ── Step 0 (demo): handcrafted rules ────────────────────
-        if demo_mode:
-            demo = _demo_rule_for_family(name, language, cluster)
-            if demo:
-                print(f"  [D] DEMO     hit  → {name}")
-                resolved[name] = demo
-                continue
-
         # ── Step A: local cache ─────────────────────────────────
         cached = db.get(name)
         cached_path = cached.get("rule_path", "") if cached else ""
         if cached and cached_path and os.path.exists(cached_path):
             ok, err = validate_rule_file(cached_path)
             if ok:
-                print(f"  [A] CACHE  hit  → {name}")
+                if not quiet:
+                    print(f"  [A] CACHE  hit  → {name}")
                 resolved[name] = cached
                 continue
-            print(f"  [A] CACHE  stale → {name} ({err}); re-resolving...")
+            if not quiet:
+                print(f"  [A] CACHE  stale → {name} ({err}); re-resolving...")
 
         # ── Step B: official registry ───────────────────────────
         match = find_best_rule_for_family(cluster.cwe_ids, language,
@@ -163,25 +143,29 @@ async def resolve_rules(families, language, registry_index, api_key,
             }
             resolved[name] = info
             db[name] = info
-            print(f"  [B] REGISTRY hit → {name}  ({match['rule_id']})")
+            if not quiet:
+                print(f"  [B] REGISTRY hit → {name}  ({match['rule_id']})")
             continue
 
         # ── Step C: LLM needed ──────────────────────────────────
         if skip_llm:
-            print(f"  [C] SKIP (no LLM) → {name}")
+            if not quiet:
+                print(f"  [C] SKIP (no LLM) → {name}")
             resolved[name] = {"source": "none", "rule_path": "", "cwe_ids": sorted(cluster.cwe_ids)}
             continue
         needs_llm.append((name, cluster))
-        print(f"  [C] LLM queue   → {name}")
+        if not quiet:
+            print(f"  [C] LLM queue   → {name}")
 
     # Run all LLM calls concurrently (rate-limited by semaphore)
     if needs_llm and not skip_llm:
         backend_label = f"Ollama ({ollama_model})" if llm_backend == "ollama" else "Gemini"
-        print(f"\n  [*] Sending {len(needs_llm)} families to {backend_label} "
-              f"(max {max_concurrent} concurrent)...")
+        if not quiet:
+            print(f"\n  [*] Sending {len(needs_llm)} families to {backend_label} "
+                  f"(max {max_concurrent} concurrent)...")
         llm_results = await _run_llm_batch(
             needs_llm, language, api_key, rules_dir, max_concurrent,
-            llm_backend, ollama_model,
+            llm_backend, ollama_model, quiet=quiet,
         )
         for name, info in llm_results.items():
             if info:
@@ -192,22 +176,33 @@ async def resolve_rules(families, language, registry_index, api_key,
 
     cached_n = sum(1 for r in resolved.values() if r.get("source") == "cache")
     reg_n    = sum(1 for r in resolved.values() if r.get("source") == "registry")
-    demo_n   = sum(1 for r in resolved.values() if r.get("source") == "demo")
     llm_n    = sum(1 for r in resolved.values() if r.get("source") in ("gemini", "ollama"))
-    print(f"\n  Summary: {len(resolved)} families resolved  "
-          f"(cache={cached_n}, registry={reg_n}, demo={demo_n}, llm={llm_n})")
+    skipped_n = sum(1 for r in resolved.values() if r.get("source") == "none")
+
+    if quiet:
+        from src.pipeline_console import print_rule_resolution_summary
+        print_rule_resolution_summary(
+            total=len(resolved),
+            cache=cached_n,
+            registry=reg_n,
+            llm=llm_n,
+            skipped=skipped_n,
+        )
+    else:
+        print(f"\n  Summary: {len(resolved)} families resolved  "
+              f"(cache={cached_n}, registry={reg_n}, llm={llm_n})")
     return resolved
 
 
 # ── LLM batch runner (async, semaphore-gated) ───────────────────────
 
 async def _run_llm_batch(items, language, api_key, rules_dir, max_concurrent,
-                         llm_backend, ollama_model):
+                         llm_backend, ollama_model, quiet=False):
     """Fire triage+deep-gen for each family, limited by a semaphore."""
     sem = asyncio.Semaphore(max_concurrent)
     tasks = [
         _llm_for_family(sem, name, cluster, language, api_key, rules_dir,
-                        llm_backend, ollama_model)
+                        llm_backend, ollama_model, quiet=quiet)
         for name, cluster in items
     ]
     pairs = await asyncio.gather(*tasks, return_exceptions=True)
@@ -223,23 +218,24 @@ async def _run_llm_batch(items, language, api_key, rules_dir, max_concurrent,
 
 
 async def _llm_for_family(sem, name, cluster, language, api_key, rules_dir,
-                          llm_backend, ollama_model):
+                          llm_backend, ollama_model, quiet=False):
     """Triage → Deep-gen for one family, gated by semaphore."""
     async with sem:
-        # ── Phase 4A: Triage ────────────────────────────────────
-        print(f"  [C] Triage → {name} (calling {llm_backend}...)")
+        if not quiet:
+            print(f"  [C] Triage → {name} (calling {llm_backend}...)")
         triage = await asyncio.to_thread(
             _triage, name, cluster, language, llm_backend, api_key, ollama_model
         )
         if not triage.get("worth_scanning", True):
-            print(f"  [C] SKIP (triage) → {name}: {triage.get('reason','')}")
+            if not quiet:
+                print(f"  [C] SKIP (triage) → {name}: {triage.get('reason','')}")
             return None
 
-        # ── Phase 4B: Deep generation ───────────────────────────
-        print(f"  [C] Deep-gen → {name} (generating YAML rule...)")
+        if not quiet:
+            print(f"  [C] Deep-gen → {name} (generating YAML rule...)")
         rule_path = await asyncio.to_thread(
             _deep_gen, name, cluster, language, rules_dir,
-            llm_backend, api_key, ollama_model
+            llm_backend, api_key, ollama_model, quiet=quiet,
         )
         if rule_path:
             info = {
@@ -247,7 +243,8 @@ async def _llm_for_family(sem, name, cluster, language, api_key, rules_dir,
                 "rule_path": rule_path,
                 "cwe_ids": sorted(cluster.cwe_ids),
             }
-            print(f"  [C] GENERATED    → {name}  ({os.path.basename(rule_path)})")
+            if not quiet:
+                print(f"  [C] GENERATED    → {name}  ({os.path.basename(rule_path)})")
             return name, info
         return None
 
@@ -280,7 +277,7 @@ def _triage(name, cluster, language, llm_backend, api_key, ollama_model):
 
 
 def _deep_gen(name, cluster, language, rules_dir,
-              llm_backend, api_key, ollama_model, retries=3):
+              llm_backend, api_key, ollama_model, retries=3, quiet=False):
     """Generate a full Semgrep YAML rule for this family."""
     cwe_desc = ", ".join(
         f"{c} ({CWE_NAMES.get(c, c)})" for c in sorted(cluster.cwe_ids)
@@ -290,7 +287,8 @@ def _deep_gen(name, cluster, language, rules_dir,
 
     ok, semgrep_detail, _ = check_semgrep_available()
     if not ok:
-        print(f"  [!] Semgrep unavailable for rule validation: {semgrep_detail}")
+        if not quiet:
+            print(f"  [!] Semgrep unavailable for rule validation: {semgrep_detail}")
 
     system = (
         "You are a static analysis expert. Output ONLY raw Semgrep YAML. "
@@ -335,11 +333,13 @@ def _deep_gen(name, cluster, language, rules_dir,
         except Exception as e:
             wait = _backoff_seconds(e, attempt)
             if attempt < retries - 1:
-                print(f"  [~] Retry {attempt+1}/{retries-1} for {name} "
-                      f"(waiting {wait}s)...", flush=True)
+                if not quiet:
+                    print(f"  [~] Retry {attempt+1}/{retries-1} for {name} "
+                          f"(waiting {wait}s)...", flush=True)
                 time.sleep(wait)
             else:
-                print(f"  [!] FAILED to generate rule for {name}: {e}")
+                if not quiet:
+                    print(f"  [!] FAILED to generate rule for {name}: {e}")
     return None
 
 

@@ -1,26 +1,32 @@
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Virtual environment
-venv/
-.env
-
-# Generated folders/files
-semgrep-rules/
-results_test/
-enriched_trivy_output.json
-pipeline_a_report.json
-risk_assessment.json
-explanations.json
-risk_report.html
-graph_snapshot.json
-demo_out/
-
-# OS / editor files
-.DS_Store
-Thumbs.db
-.vscode/
-repomix-output.xml
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# Generated pipeline / agent output
+output/
+demo_out/
+semgrep_rules/
+results_test/
+enriched_trivy_output.json
+pipeline_a_report.json
+patches.json
+symbol_scan.json
+upgrade_simulation.json
+risk_assessment.json
+explanations.json
+risk_report.html
+graph_snapshot.json
+data/agent_trace.json
+data/report.html
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+repomix-output.xml

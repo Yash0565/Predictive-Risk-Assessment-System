@@ -17,10 +17,10 @@ from src.symbol_scanner import (
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "symbol_scanner"
 TASKFLOW = Path(__file__).resolve().parent.parent / "vulnerable-task-tracker"
-GOLDEN = Path(__file__).resolve().parent.parent / "examples" / "symbol_scan_output.json"
+GOLDEN = Path(__file__).resolve().parent / "fixtures" / "symbol_scan_output.json"
 
 
-# CVEs covered by examples/symbol_scan_output.json (stable integration test subset).
+# CVEs covered by tests/fixtures/symbol_scan_output.json (stable integration test subset).
 _TASKFLOW_STABLE_CVES = frozenset({
     "CVE-2018-1000656",
     "CVE-2019-10906",

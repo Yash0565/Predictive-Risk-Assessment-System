@@ -1,7 +1,7 @@
 """Simple AST-based call graph extractor for Phase 5 graph ingestion.
 
 Uses ast.parse only — no cross-file or import resolution. Sufficient for
-single-file Flask demos like test/test.py.
+single-file Flask samples.
 """
 
 import ast

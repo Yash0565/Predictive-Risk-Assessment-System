@@ -1,8 +1,0 @@
-rules:
-  - id: detect-session_management-python
-    description: Detect session management vulnerabilities in Python with Flask
-    severity: HIGH
-    matchers:
-      - python-regex:
-          pattern: |
-            \b(Flask|flask)\.session\b.*\.(add|update|set|assign)\(.*
