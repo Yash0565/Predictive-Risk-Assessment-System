@@ -102,4 +102,7 @@ def test_check_semgrep_available() -> None:
         assert os.path.isfile(exe)
         assert detail
     else:
-        assert "semgrep not found" in detail.lower() or "failed" in detail.lower()
+        # Accepted "unavailable" responses: not installed, exited non-zero,
+        # timed out, or failed to spawn (e.g. Windows paging file exhaustion).
+        markers = ("semgrep not found", "failed", "timed out", "disabled")
+        assert any(m in detail.lower() for m in markers), detail

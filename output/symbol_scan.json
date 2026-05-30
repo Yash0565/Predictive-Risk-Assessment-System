@@ -5,71 +5,23 @@
       "confidence": "HIGH",
       "is_reachable": true,
       "package": "flask",
-      "reference_count": 4,
+      "reference_count": 1,
       "references": [
         {
           "col": 14,
           "confidence": "HIGH",
-          "enclosing_function": "auth_login",
+          "enclosing_function": "api_data",
           "entry_point_info": {
             "framework": "flask",
             "method": "POST",
-            "route": "/auth/login"
+            "route": "/api/data"
           },
           "file": "app.py",
           "import_chain": "request (from flask import request).get_json",
           "in_entry_point": true,
           "kind": "call",
-          "line": 23,
-          "source": "payload = request.get_json() or {}"
-        },
-        {
-          "col": 14,
-          "confidence": "HIGH",
-          "enclosing_function": "tasks_create",
-          "entry_point_info": {
-            "framework": "flask",
-            "method": "POST",
-            "route": "/tasks"
-          },
-          "file": "app.py",
-          "import_chain": "request (from flask import request).get_json",
-          "in_entry_point": true,
-          "kind": "call",
-          "line": 41,
-          "source": "payload = request.get_json() or {}"
-        },
-        {
-          "col": 14,
-          "confidence": "HIGH",
-          "enclosing_function": "webhook_notify",
-          "entry_point_info": {
-            "framework": "flask",
-            "method": "POST",
-            "route": "/webhook/notify"
-          },
-          "file": "app.py",
-          "import_chain": "request (from flask import request).get_json",
-          "in_entry_point": true,
-          "kind": "call",
-          "line": 62,
-          "source": "payload = request.get_json() or {}"
-        },
-        {
-          "col": 14,
-          "confidence": "HIGH",
-          "enclosing_function": "admin_config",
-          "entry_point_info": {
-            "framework": "flask",
-            "method": "POST",
-            "route": "/admin/config"
-          },
-          "file": "app.py",
-          "import_chain": "request (from flask import request).get_json",
-          "in_entry_point": true,
-          "kind": "call",
-          "line": 86,
-          "source": "payload = request.get_json() or {}"
+          "line": 27,
+          "source": "payload = request.get_json(force=True, silent=False)"
         }
       ],
       "vulnerable_symbol": "flask.wrappers.get_json"
@@ -86,10 +38,38 @@
     "CVE-2019-10906": {
       "change_classification": "HARDENED_ONLY",
       "confidence": "HIGH",
-      "is_reachable": false,
+      "is_reachable": true,
       "package": "jinja2",
-      "reference_count": 0,
-      "references": [],
+      "reference_count": 2,
+      "references": [
+        {
+          "col": 0,
+          "confidence": "HIGH",
+          "enclosing_function": null,
+          "file": "tasks.py",
+          "import_chain": "jinja2.sandbox.SandboxedEnvironment",
+          "in_entry_point": false,
+          "kind": "import",
+          "line": 7,
+          "source": "from jinja2.sandbox import SandboxedEnvironment"
+        },
+        {
+          "col": 10,
+          "confidence": "HIGH",
+          "enclosing_function": "task_detail",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/tasks/<id>"
+          },
+          "file": "tasks.py",
+          "import_chain": "SandboxedEnvironment (from jinja2.sandbox import SandboxedEnvironment)",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 41,
+          "source": "env = SandboxedEnvironment()"
+        }
+      ],
       "vulnerable_symbol": "jinja2.sandbox.SandboxedEnvironment"
     },
     "CVE-2019-11324": {
@@ -129,13 +109,18 @@
         {
           "col": 13,
           "confidence": "HIGH",
-          "enclosing_function": "load_admin_config",
+          "enclosing_function": "load_config",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/admin/config"
+          },
           "file": "config_loader.py",
           "import_chain": "yaml (import yaml).load",
-          "in_entry_point": false,
+          "in_entry_point": true,
           "kind": "call",
-          "line": 21,
-          "source": "parsed = yaml.load(yaml_content)"
+          "line": 29,
+          "source": "config = yaml.load(raw)"
         }
       ],
       "vulnerable_symbol": "yaml.load"
@@ -152,23 +137,11 @@
     "CVE-2020-26137": {
       "change_classification": "HARDENED_ONLY",
       "confidence": "HIGH",
-      "is_reachable": true,
+      "is_reachable": false,
       "package": "urllib3",
-      "reference_count": 1,
-      "references": [
-        {
-          "col": 8,
-          "confidence": "HIGH",
-          "enclosing_function": "_conn",
-          "file": "db.py",
-          "import_chain": "sqlite3 (import sqlite3).connect",
-          "in_entry_point": false,
-          "kind": "call",
-          "line": 12,
-          "source": "c = sqlite3.connect(DB_PATH)"
-        }
-      ],
-      "vulnerable_symbol": "urllib3.src.urllib3.connection.connect"
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.connection.HTTPConnection.putrequest"
     },
     "CVE-2020-28493": {
       "change_classification": "INTERNAL_CHANGE",
@@ -207,13 +180,18 @@
         {
           "col": 10,
           "confidence": "HIGH",
-          "enclosing_function": "_generate_thumbnail",
+          "enclosing_function": "upload_task_image",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/tasks/<id>/upload"
+          },
           "file": "uploads.py",
           "import_chain": "Image (from PIL import Image).open",
-          "in_entry_point": false,
+          "in_entry_point": true,
           "kind": "call",
-          "line": 59,
-          "source": "img = Image.open(BytesIO(data))"
+          "line": 54,
+          "source": "img = Image.open(stream)"
         }
       ],
       "vulnerable_symbol": "PIL.Image.open"
@@ -341,18 +319,23 @@
           "import_chain": "requests.utils.rebuild_auth",
           "in_entry_point": false,
           "kind": "import",
-          "line": 11,
+          "line": 10,
           "source": "from requests.utils import rebuild_auth"
         },
         {
-          "col": 27,
+          "col": 23,
           "confidence": "HIGH",
           "enclosing_function": "login_user",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/auth/login"
+          },
           "file": "auth.py",
           "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
-          "in_entry_point": false,
+          "in_entry_point": true,
           "kind": "call",
-          "line": 41,
+          "line": 42,
           "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
         }
       ],
@@ -480,50 +463,29 @@
       "confidence": "HIGH",
       "is_reachable": true,
       "package": "urllib3",
-      "reference_count": 3,
+      "reference_count": 2,
       "references": [
-        {
-          "col": 14,
-          "confidence": "HIGH",
-          "enclosing_function": "tasks_list",
-          "entry_point_info": {
-            "framework": "flask",
-            "method": "GET",
-            "route": "/tasks"
-          },
-          "file": "app.py",
-          "import_chain": "request (from flask import request).args.get",
-          "in_entry_point": true,
-          "kind": "call",
-          "line": 34,
-          "source": "project = request.args.get(\"project\", \"\")"
-        },
-        {
-          "col": 10,
-          "confidence": "HIGH",
-          "enclosing_function": "reports_export",
-          "entry_point_info": {
-            "framework": "flask",
-            "method": "GET",
-            "route": "/reports/export"
-          },
-          "file": "app.py",
-          "import_chain": "request (from flask import request).args.get",
-          "in_entry_point": true,
-          "kind": "call",
-          "line": 77,
-          "source": "fmt = request.args.get(\"format\", \"html\")"
-        },
         {
           "col": 11,
           "confidence": "HIGH",
-          "enclosing_function": "current_user_id",
-          "file": "auth.py",
-          "import_chain": "session (from flask import session).get",
+          "enclosing_function": "_load_template_source",
+          "file": "tasks.py",
+          "import_chain": "request (from flask import request).args.get",
           "in_entry_point": false,
           "kind": "call",
-          "line": 74,
-          "source": "return session.get(\"user_id\")"
+          "line": 17,
+          "source": "return request.args.get(\"template\", \"<p>{{ task_id }}</p>\")"
+        },
+        {
+          "col": 8,
+          "confidence": "HIGH",
+          "enclosing_function": "_get_upload_stream",
+          "file": "uploads.py",
+          "import_chain": "request (from flask import request).files.get",
+          "in_entry_point": false,
+          "kind": "call",
+          "line": 10,
+          "source": "f = request.files.get(\"file\")"
         }
       ],
       "vulnerable_symbol": "urllib3.src.urllib3.response.get"
@@ -574,31 +536,31 @@
       "vulnerable_symbol": "PIL.src.PIL.PdfParser.read_prev_trailer"
     }
   },
-  "scanned_at": "2026-05-28T07:38:55+00:00",
+  "scanned_at": "2026-05-28T09:21:59+00:00",
   "stats": {
-    "duration_ms": 12,
+    "duration_ms": 33,
     "files_failed": 0,
-    "files_parsed_ok": 9,
-    "files_scanned": 9,
-    "total_findings": 12
+    "files_parsed_ok": 6,
+    "files_scanned": 6,
+    "total_findings": 9
   },
   "summary": {
     "noise_reduction_percent": 86.7,
     "reachable_cves": [
       "CVE-2018-1000656",
+      "CVE-2019-10906",
       "CVE-2020-1747",
-      "CVE-2020-26137",
       "CVE-2020-5313",
       "CVE-2023-32681",
       "CVE-2025-66471"
     ],
     "unreachable_cves": [
       "CVE-2018-25091",
-      "CVE-2019-10906",
       "CVE-2019-11324",
       "CVE-2019-19911",
       "CVE-2020-14343",
       "CVE-2020-25659",
+      "CVE-2020-26137",
       "CVE-2020-28493",
       "CVE-2020-35653",
       "CVE-2020-35655",
@@ -634,5 +596,5 @@
       "CVE-2026-42310"
     ]
   },
-  "target_dir": "D:\\vulnerable-task-tracker"
+  "target_dir": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
 }

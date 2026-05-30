@@ -12,7 +12,18 @@ from typing import Any, Callable, Optional
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from src.explainer import explain_risk
-from src.html_reporter import build_report_data, generate_report
+from src.html_reporter import (
+    build_report_data as _build_report_data_v1,
+    generate_report as _generate_report_v1,
+)
+from src.html_reporter_v2 import (
+    build_report_data as _build_report_data_v2,
+    generate_report as _generate_report_v2,
+)
+from src.html_reporter_final_v2 import (
+    build_report_data as _build_report_data_final,
+    generate_report as _generate_report_final,
+)
 from src.patch_fetcher import fetch_patch, fetch_patches_batch
 from src.scorer import score_cves
 from src.symbol_scanner import scan_symbols
@@ -333,6 +344,13 @@ def tool_compute_score(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any
     return assessment, f"Scored {n} CVEs; overall {rec}"
 
 
+_REPORT_BUILDERS = {
+    "v1": (_build_report_data_v1, _generate_report_v1),
+    "v2": (_build_report_data_v2, _generate_report_v2),
+    "final": (_build_report_data_final, _generate_report_final),
+}
+
+
 def tool_generate_report(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
     _ = CollectedDataArgs.model_validate(args)
     data = state["collected_data"]
@@ -340,7 +358,9 @@ def tool_generate_report(args: dict[str, Any], state: dict[str, Any]) -> tuple[A
     if not assessment:
         raise ToolError("No scores; run compute_score first")
     repo = state["target_repo"]
-    report_data = build_report_data(
+    version = state.get("report_version", "final")
+    builder, renderer = _REPORT_BUILDERS.get(version, _REPORT_BUILDERS["final"])
+    report_data = builder(
         assessment,
         explanations=data.get("explanations"),
         symbol_scan=data.get("symbol_findings"),
@@ -350,8 +370,8 @@ def tool_generate_report(args: dict[str, Any], state: dict[str, Any]) -> tuple[A
     )
     out_dir = Path(state.get("output_dir") or _REPO_ROOT / "data")
     out_dir.mkdir(parents=True, exist_ok=True)
-    report_path = out_dir / "report.html"
-    path = generate_report(report_data, output_path=str(report_path), offline=True)
+    report_path = out_dir / "risk_report.html"
+    path = renderer(report_data, output_path=str(report_path), offline=True)
     data["report_data"] = report_data
     state["report_path"] = path
     return {"path": path}, f"Report written to {path}"

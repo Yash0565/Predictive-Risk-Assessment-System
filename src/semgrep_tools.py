@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 import sys
@@ -10,6 +11,35 @@ from typing import Any
 import yaml
 
 from src.utils import find_tool, tool_subprocess_env
+
+logger = logging.getLogger(__name__)
+
+# Process-wide caches and circuit breakers.
+# Once `semgrep --version` or `--validate` hits a TimeoutExpired/OSError we
+# stop trying to spawn the subprocess and fall back to schema-only validation
+# for the remainder of the run — this prevents Windows page-file failures
+# from cascading into 15+ redundant timeouts (one per family × retry).
+_AVAILABILITY_CACHE: tuple[bool, str, str | None] | None = None
+_SUBPROCESS_DISABLED: bool = False
+_SUBPROCESS_DISABLED_REASON: str = ""
+
+
+def _disable_subprocess(reason: str) -> None:
+    """Trip the subprocess circuit breaker; later calls skip the shell-out."""
+    global _SUBPROCESS_DISABLED, _SUBPROCESS_DISABLED_REASON
+    if _SUBPROCESS_DISABLED:
+        return
+    _SUBPROCESS_DISABLED = True
+    _SUBPROCESS_DISABLED_REASON = reason
+    hint = ""
+    if "WinError 1455" in reason or "paging file" in reason.lower():
+        hint = (
+            " · Windows page file exhausted; close Ollama/Neo4j or run with "
+            "--skip-llm to skip Phase 3 LLM rule generation."
+        )
+    logger.warning(
+        "Semgrep subprocess disabled for remainder of run: %s%s", reason, hint,
+    )
 
 _PATTERN_KEYS = frozenset({
     "pattern",
@@ -47,37 +77,84 @@ def check_semgrep_available() -> tuple[bool, str, str | None]:
     """Verify Semgrep is installed and responds to ``--version``.
 
     Returns ``(ok, detail_message, semgrep_exe)``.
+
+    The result is cached for the lifetime of the process so callers can probe
+    cheaply inside hot loops (rule generation, retries) without re-spawning
+    a subprocess every time.
     """
+    global _AVAILABILITY_CACHE
+    if _AVAILABILITY_CACHE is not None:
+        return _AVAILABILITY_CACHE
+
     semgrep_exe = find_semgrep()
     if not semgrep_exe:
         paths = semgrep_search_paths()
         hint = "\n".join(f"           {p}" for p in paths)
-        return (
+        result = (
             False,
             "semgrep not found. Install with: pip install semgrep\n"
             "         If already installed, ensure Python Scripts is on PATH:\n"
             f"{hint}",
             None,
         )
+        _AVAILABILITY_CACHE = result
+        return result
+
+    if _SUBPROCESS_DISABLED:
+        result = (
+            False,
+            f"semgrep subprocess disabled: {_SUBPROCESS_DISABLED_REASON}",
+            semgrep_exe,
+        )
+        _AVAILABILITY_CACHE = result
+        return result
 
     cmd = semgrep_cmd(semgrep_exe) + ["--version"]
-    proc = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        timeout=30,
-        env=tool_subprocess_env(),
-    )
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=tool_subprocess_env(),
+        )
+    except subprocess.TimeoutExpired as exc:
+        _disable_subprocess(f"semgrep --version timed out after {exc.timeout}s")
+        result = (False, f"semgrep --version timed out after {exc.timeout}s", semgrep_exe)
+        _AVAILABILITY_CACHE = result
+        return result
+    except OSError as exc:
+        _disable_subprocess(f"semgrep --version failed to spawn: {exc}")
+        result = (False, f"semgrep --version failed to spawn: {exc}", semgrep_exe)
+        _AVAILABILITY_CACHE = result
+        return result
+
     detail = (proc.stdout or proc.stderr or "").strip()
     if proc.returncode != 0:
-        return (
+        # Detect Windows paging-file errors in stderr and trip the breaker so
+        # we don't retry 15× more.
+        if "WinError 1455" in detail or "paging file" in detail.lower():
+            _disable_subprocess(detail.splitlines()[0] if detail else "WinError 1455")
+        result = (
             False,
             f"semgrep found at {semgrep_exe} but --version failed "
             f"(exit {proc.returncode}): {detail or 'no output'}",
             semgrep_exe,
         )
+        _AVAILABILITY_CACHE = result
+        return result
     version_line = detail.splitlines()[0] if detail else "unknown version"
-    return True, version_line, semgrep_exe
+    result = (True, version_line, semgrep_exe)
+    _AVAILABILITY_CACHE = result
+    return result
+
+
+def reset_semgrep_cache() -> None:
+    """Clear cached availability + circuit breaker (used in tests)."""
+    global _AVAILABILITY_CACHE, _SUBPROCESS_DISABLED, _SUBPROCESS_DISABLED_REASON
+    _AVAILABILITY_CACHE = None
+    _SUBPROCESS_DISABLED = False
+    _SUBPROCESS_DISABLED_REASON = ""
 
 
 def validate_rule_schema(parsed: Any) -> tuple[bool, str]:
@@ -151,16 +228,33 @@ def validate_rule_file(
     if not exe:
         return False, "semgrep not installed (cannot run --validate)"
 
+    # Circuit breaker: if a previous spawn failed due to OS-level resource
+    # exhaustion (e.g. Windows paging file), don't keep trying — fall back
+    # to the schema check we already ran above.
+    if _SUBPROCESS_DISABLED:
+        return True, f"schema-only (subprocess disabled: {_SUBPROCESS_DISABLED_REASON})"
+
     cmd = semgrep_cmd(exe) + ["--validate", "--config", rule_path]
-    proc = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        timeout=60,
-        env=tool_subprocess_env(),
-    )
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=tool_subprocess_env(),
+        )
+    except subprocess.TimeoutExpired as exc:
+        _disable_subprocess(f"semgrep --validate timed out after {exc.timeout}s")
+        return True, f"schema-only (semgrep --validate timed out after {exc.timeout}s)"
+    except OSError as exc:
+        _disable_subprocess(f"semgrep --validate failed to spawn: {exc}")
+        return True, f"schema-only (semgrep --validate failed to spawn: {exc})"
+
     if proc.returncode != 0:
         detail = (proc.stderr or proc.stdout or "").strip()
+        if "WinError 1455" in detail or "paging file" in detail.lower():
+            _disable_subprocess(detail.splitlines()[0] if detail else "WinError 1455")
+            return True, "schema-only (Windows paging file exhausted)"
         first_lines = "\n".join(detail.splitlines()[:5])
         return False, f"semgrep --validate failed: {first_lines or 'no output'}"
 

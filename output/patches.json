@@ -129,6 +129,19 @@
     "status": "no_patch_found",
     "vulnerable_symbols": []
   },
+  "CVE-2019-11236": {
+    "cve_id": "CVE-2019-11236",
+    "fetched_at": "2026-05-21T08:05:23+00:00",
+    "files_changed": [],
+    "import_aliases": [],
+    "package": "urllib3",
+    "patch_commit": null,
+    "patch_repo": null,
+    "patch_url": null,
+    "sources_tried": [],
+    "status": "no_patch_found",
+    "vulnerable_symbols": []
+  },
   "CVE-2019-10906": {
     "cve_id": "CVE-2019-10906",
     "fetched_at": "2026-05-19T17:54:40+00:00",
@@ -301,19 +314,6 @@
       }
     ]
   },
-  "CVE-2019-11236": {
-    "cve_id": "CVE-2019-11236",
-    "fetched_at": "2026-05-21T08:05:23+00:00",
-    "files_changed": [],
-    "import_aliases": [],
-    "package": "urllib3",
-    "patch_commit": null,
-    "patch_repo": null,
-    "patch_url": null,
-    "sources_tried": [],
-    "status": "no_patch_found",
-    "vulnerable_symbols": []
-  },
   "CVE-2019-16865": {
     "cve_id": "CVE-2019-16865",
     "fetched_at": "2026-05-21T08:05:30+00:00",
@@ -446,6 +446,27 @@
     "status": "partial",
     "vulnerable_symbols": []
   },
+  "CVE-2020-10378": {
+    "cve_id": "CVE-2020-10378",
+    "fetched_at": "2026-05-21T08:05:36+00:00",
+    "files_changed": [
+      "Tests/images/01r_00.pcx",
+      "Tests/test_image.py"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "124f4bb591e16212605d0e41c413ed53e242cba2",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/124f4bb591e16212605d0e41c413ed53e242cba2",
+    "sources_tried": [
+      "trivy",
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "partial",
+    "vulnerable_symbols": []
+  },
   "CVE-2020-10379": {
     "cve_id": "CVE-2020-10379",
     "fetched_at": "2026-05-21T08:05:35+00:00",
@@ -479,6 +500,40 @@
         "lines_removed": 1,
         "short_name": "TiffDecode.c",
         "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
+  "CVE-2020-10994": {
+    "cve_id": "CVE-2020-10994",
+    "fetched_at": "2026-05-21T08:05:39+00:00",
+    "files_changed": [
+      "Tests/check_jp2_overflow.py",
+      "Tests/images/00r0_gray_l.jp2",
+      "Tests/images/00r1_graya_la.jp2",
+      "src/libImaging/Jpeg2KDecode.c"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "ff60894d697d1992147b791101ad53a8bf1352e4",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/ff60894d697d1992147b791101ad53a8bf1352e4",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "",
+        "before_signature": "",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/libImaging/Jpeg2KDecode.c",
+        "fully_qualified_name": "PIL.Jpeg2KDecode.c",
+        "kind": "file",
+        "lines_added": 43,
+        "lines_removed": 17,
+        "short_name": "Jpeg2KDecode.c",
+        "summary": "Native code change in src/libImaging/Jpeg2KDecode.c (Python wrapper may still be affected)"
       }
     ]
   },
@@ -516,58 +571,78 @@
       }
     ]
   },
-  "CVE-2020-10378": {
-    "cve_id": "CVE-2020-10378",
-    "fetched_at": "2026-05-21T08:05:36+00:00",
+  "CVE-2020-14343": {
+    "cve_id": "CVE-2020-14343",
+    "fetched_at": "2026-05-20T06:18:39+00:00",
     "files_changed": [
-      "Tests/images/01r_00.pcx",
-      "Tests/test_image.py"
+      "lib/yaml/constructor.py",
+      "lib3/yaml/constructor.py",
+      "tests/lib/test_recursive.py",
+      "tests/lib3/test_recursive.py"
     ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "124f4bb591e16212605d0e41c413ed53e242cba2",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/124f4bb591e16212605d0e41c413ed53e242cba2",
+    "import_aliases": [
+      "from yaml.lib.yaml.constructor import construct_python_object_new",
+      "from yaml import constructor",
+      "from yaml.lib.yaml.constructor import set_python_instance_state",
+      "from yaml.lib3.yaml.constructor import construct_python_object_new",
+      "from yaml.lib3.yaml.constructor import set_python_instance_state"
+    ],
+    "package": "pyyaml",
+    "patch_commit": "a001f2782501ad2d24986959f0239a354675f9dc",
+    "patch_repo": "yaml/pyyaml",
+    "patch_url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc",
     "sources_tried": [
-      "trivy",
-      "nvd",
-      "osv",
-      "ghsa"
-    ],
-    "status": "partial",
-    "vulnerable_symbols": []
-  },
-  "CVE-2020-10994": {
-    "cve_id": "CVE-2020-10994",
-    "fetched_at": "2026-05-21T08:05:39+00:00",
-    "files_changed": [
-      "Tests/check_jp2_overflow.py",
-      "Tests/images/00r0_gray_l.jp2",
-      "Tests/images/00r1_graya_la.jp2",
-      "src/libImaging/Jpeg2KDecode.c"
-    ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "ff60894d697d1992147b791101ad53a8bf1352e4",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/ff60894d697d1992147b791101ad53a8bf1352e4",
-    "sources_tried": [
-      "trivy",
       "ghsa"
     ],
     "status": "ok",
     "vulnerable_symbols": [
       {
-        "after_signature": "",
-        "before_signature": "",
+        "after_signature": "def construct_python_object_new(...)",
+        "before_signature": "def construct_python_object_new(...)",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/Jpeg2KDecode.c",
-        "fully_qualified_name": "PIL.Jpeg2KDecode.c",
-        "kind": "file",
-        "lines_added": 43,
-        "lines_removed": 17,
-        "short_name": "Jpeg2KDecode.c",
-        "summary": "Native code change in src/libImaging/Jpeg2KDecode.c (Python wrapper may still be affected)"
+        "file_in_patch": "lib/yaml/constructor.py",
+        "fully_qualified_name": "yaml.lib.yaml.constructor.construct_python_object_new",
+        "kind": "function",
+        "lines_added": 0,
+        "lines_removed": 12,
+        "short_name": "construct_python_object_new",
+        "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+      },
+      {
+        "after_signature": "def set_python_instance_state(...)",
+        "before_signature": "def set_python_instance_state(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "lib/yaml/constructor.py",
+        "fully_qualified_name": "yaml.lib.yaml.constructor.set_python_instance_state",
+        "kind": "function",
+        "lines_added": 12,
+        "lines_removed": 0,
+        "short_name": "set_python_instance_state",
+        "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
+      },
+      {
+        "after_signature": "def construct_python_object_new(...)",
+        "before_signature": "def construct_python_object_new(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "lib3/yaml/constructor.py",
+        "fully_qualified_name": "yaml.lib3.yaml.constructor.construct_python_object_new",
+        "kind": "function",
+        "lines_added": 0,
+        "lines_removed": 12,
+        "short_name": "construct_python_object_new",
+        "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
+      },
+      {
+        "after_signature": "def set_python_instance_state(...)",
+        "before_signature": "def set_python_instance_state(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "lib3/yaml/constructor.py",
+        "fully_qualified_name": "yaml.lib3.yaml.constructor.set_python_instance_state",
+        "kind": "function",
+        "lines_added": 12,
+        "lines_removed": 0,
+        "short_name": "set_python_instance_state",
+        "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
       }
     ]
   },
@@ -713,115 +788,6 @@
       }
     ]
   },
-  "CVE-2020-14343": {
-    "cve_id": "CVE-2020-14343",
-    "fetched_at": "2026-05-20T06:18:39+00:00",
-    "files_changed": [
-      "lib/yaml/constructor.py",
-      "lib3/yaml/constructor.py",
-      "tests/lib/test_recursive.py",
-      "tests/lib3/test_recursive.py"
-    ],
-    "import_aliases": [
-      "from yaml.lib.yaml.constructor import construct_python_object_new",
-      "from yaml import constructor",
-      "from yaml.lib.yaml.constructor import set_python_instance_state",
-      "from yaml.lib3.yaml.constructor import construct_python_object_new",
-      "from yaml.lib3.yaml.constructor import set_python_instance_state"
-    ],
-    "package": "pyyaml",
-    "patch_commit": "a001f2782501ad2d24986959f0239a354675f9dc",
-    "patch_repo": "yaml/pyyaml",
-    "patch_url": "https://github.com/yaml/pyyaml/commit/a001f2782501ad2d24986959f0239a354675f9dc",
-    "sources_tried": [
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def construct_python_object_new(...)",
-        "before_signature": "def construct_python_object_new(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "lib/yaml/constructor.py",
-        "fully_qualified_name": "yaml.lib.yaml.constructor.construct_python_object_new",
-        "kind": "function",
-        "lines_added": 0,
-        "lines_removed": 12,
-        "short_name": "construct_python_object_new",
-        "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
-      },
-      {
-        "after_signature": "def set_python_instance_state(...)",
-        "before_signature": "def set_python_instance_state(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "lib/yaml/constructor.py",
-        "fully_qualified_name": "yaml.lib.yaml.constructor.set_python_instance_state",
-        "kind": "function",
-        "lines_added": 12,
-        "lines_removed": 0,
-        "short_name": "set_python_instance_state",
-        "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
-      },
-      {
-        "after_signature": "def construct_python_object_new(...)",
-        "before_signature": "def construct_python_object_new(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "lib3/yaml/constructor.py",
-        "fully_qualified_name": "yaml.lib3.yaml.constructor.construct_python_object_new",
-        "kind": "function",
-        "lines_added": 0,
-        "lines_removed": 12,
-        "short_name": "construct_python_object_new",
-        "summary": "Internal logic updated in construct_python_object_new (+0/-12 lines in hunk)"
-      },
-      {
-        "after_signature": "def set_python_instance_state(...)",
-        "before_signature": "def set_python_instance_state(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "lib3/yaml/constructor.py",
-        "fully_qualified_name": "yaml.lib3.yaml.constructor.set_python_instance_state",
-        "kind": "function",
-        "lines_added": 12,
-        "lines_removed": 0,
-        "short_name": "set_python_instance_state",
-        "summary": "Internal logic updated in set_python_instance_state (+12/-0 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2020-28493": {
-    "cve_id": "CVE-2020-28493",
-    "fetched_at": "2026-05-21T04:47:43+00:00",
-    "files_changed": [
-      "CHANGES.rst",
-      "src/jinja2/utils.py"
-    ],
-    "import_aliases": [
-      "from jinja2.src.jinja2.utils import urlize",
-      "from jinja2 import utils"
-    ],
-    "package": "Jinja2",
-    "patch_commit": "15ef8f09b659f9100610583938005a7a10472d4d",
-    "patch_repo": "pallets/jinja",
-    "patch_url": "https://github.com/pallets/jinja/commit/15ef8f09b659f9100610583938005a7a10472d4d",
-    "sources_tried": [
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def urlize(...)",
-        "before_signature": "def urlize(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/jinja2/utils.py",
-        "fully_qualified_name": "jinja2.src.jinja2.utils.urlize",
-        "kind": "function",
-        "lines_added": 54,
-        "lines_removed": 37,
-        "short_name": "urlize",
-        "summary": "Internal logic updated in urlize (+54/-37 lines in hunk)"
-      }
-    ]
-  },
   "CVE-2020-25659": {
     "cve_id": "CVE-2020-25659",
     "fetched_at": "2026-05-19T17:55:21+00:00",
@@ -935,36 +901,37 @@
       }
     ]
   },
-  "CVE-2020-35654": {
-    "cve_id": "CVE-2020-35654",
-    "fetched_at": "2026-05-21T08:05:42+00:00",
+  "CVE-2020-28493": {
+    "cve_id": "CVE-2020-28493",
+    "fetched_at": "2026-05-21T04:47:43+00:00",
     "files_changed": [
-      "Tests/images/crash-2020-10-test.tif",
-      "Tests/test_tiff_crashes.py",
-      "src/libImaging/TiffDecode.c"
+      "CHANGES.rst",
+      "src/jinja2/utils.py"
     ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "eb8c1206d6b170d4e798a00db7432e023853da5c",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/eb8c1206d6b170d4e798a00db7432e023853da5c",
+    "import_aliases": [
+      "from jinja2.src.jinja2.utils import urlize",
+      "from jinja2 import utils"
+    ],
+    "package": "Jinja2",
+    "patch_commit": "15ef8f09b659f9100610583938005a7a10472d4d",
+    "patch_repo": "pallets/jinja",
+    "patch_url": "https://github.com/pallets/jinja/commit/15ef8f09b659f9100610583938005a7a10472d4d",
     "sources_tried": [
-      "trivy",
       "ghsa"
     ],
     "status": "ok",
     "vulnerable_symbols": [
       {
-        "after_signature": "",
-        "before_signature": "",
+        "after_signature": "def urlize(...)",
+        "before_signature": "def urlize(...)",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/TiffDecode.c",
-        "fully_qualified_name": "PIL.TiffDecode.c",
-        "kind": "file",
-        "lines_added": 169,
-        "lines_removed": 97,
-        "short_name": "TiffDecode.c",
-        "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
+        "file_in_patch": "src/jinja2/utils.py",
+        "fully_qualified_name": "jinja2.src.jinja2.utils.urlize",
+        "kind": "function",
+        "lines_added": 54,
+        "lines_removed": 37,
+        "short_name": "urlize",
+        "summary": "Internal logic updated in urlize (+54/-37 lines in hunk)"
       }
     ]
   },
@@ -1004,23 +971,21 @@
       }
     ]
   },
-  "CVE-2020-5310": {
-    "cve_id": "CVE-2020-5310",
-    "fetched_at": "2026-05-21T08:05:48+00:00",
+  "CVE-2020-35654": {
+    "cve_id": "CVE-2020-35654",
+    "fetched_at": "2026-05-21T08:05:42+00:00",
     "files_changed": [
-      "Tests/images/tiff_overflow_rows_per_strip.tif",
-      "Tests/test_file_libtiff.py",
+      "Tests/images/crash-2020-10-test.tif",
+      "Tests/test_tiff_crashes.py",
       "src/libImaging/TiffDecode.c"
     ],
     "import_aliases": [],
     "package": "Pillow",
-    "patch_commit": "4e2def2539ec13e53a82e06c4b3daf00454100c4",
+    "patch_commit": "eb8c1206d6b170d4e798a00db7432e023853da5c",
     "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/4e2def2539ec13e53a82e06c4b3daf00454100c4",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/eb8c1206d6b170d4e798a00db7432e023853da5c",
     "sources_tried": [
       "trivy",
-      "nvd",
-      "osv",
       "ghsa"
     ],
     "status": "ok",
@@ -1032,8 +997,8 @@
         "file_in_patch": "src/libImaging/TiffDecode.c",
         "fully_qualified_name": "PIL.TiffDecode.c",
         "kind": "file",
-        "lines_added": 14,
-        "lines_removed": 3,
+        "lines_added": 169,
+        "lines_removed": 97,
         "short_name": "TiffDecode.c",
         "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
       }
@@ -1110,6 +1075,41 @@
       }
     ]
   },
+  "CVE-2020-5310": {
+    "cve_id": "CVE-2020-5310",
+    "fetched_at": "2026-05-21T08:05:48+00:00",
+    "files_changed": [
+      "Tests/images/tiff_overflow_rows_per_strip.tif",
+      "Tests/test_file_libtiff.py",
+      "src/libImaging/TiffDecode.c"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "4e2def2539ec13e53a82e06c4b3daf00454100c4",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/4e2def2539ec13e53a82e06c4b3daf00454100c4",
+    "sources_tried": [
+      "trivy",
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "",
+        "before_signature": "",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/libImaging/TiffDecode.c",
+        "fully_qualified_name": "PIL.TiffDecode.c",
+        "kind": "file",
+        "lines_added": 14,
+        "lines_removed": 3,
+        "short_name": "TiffDecode.c",
+        "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
   "CVE-2020-5311": {
     "cve_id": "CVE-2020-5311",
     "fetched_at": "2026-05-21T08:05:47+00:00",
@@ -1143,42 +1143,6 @@
         "lines_removed": 6,
         "short_name": "SgiRleDecode.c",
         "summary": "Native code change in src/libImaging/SgiRleDecode.c (Python wrapper may still be affected)"
-      }
-    ]
-  },
-  "CVE-2021-25287": {
-    "cve_id": "CVE-2021-25287",
-    "fetched_at": "2026-05-21T08:05:53+00:00",
-    "files_changed": [
-      "Tests/images/crash-4fb027452e6988530aa5dabee76eecacb3b79f8a.j2k",
-      "Tests/images/crash-7d4c83eb92150fb8f1653a697703ae06ae7c4998.j2k",
-      "Tests/images/crash-ccca68ff40171fdae983d924e127a721cab2bd50.j2k",
-      "Tests/images/crash-d2c93af851d3ab9a19e34503626368b2ecde9c03.j2k",
-      "Tests/test_file_jpeg2k.py",
-      "src/libImaging/Jpeg2KDecode.c"
-    ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "3bf5eddb89afdf690eceaa52bc4d3546ba9a5f87",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bf5eddb89afdf690eceaa52bc4d3546ba9a5f87",
-    "sources_tried": [
-      "trivy",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "",
-        "before_signature": "",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/Jpeg2KDecode.c",
-        "fully_qualified_name": "PIL.Jpeg2KDecode.c",
-        "kind": "file",
-        "lines_added": 25,
-        "lines_removed": 8,
-        "short_name": "Jpeg2KDecode.c",
-        "summary": "Native code change in src/libImaging/Jpeg2KDecode.c (Python wrapper may still be affected)"
       }
     ]
   },
@@ -1268,6 +1232,42 @@
       }
     ]
   },
+  "CVE-2021-25287": {
+    "cve_id": "CVE-2021-25287",
+    "fetched_at": "2026-05-21T08:05:53+00:00",
+    "files_changed": [
+      "Tests/images/crash-4fb027452e6988530aa5dabee76eecacb3b79f8a.j2k",
+      "Tests/images/crash-7d4c83eb92150fb8f1653a697703ae06ae7c4998.j2k",
+      "Tests/images/crash-ccca68ff40171fdae983d924e127a721cab2bd50.j2k",
+      "Tests/images/crash-d2c93af851d3ab9a19e34503626368b2ecde9c03.j2k",
+      "Tests/test_file_jpeg2k.py",
+      "src/libImaging/Jpeg2KDecode.c"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "3bf5eddb89afdf690eceaa52bc4d3546ba9a5f87",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bf5eddb89afdf690eceaa52bc4d3546ba9a5f87",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "",
+        "before_signature": "",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/libImaging/Jpeg2KDecode.c",
+        "fully_qualified_name": "PIL.Jpeg2KDecode.c",
+        "kind": "file",
+        "lines_added": 25,
+        "lines_removed": 8,
+        "short_name": "Jpeg2KDecode.c",
+        "summary": "Native code change in src/libImaging/Jpeg2KDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
   "CVE-2021-25288": {
     "cve_id": "CVE-2021-25288",
     "fetched_at": "2026-05-21T08:05:53+00:00",
@@ -1338,40 +1338,6 @@
       }
     ]
   },
-  "CVE-2021-25292": {
-    "cve_id": "CVE-2021-25292",
-    "fetched_at": "2026-05-21T08:05:59+00:00",
-    "files_changed": [
-      "src/PIL/PdfParser.py"
-    ],
-    "import_aliases": [
-      "from PIL.src.PIL.PdfParser import next_object_id",
-      "from PIL import PdfParser"
-    ],
-    "package": "Pillow",
-    "patch_commit": "3bce145966374dd39ce58a6fc0083f8d1890719c",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bce145966374dd39ce58a6fc0083f8d1890719c",
-    "sources_tried": [
-      "trivy",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def next_object_id(...)",
-        "before_signature": "def next_object_id(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/PdfParser.py",
-        "fully_qualified_name": "PIL.src.PIL.PdfParser.next_object_id",
-        "kind": "function",
-        "lines_added": 2,
-        "lines_removed": 1,
-        "short_name": "next_object_id",
-        "summary": "Internal logic updated in next_object_id (+2/-1 lines in hunk)"
-      }
-    ]
-  },
   "CVE-2021-25291": {
     "cve_id": "CVE-2021-25291",
     "fetched_at": "2026-05-21T08:05:59+00:00",
@@ -1405,25 +1371,24 @@
       }
     ]
   },
-  "CVE-2021-25293": {
-    "cve_id": "CVE-2021-25293",
-    "fetched_at": "2026-05-21T08:05:59+00:00",
+  "CVE-2021-25290": {
+    "cve_id": "CVE-2021-25290",
+    "fetched_at": "2026-05-21T08:05:57+00:00",
     "files_changed": [
-      "Tests/images/crash-465703f71a0f0094873a3e0e82c9f798161171b8.sgi",
-      "Tests/images/crash-64834657ee604b8797bf99eac6a194c124a9a8ba.sgi",
-      "Tests/images/crash-754d9c7ec485ffb76a90eeaab191ef69a2a3a3cd.sgi",
-      "Tests/images/crash-abcf1c97b8fe42a6c68f1fb0b978530c98d57ced.sgi",
-      "Tests/images/crash-b82e64d4f3f76d7465b6af535283029eda211259.sgi",
-      "Tests/images/crash-c1b2595b8b0b92cc5f38b6635e98e3a119ade807.sgi",
-      "Tests/images/crash-db8bfa78b19721225425530c5946217720d7df4e.sgi",
-      "Tests/test_sgi_crash.py",
-      "src/libImaging/SgiRleDecode.c"
+      "Tests/images/crash-0c7e0e8e11ce787078f00b5b0ca409a167f070e0.tif",
+      "Tests/images/crash-1185209cf7655b5aed8ae5e77784dfdd18ab59e9.tif",
+      "Tests/images/crash-338516dbd2f0e83caddb8ce256c22db3bd6dc40f.tif",
+      "Tests/images/crash-4f085cc12ece8cde18758d42608bed6a2a2cfb1c.tif",
+      "Tests/images/crash-86214e58da443d2b80820cff9677a38a33dcbbca.tif",
+      "Tests/images/crash-f46f5b2f43c370fe65706c11449f567ecc345e74.tif",
+      "Tests/test_tiff_crashes.py",
+      "src/libImaging/TiffDecode.c"
     ],
     "import_aliases": [],
     "package": "Pillow",
-    "patch_commit": "4853e522bddbec66022c0915b9a56255d0188bf9",
+    "patch_commit": "86f02f7c70862a0954bfe8133736d352db978eaa",
     "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/4853e522bddbec66022c0915b9a56255d0188bf9",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/86f02f7c70862a0954bfe8133736d352db978eaa",
     "sources_tried": [
       "trivy",
       "ghsa"
@@ -1434,13 +1399,47 @@
         "after_signature": "",
         "before_signature": "",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/SgiRleDecode.c",
-        "fully_qualified_name": "PIL.SgiRleDecode.c",
+        "file_in_patch": "src/libImaging/TiffDecode.c",
+        "fully_qualified_name": "PIL.TiffDecode.c",
         "kind": "file",
-        "lines_added": 77,
-        "lines_removed": 14,
-        "short_name": "SgiRleDecode.c",
-        "summary": "Native code change in src/libImaging/SgiRleDecode.c (Python wrapper may still be affected)"
+        "lines_added": 4,
+        "lines_removed": 0,
+        "short_name": "TiffDecode.c",
+        "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
+  "CVE-2021-25292": {
+    "cve_id": "CVE-2021-25292",
+    "fetched_at": "2026-05-21T08:05:59+00:00",
+    "files_changed": [
+      "src/PIL/PdfParser.py"
+    ],
+    "import_aliases": [
+      "from PIL.src.PIL.PdfParser import next_object_id",
+      "from PIL import PdfParser"
+    ],
+    "package": "Pillow",
+    "patch_commit": "3bce145966374dd39ce58a6fc0083f8d1890719c",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bce145966374dd39ce58a6fc0083f8d1890719c",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def next_object_id(...)",
+        "before_signature": "def next_object_id(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/PdfParser.py",
+        "fully_qualified_name": "PIL.src.PIL.PdfParser.next_object_id",
+        "kind": "function",
+        "lines_added": 2,
+        "lines_removed": 1,
+        "short_name": "next_object_id",
+        "summary": "Internal logic updated in next_object_id (+2/-1 lines in hunk)"
       }
     ]
   },
@@ -1510,6 +1509,45 @@
       }
     ]
   },
+  "CVE-2021-25293": {
+    "cve_id": "CVE-2021-25293",
+    "fetched_at": "2026-05-21T08:05:59+00:00",
+    "files_changed": [
+      "Tests/images/crash-465703f71a0f0094873a3e0e82c9f798161171b8.sgi",
+      "Tests/images/crash-64834657ee604b8797bf99eac6a194c124a9a8ba.sgi",
+      "Tests/images/crash-754d9c7ec485ffb76a90eeaab191ef69a2a3a3cd.sgi",
+      "Tests/images/crash-abcf1c97b8fe42a6c68f1fb0b978530c98d57ced.sgi",
+      "Tests/images/crash-b82e64d4f3f76d7465b6af535283029eda211259.sgi",
+      "Tests/images/crash-c1b2595b8b0b92cc5f38b6635e98e3a119ade807.sgi",
+      "Tests/images/crash-db8bfa78b19721225425530c5946217720d7df4e.sgi",
+      "Tests/test_sgi_crash.py",
+      "src/libImaging/SgiRleDecode.c"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "4853e522bddbec66022c0915b9a56255d0188bf9",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/4853e522bddbec66022c0915b9a56255d0188bf9",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "",
+        "before_signature": "",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/libImaging/SgiRleDecode.c",
+        "fully_qualified_name": "PIL.SgiRleDecode.c",
+        "kind": "file",
+        "lines_added": 77,
+        "lines_removed": 14,
+        "short_name": "SgiRleDecode.c",
+        "summary": "Native code change in src/libImaging/SgiRleDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
   "CVE-2021-27922": {
     "cve_id": "CVE-2021-27922",
     "fetched_at": "2026-05-21T08:06:05+00:00",
@@ -1576,44 +1614,6 @@
       }
     ]
   },
-  "CVE-2021-25290": {
-    "cve_id": "CVE-2021-25290",
-    "fetched_at": "2026-05-21T08:05:57+00:00",
-    "files_changed": [
-      "Tests/images/crash-0c7e0e8e11ce787078f00b5b0ca409a167f070e0.tif",
-      "Tests/images/crash-1185209cf7655b5aed8ae5e77784dfdd18ab59e9.tif",
-      "Tests/images/crash-338516dbd2f0e83caddb8ce256c22db3bd6dc40f.tif",
-      "Tests/images/crash-4f085cc12ece8cde18758d42608bed6a2a2cfb1c.tif",
-      "Tests/images/crash-86214e58da443d2b80820cff9677a38a33dcbbca.tif",
-      "Tests/images/crash-f46f5b2f43c370fe65706c11449f567ecc345e74.tif",
-      "Tests/test_tiff_crashes.py",
-      "src/libImaging/TiffDecode.c"
-    ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "86f02f7c70862a0954bfe8133736d352db978eaa",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/86f02f7c70862a0954bfe8133736d352db978eaa",
-    "sources_tried": [
-      "trivy",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "",
-        "before_signature": "",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/TiffDecode.c",
-        "fully_qualified_name": "PIL.TiffDecode.c",
-        "kind": "file",
-        "lines_added": 4,
-        "lines_removed": 0,
-        "short_name": "TiffDecode.c",
-        "summary": "Native code change in src/libImaging/TiffDecode.c (Python wrapper may still be affected)"
-      }
-    ]
-  },
   "CVE-2021-27923": {
     "cve_id": "CVE-2021-27923",
     "fetched_at": "2026-05-21T08:06:05+00:00",
@@ -1677,6 +1677,90 @@
         "lines_removed": 0,
         "short_name": "frame",
         "summary": "Added validation or guards in frame (+1/-0 lines in hunk)"
+      }
+    ]
+  },
+  "CVE-2021-28676": {
+    "cve_id": "CVE-2021-28676",
+    "fetched_at": "2026-05-21T08:06:09+00:00",
+    "files_changed": [
+      "Tests/images/timeout-9139147ce93e20eb14088fe238e541443ffd64b3.fli",
+      "Tests/images/timeout-bff0a9dc7243a8e6ede2408d2ffa6a9964698b87.fli",
+      "Tests/test_file_fli.py",
+      "src/libImaging/FliDecode.c"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "bb6c11fb889e6c11b0ee122b828132ee763b5856",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/bb6c11fb889e6c11b0ee122b828132ee763b5856",
+    "sources_tried": [
+      "trivy",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "",
+        "before_signature": "",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/libImaging/FliDecode.c",
+        "fully_qualified_name": "PIL.FliDecode.c",
+        "kind": "file",
+        "lines_added": 5,
+        "lines_removed": 0,
+        "short_name": "FliDecode.c",
+        "summary": "Native code change in src/libImaging/FliDecode.c (Python wrapper may still be affected)"
+      }
+    ]
+  },
+  "CVE-2021-28677": {
+    "cve_id": "CVE-2021-28677",
+    "fetched_at": "2026-05-21T08:06:11+00:00",
+    "files_changed": [
+      "Tests/images/timeout-d675703545fee17acab56e5fec644c19979175de.eps",
+      "Tests/test_file_eps.py",
+      "src/PIL/EpsImagePlugin.py"
+    ],
+    "import_aliases": [
+      "from PIL.src.PIL.EpsImagePlugin import seek",
+      "from PIL import EpsImagePlugin",
+      "from PIL.src.PIL.EpsImagePlugin import readline"
+    ],
+    "package": "Pillow",
+    "patch_commit": "5a5e6db0abf4e7a638fb1b3408c4e495a096cb92",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/5a5e6db0abf4e7a638fb1b3408c4e495a096cb92",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def readline(...)",
+        "before_signature": "def readline(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/EpsImagePlugin.py",
+        "fully_qualified_name": "PIL.src.PIL.EpsImagePlugin.readline",
+        "kind": "function",
+        "lines_added": 1,
+        "lines_removed": 1,
+        "short_name": "readline",
+        "summary": "Internal logic updated in readline (+1/-1 lines in hunk)"
+      },
+      {
+        "after_signature": "def seek(...)",
+        "before_signature": "def seek(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/EpsImagePlugin.py",
+        "fully_qualified_name": "PIL.src.PIL.EpsImagePlugin.seek",
+        "kind": "function",
+        "lines_added": 3,
+        "lines_removed": 3,
+        "short_name": "seek",
+        "summary": "Internal logic updated in seek (+3/-3 lines in hunk)"
       }
     ]
   },
@@ -1763,55 +1847,6 @@
       }
     ]
   },
-  "CVE-2021-28677": {
-    "cve_id": "CVE-2021-28677",
-    "fetched_at": "2026-05-21T08:06:11+00:00",
-    "files_changed": [
-      "Tests/images/timeout-d675703545fee17acab56e5fec644c19979175de.eps",
-      "Tests/test_file_eps.py",
-      "src/PIL/EpsImagePlugin.py"
-    ],
-    "import_aliases": [
-      "from PIL.src.PIL.EpsImagePlugin import seek",
-      "from PIL import EpsImagePlugin",
-      "from PIL.src.PIL.EpsImagePlugin import readline"
-    ],
-    "package": "Pillow",
-    "patch_commit": "5a5e6db0abf4e7a638fb1b3408c4e495a096cb92",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/5a5e6db0abf4e7a638fb1b3408c4e495a096cb92",
-    "sources_tried": [
-      "trivy",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def readline(...)",
-        "before_signature": "def readline(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/EpsImagePlugin.py",
-        "fully_qualified_name": "PIL.src.PIL.EpsImagePlugin.readline",
-        "kind": "function",
-        "lines_added": 1,
-        "lines_removed": 1,
-        "short_name": "readline",
-        "summary": "Internal logic updated in readline (+1/-1 lines in hunk)"
-      },
-      {
-        "after_signature": "def seek(...)",
-        "before_signature": "def seek(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/EpsImagePlugin.py",
-        "fully_qualified_name": "PIL.src.PIL.EpsImagePlugin.seek",
-        "kind": "function",
-        "lines_added": 3,
-        "lines_removed": 3,
-        "short_name": "seek",
-        "summary": "Internal logic updated in seek (+3/-3 lines in hunk)"
-      }
-    ]
-  },
   "CVE-2021-34552": {
     "cve_id": "CVE-2021-34552",
     "fetched_at": "2026-05-21T08:06:12+00:00",
@@ -1840,77 +1875,6 @@
         "lines_removed": 6,
         "short_name": "Convert.c",
         "summary": "Native code change in src/libImaging/Convert.c (Python wrapper may still be affected)"
-      }
-    ]
-  },
-  "CVE-2021-28676": {
-    "cve_id": "CVE-2021-28676",
-    "fetched_at": "2026-05-21T08:06:09+00:00",
-    "files_changed": [
-      "Tests/images/timeout-9139147ce93e20eb14088fe238e541443ffd64b3.fli",
-      "Tests/images/timeout-bff0a9dc7243a8e6ede2408d2ffa6a9964698b87.fli",
-      "Tests/test_file_fli.py",
-      "src/libImaging/FliDecode.c"
-    ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "bb6c11fb889e6c11b0ee122b828132ee763b5856",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/bb6c11fb889e6c11b0ee122b828132ee763b5856",
-    "sources_tried": [
-      "trivy",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "",
-        "before_signature": "",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/libImaging/FliDecode.c",
-        "fully_qualified_name": "PIL.FliDecode.c",
-        "kind": "file",
-        "lines_added": 5,
-        "lines_removed": 0,
-        "short_name": "FliDecode.c",
-        "summary": "Native code change in src/libImaging/FliDecode.c (Python wrapper may still be affected)"
-      }
-    ]
-  },
-  "CVE-2022-22817": {
-    "cve_id": "CVE-2022-22817",
-    "fetched_at": "2026-05-21T08:06:17+00:00",
-    "files_changed": [
-      "Tests/test_imagemath.py",
-      "docs/releasenotes/9.0.0.rst",
-      "src/PIL/ImageMath.py"
-    ],
-    "import_aliases": [
-      "from PIL.src.PIL.ImageMath import eval",
-      "from PIL import ImageMath"
-    ],
-    "package": "Pillow",
-    "patch_commit": "8531b01d6cdf0b70f256f93092caa2a5d91afc11",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/8531b01d6cdf0b70f256f93092caa2a5d91afc11",
-    "sources_tried": [
-      "trivy",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def eval(...)",
-        "before_signature": "def eval(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/ImageMath.py",
-        "fully_qualified_name": "PIL.src.PIL.ImageMath.eval",
-        "kind": "function",
-        "lines_added": 6,
-        "lines_removed": 1,
-        "short_name": "eval",
-        "summary": "Internal logic updated in eval (+6/-1 lines in hunk)"
       }
     ]
   },
@@ -2000,6 +1964,42 @@
       }
     ]
   },
+  "CVE-2022-22817": {
+    "cve_id": "CVE-2022-22817",
+    "fetched_at": "2026-05-21T08:06:17+00:00",
+    "files_changed": [
+      "Tests/test_imagemath.py",
+      "docs/releasenotes/9.0.0.rst",
+      "src/PIL/ImageMath.py"
+    ],
+    "import_aliases": [
+      "from PIL.src.PIL.ImageMath import eval",
+      "from PIL import ImageMath"
+    ],
+    "package": "Pillow",
+    "patch_commit": "8531b01d6cdf0b70f256f93092caa2a5d91afc11",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/8531b01d6cdf0b70f256f93092caa2a5d91afc11",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def eval(...)",
+        "before_signature": "def eval(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/ImageMath.py",
+        "fully_qualified_name": "PIL.src.PIL.ImageMath.eval",
+        "kind": "function",
+        "lines_added": 6,
+        "lines_removed": 1,
+        "short_name": "eval",
+        "summary": "Internal logic updated in eval (+6/-1 lines in hunk)"
+      }
+    ]
+  },
   "CVE-2022-22816": {
     "cve_id": "CVE-2022-22816",
     "fetched_at": "2026-05-21T08:06:16+00:00",
@@ -2066,6 +2066,26 @@
       }
     ]
   },
+  "CVE-2022-45198": {
+    "cve_id": "CVE-2022-45198",
+    "fetched_at": "2026-05-21T08:06:22+00:00",
+    "files_changed": [
+      "docs/releasenotes/9.2.0.rst"
+    ],
+    "import_aliases": [],
+    "package": "Pillow",
+    "patch_commit": "11918eac0628ec8ac0812670d9838361ead2d6a4",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/11918eac0628ec8ac0812670d9838361ead2d6a4",
+    "sources_tried": [
+      "trivy",
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "partial",
+    "vulnerable_symbols": []
+  },
   "CVE-2023-0286": {
     "cve_id": "CVE-2023-0286",
     "fetched_at": "2026-05-21T08:06:16+00:00",
@@ -2080,6 +2100,42 @@
     ],
     "status": "network_error",
     "vulnerable_symbols": []
+  },
+  "CVE-2023-30861": {
+    "cve_id": "CVE-2023-30861",
+    "fetched_at": "2026-05-21T04:47:43+00:00",
+    "files_changed": [
+      "src/flask/sessions.py",
+      "tests/test_basic.py"
+    ],
+    "import_aliases": [
+      "from flask.src.flask.sessions import save_session",
+      "from flask import sessions"
+    ],
+    "package": "Flask",
+    "patch_commit": "70f906c51ce49c485f1d355703e9cc3386b1cc2b",
+    "patch_repo": "pallets/flask",
+    "patch_url": "https://github.com/pallets/flask/commit/70f906c51ce49c485f1d355703e9cc3386b1cc2b",
+    "sources_tried": [
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def save_session(...)",
+        "before_signature": "def save_session(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/flask/sessions.py",
+        "fully_qualified_name": "flask.src.flask.sessions.save_session",
+        "kind": "function",
+        "lines_added": 6,
+        "lines_removed": 4,
+        "short_name": "save_session",
+        "summary": "Internal logic updated in save_session (+4/-0 lines in hunk)"
+      }
+    ]
   },
   "CVE-2023-23931": {
     "cve_id": "CVE-2023-23931",
@@ -2119,41 +2175,62 @@
       }
     ]
   },
-  "CVE-2022-45198": {
-    "cve_id": "CVE-2022-45198",
-    "fetched_at": "2026-05-21T08:06:22+00:00",
+  "CVE-2023-43804": {
+    "cve_id": "CVE-2023-43804",
+    "fetched_at": "2026-05-21T08:06:26+00:00",
     "files_changed": [
-      "docs/releasenotes/9.2.0.rst"
+      "CHANGES.rst",
+      "src/urllib3/util/retry.py",
+      "test/test_retry.py",
+      "test/test_retry_deprecated.py",
+      "test/with_dummyserver/test_poolmanager.py"
     ],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "11918eac0628ec8ac0812670d9838361ead2d6a4",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/11918eac0628ec8ac0812670d9838361ead2d6a4",
+    "import_aliases": [
+      "from urllib3.src.urllib3.util.retry import Retry",
+      "from urllib3 import retry"
+    ],
+    "package": "urllib3",
+    "patch_commit": "01220354d389cd05474713f8c982d05c9b17aafb",
+    "patch_repo": "urllib3/urllib3",
+    "patch_url": "https://github.com/urllib3/urllib3/commit/01220354d389cd05474713f8c982d05c9b17aafb",
     "sources_tried": [
       "trivy",
-      "nvd",
       "osv",
       "ghsa"
     ],
-    "status": "partial",
-    "vulnerable_symbols": []
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "class Retry",
+        "before_signature": "class Retry",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/urllib3/util/retry.py",
+        "fully_qualified_name": "urllib3.src.urllib3.util.retry.Retry",
+        "kind": "class",
+        "lines_added": 1,
+        "lines_removed": 1,
+        "short_name": "Retry",
+        "summary": "Internal logic updated in Retry (+1/-1 lines in hunk)"
+      }
+    ]
   },
-  "CVE-2023-30861": {
-    "cve_id": "CVE-2023-30861",
-    "fetched_at": "2026-05-21T04:47:43+00:00",
+  "CVE-2023-32681": {
+    "cve_id": "CVE-2023-32681",
+    "fetched_at": "2026-05-19T17:54:33+00:00",
     "files_changed": [
-      "src/flask/sessions.py",
-      "tests/test_basic.py"
+      "requests/sessions.py",
+      "tests/test_requests.py"
     ],
     "import_aliases": [
-      "from flask.src.flask.sessions import save_session",
-      "from flask import sessions"
+      "from requests.sessions import rebuild_proxies",
+      "from requests import sessions",
+      "from requests.sessions.Session import rebuild_auth",
+      "from requests import Session"
     ],
-    "package": "Flask",
-    "patch_commit": "70f906c51ce49c485f1d355703e9cc3386b1cc2b",
-    "patch_repo": "pallets/flask",
-    "patch_url": "https://github.com/pallets/flask/commit/70f906c51ce49c485f1d355703e9cc3386b1cc2b",
+    "package": "requests",
+    "patch_commit": "74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
+    "patch_repo": "psf/requests",
+    "patch_url": "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
     "sources_tried": [
       "nvd",
       "osv",
@@ -2162,16 +2239,28 @@
     "status": "ok",
     "vulnerable_symbols": [
       {
-        "after_signature": "def save_session(...)",
-        "before_signature": "def save_session(...)",
+        "after_signature": "",
+        "before_signature": "",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/flask/sessions.py",
-        "fully_qualified_name": "flask.src.flask.sessions.save_session",
+        "file_in_patch": "requests/sessions.py",
+        "fully_qualified_name": "requests.sessions.Session.rebuild_auth",
         "kind": "function",
-        "lines_added": 6,
-        "lines_removed": 4,
-        "short_name": "save_session",
-        "summary": "Internal logic updated in save_session (+4/-0 lines in hunk)"
+        "lines_added": 0,
+        "lines_removed": 0,
+        "short_name": "rebuild_auth",
+        "summary": "Proxy-Authorization handling on redirect; patch hardens rebuild_proxies"
+      },
+      {
+        "after_signature": "def rebuild_proxies(...)",
+        "before_signature": "def rebuild_proxies(...)",
+        "change_classification": "HARDENED_ONLY",
+        "file_in_patch": "requests/sessions.py",
+        "fully_qualified_name": "requests.sessions.rebuild_proxies",
+        "kind": "function",
+        "lines_added": 3,
+        "lines_removed": 1,
+        "short_name": "rebuild_proxies",
+        "summary": "Added validation or guards in rebuild_proxies (+3/-1 lines in hunk)"
       }
     ]
   },
@@ -2250,95 +2339,6 @@
         "lines_removed": 0,
         "short_name": "getmask2",
         "summary": "Added validation or guards in getmask2 (+1/-0 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2023-32681": {
-    "cve_id": "CVE-2023-32681",
-    "fetched_at": "2026-05-19T17:54:33+00:00",
-    "files_changed": [
-      "requests/sessions.py",
-      "tests/test_requests.py"
-    ],
-    "import_aliases": [
-      "from requests.sessions import rebuild_proxies",
-      "from requests import sessions",
-      "from requests.sessions.Session import rebuild_auth",
-      "from requests import Session"
-    ],
-    "package": "requests",
-    "patch_commit": "74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
-    "patch_repo": "psf/requests",
-    "patch_url": "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
-    "sources_tried": [
-      "nvd",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "",
-        "before_signature": "",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "requests/sessions.py",
-        "fully_qualified_name": "requests.sessions.Session.rebuild_auth",
-        "kind": "function",
-        "lines_added": 0,
-        "lines_removed": 0,
-        "short_name": "rebuild_auth",
-        "summary": "Proxy-Authorization handling on redirect; patch hardens rebuild_proxies"
-      },
-      {
-        "after_signature": "def rebuild_proxies(...)",
-        "before_signature": "def rebuild_proxies(...)",
-        "change_classification": "HARDENED_ONLY",
-        "file_in_patch": "requests/sessions.py",
-        "fully_qualified_name": "requests.sessions.rebuild_proxies",
-        "kind": "function",
-        "lines_added": 3,
-        "lines_removed": 1,
-        "short_name": "rebuild_proxies",
-        "summary": "Added validation or guards in rebuild_proxies (+3/-1 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2023-43804": {
-    "cve_id": "CVE-2023-43804",
-    "fetched_at": "2026-05-21T08:06:26+00:00",
-    "files_changed": [
-      "CHANGES.rst",
-      "src/urllib3/util/retry.py",
-      "test/test_retry.py",
-      "test/test_retry_deprecated.py",
-      "test/with_dummyserver/test_poolmanager.py"
-    ],
-    "import_aliases": [
-      "from urllib3.src.urllib3.util.retry import Retry",
-      "from urllib3 import retry"
-    ],
-    "package": "urllib3",
-    "patch_commit": "01220354d389cd05474713f8c982d05c9b17aafb",
-    "patch_repo": "urllib3/urllib3",
-    "patch_url": "https://github.com/urllib3/urllib3/commit/01220354d389cd05474713f8c982d05c9b17aafb",
-    "sources_tried": [
-      "trivy",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "class Retry",
-        "before_signature": "class Retry",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/urllib3/util/retry.py",
-        "fully_qualified_name": "urllib3.src.urllib3.util.retry.Retry",
-        "kind": "class",
-        "lines_added": 1,
-        "lines_removed": 1,
-        "short_name": "Retry",
-        "summary": "Internal logic updated in Retry (+1/-1 lines in hunk)"
       }
     ]
   },
@@ -2444,17 +2444,23 @@
       }
     ]
   },
-  "CVE-2023-50782": {
-    "cve_id": "CVE-2023-50782",
-    "fetched_at": "2026-05-21T08:06:27+00:00",
-    "files_changed": [],
+  "CVE-2023-4863": {
+    "cve_id": "CVE-2023-4863",
+    "fetched_at": "2026-05-21T08:06:28+00:00",
+    "files_changed": [
+      "Cargo.toml"
+    ],
     "import_aliases": [],
-    "package": "cryptography",
-    "patch_commit": null,
-    "patch_repo": null,
-    "patch_url": null,
-    "sources_tried": [],
-    "status": "no_patch_found",
+    "package": "Pillow",
+    "patch_commit": "9d4c56e63abecc777df71c702503c3eaabd7dcbc",
+    "patch_repo": "jaredforth/webp",
+    "patch_url": "https://github.com/jaredforth/webp/commit/9d4c56e63abecc777df71c702503c3eaabd7dcbc",
+    "sources_tried": [
+      "trivy",
+      "osv",
+      "ghsa"
+    ],
+    "status": "partial",
     "vulnerable_symbols": []
   },
   "CVE-2024-0727": {
@@ -2479,23 +2485,17 @@
     "status": "partial",
     "vulnerable_symbols": []
   },
-  "CVE-2023-4863": {
-    "cve_id": "CVE-2023-4863",
-    "fetched_at": "2026-05-21T08:06:28+00:00",
-    "files_changed": [
-      "Cargo.toml"
-    ],
+  "CVE-2023-50782": {
+    "cve_id": "CVE-2023-50782",
+    "fetched_at": "2026-05-21T08:06:27+00:00",
+    "files_changed": [],
     "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": "9d4c56e63abecc777df71c702503c3eaabd7dcbc",
-    "patch_repo": "jaredforth/webp",
-    "patch_url": "https://github.com/jaredforth/webp/commit/9d4c56e63abecc777df71c702503c3eaabd7dcbc",
-    "sources_tried": [
-      "trivy",
-      "osv",
-      "ghsa"
-    ],
-    "status": "partial",
+    "package": "cryptography",
+    "patch_commit": null,
+    "patch_repo": null,
+    "patch_url": null,
+    "sources_tried": [],
+    "status": "no_patch_found",
     "vulnerable_symbols": []
   },
   "CVE-2024-22195": {
@@ -2579,6 +2579,56 @@
       }
     ]
   },
+  "CVE-2024-34064": {
+    "cve_id": "CVE-2024-34064",
+    "fetched_at": "2026-05-21T04:47:48+00:00",
+    "files_changed": [
+      "CHANGES.rst",
+      "src/jinja2/filters.py",
+      "tests/test_filters.py"
+    ],
+    "import_aliases": [
+      "from jinja2.src.jinja2.filters import do_items",
+      "from jinja2 import filters",
+      "from jinja2.src.jinja2.filters import do_xmlattr"
+    ],
+    "package": "Jinja2",
+    "patch_commit": "0668239dc6b44ef38e7a6c9f91f312fd4ca581cb",
+    "patch_repo": "pallets/jinja",
+    "patch_url": "https://github.com/pallets/jinja/commit/0668239dc6b44ef38e7a6c9f91f312fd4ca581cb",
+    "sources_tried": [
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def do_items(...)",
+        "before_signature": "def do_items(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/jinja2/filters.py",
+        "fully_qualified_name": "jinja2.src.jinja2.filters.do_items",
+        "kind": "function",
+        "lines_added": 3,
+        "lines_removed": 1,
+        "short_name": "do_items",
+        "summary": "Internal logic updated in do_items (+3/-1 lines in hunk)"
+      },
+      {
+        "after_signature": "def do_xmlattr(...)",
+        "before_signature": "def do_xmlattr(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/jinja2/filters.py",
+        "fully_qualified_name": "jinja2.src.jinja2.filters.do_xmlattr",
+        "kind": "function",
+        "lines_added": 14,
+        "lines_removed": 4,
+        "short_name": "do_xmlattr",
+        "summary": "Internal logic updated in do_xmlattr (+8/-2 lines in hunk)"
+      }
+    ]
+  },
   "CVE-2024-35195": {
     "cve_id": "CVE-2024-35195",
     "fetched_at": "2026-05-21T08:06:37+00:00",
@@ -2639,96 +2689,6 @@
         "lines_removed": 1,
         "short_name": "send",
         "summary": "Internal logic updated in send (+1/-1 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2024-34064": {
-    "cve_id": "CVE-2024-34064",
-    "fetched_at": "2026-05-21T04:47:48+00:00",
-    "files_changed": [
-      "CHANGES.rst",
-      "src/jinja2/filters.py",
-      "tests/test_filters.py"
-    ],
-    "import_aliases": [
-      "from jinja2.src.jinja2.filters import do_items",
-      "from jinja2 import filters",
-      "from jinja2.src.jinja2.filters import do_xmlattr"
-    ],
-    "package": "Jinja2",
-    "patch_commit": "0668239dc6b44ef38e7a6c9f91f312fd4ca581cb",
-    "patch_repo": "pallets/jinja",
-    "patch_url": "https://github.com/pallets/jinja/commit/0668239dc6b44ef38e7a6c9f91f312fd4ca581cb",
-    "sources_tried": [
-      "nvd",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def do_items(...)",
-        "before_signature": "def do_items(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/jinja2/filters.py",
-        "fully_qualified_name": "jinja2.src.jinja2.filters.do_items",
-        "kind": "function",
-        "lines_added": 3,
-        "lines_removed": 1,
-        "short_name": "do_items",
-        "summary": "Internal logic updated in do_items (+3/-1 lines in hunk)"
-      },
-      {
-        "after_signature": "def do_xmlattr(...)",
-        "before_signature": "def do_xmlattr(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/jinja2/filters.py",
-        "fully_qualified_name": "jinja2.src.jinja2.filters.do_xmlattr",
-        "kind": "function",
-        "lines_added": 14,
-        "lines_removed": 4,
-        "short_name": "do_xmlattr",
-        "summary": "Internal logic updated in do_xmlattr (+8/-2 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2024-37891": {
-    "cve_id": "CVE-2024-37891",
-    "fetched_at": "2026-05-21T08:06:39+00:00",
-    "files_changed": [
-      "CHANGES.rst",
-      "src/urllib3/util/retry.py",
-      "test/test_retry.py",
-      "test/test_retry_deprecated.py",
-      "test/with_dummyserver/test_poolmanager.py"
-    ],
-    "import_aliases": [
-      "from urllib3.src.urllib3.util.retry import Retry",
-      "from urllib3 import retry"
-    ],
-    "package": "urllib3",
-    "patch_commit": "40b6d1605814dd1db0a46e202d6e56f2e4c9a468",
-    "patch_repo": "urllib3/urllib3",
-    "patch_url": "https://github.com/urllib3/urllib3/commit/40b6d1605814dd1db0a46e202d6e56f2e4c9a468",
-    "sources_tried": [
-      "trivy",
-      "nvd",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "class Retry",
-        "before_signature": "class Retry",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/urllib3/util/retry.py",
-        "fully_qualified_name": "urllib3.src.urllib3.util.retry.Retry",
-        "kind": "class",
-        "lines_added": 3,
-        "lines_removed": 1,
-        "short_name": "Retry",
-        "summary": "Internal logic updated in Retry (+3/-1 lines in hunk)"
       }
     ]
   },
@@ -2805,6 +2765,46 @@
         "lines_removed": 21,
         "short_name": "unsafe_undefined",
         "summary": "Internal logic updated in unsafe_undefined (+36/-21 lines in hunk)"
+      }
+    ]
+  },
+  "CVE-2024-37891": {
+    "cve_id": "CVE-2024-37891",
+    "fetched_at": "2026-05-21T08:06:39+00:00",
+    "files_changed": [
+      "CHANGES.rst",
+      "src/urllib3/util/retry.py",
+      "test/test_retry.py",
+      "test/test_retry_deprecated.py",
+      "test/with_dummyserver/test_poolmanager.py"
+    ],
+    "import_aliases": [
+      "from urllib3.src.urllib3.util.retry import Retry",
+      "from urllib3 import retry"
+    ],
+    "package": "urllib3",
+    "patch_commit": "40b6d1605814dd1db0a46e202d6e56f2e4c9a468",
+    "patch_repo": "urllib3/urllib3",
+    "patch_url": "https://github.com/urllib3/urllib3/commit/40b6d1605814dd1db0a46e202d6e56f2e4c9a468",
+    "sources_tried": [
+      "trivy",
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "class Retry",
+        "before_signature": "class Retry",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/urllib3/util/retry.py",
+        "fully_qualified_name": "urllib3.src.urllib3.util.retry.Retry",
+        "kind": "class",
+        "lines_added": 3,
+        "lines_removed": 1,
+        "short_name": "Retry",
+        "summary": "Internal logic updated in Retry (+3/-1 lines in hunk)"
       }
     ]
   },
@@ -2970,80 +2970,6 @@
         "lines_removed": 1,
         "short_name": "MultiDecoder",
         "summary": "Internal logic updated in MultiDecoder (+11/-1 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2026-25645": {
-    "cve_id": "CVE-2026-25645",
-    "fetched_at": "2026-05-21T08:06:46+00:00",
-    "files_changed": [
-      "src/requests/utils.py"
-    ],
-    "import_aliases": [
-      "from requests.src.requests.utils import extract_zipped_paths",
-      "from requests import utils"
-    ],
-    "package": "requests",
-    "patch_commit": "66d21cb07bd6255b1280291c4fafb71803cdb3b7",
-    "patch_repo": "psf/requests",
-    "patch_url": "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7",
-    "sources_tried": [
-      "trivy",
-      "nvd",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def extract_zipped_paths(...)",
-        "before_signature": "def extract_zipped_paths(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/requests/utils.py",
-        "fully_qualified_name": "requests.src.requests.utils.extract_zipped_paths",
-        "kind": "function",
-        "lines_added": 7,
-        "lines_removed": 6,
-        "short_name": "extract_zipped_paths",
-        "summary": "Internal logic updated in extract_zipped_paths (+7/-6 lines in hunk)"
-      }
-    ]
-  },
-  "CVE-2026-21441": {
-    "cve_id": "CVE-2026-21441",
-    "fetched_at": "2026-05-21T08:06:45+00:00",
-    "files_changed": [
-      "CHANGES.rst",
-      "dummyserver/app.py",
-      "src/urllib3/response.py",
-      "test/with_dummyserver/test_connectionpool.py"
-    ],
-    "import_aliases": [
-      "from urllib3.src.urllib3.response import drain_conn",
-      "from urllib3 import response"
-    ],
-    "package": "urllib3",
-    "patch_commit": "8864ac407bba8607950025e0979c4c69bc7abc7b",
-    "patch_repo": "urllib3/urllib3",
-    "patch_url": "https://github.com/urllib3/urllib3/commit/8864ac407bba8607950025e0979c4c69bc7abc7b",
-    "sources_tried": [
-      "trivy",
-      "osv",
-      "ghsa"
-    ],
-    "status": "ok",
-    "vulnerable_symbols": [
-      {
-        "after_signature": "def drain_conn(...)",
-        "before_signature": "def drain_conn(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/urllib3/response.py",
-        "fully_qualified_name": "urllib3.src.urllib3.response.drain_conn",
-        "kind": "function",
-        "lines_added": 5,
-        "lines_removed": 1,
-        "short_name": "drain_conn",
-        "summary": "Internal logic updated in drain_conn (+5/-1 lines in hunk)"
       }
     ]
   },
@@ -3272,26 +3198,20 @@
       }
     ]
   },
-  "CVE-2026-26007": {
-    "cve_id": "CVE-2026-26007",
-    "fetched_at": "2026-05-21T08:06:49+00:00",
+  "CVE-2026-25645": {
+    "cve_id": "CVE-2026-25645",
+    "fetched_at": "2026-05-21T08:06:46+00:00",
     "files_changed": [
-      "CHANGELOG.rst",
-      "src/cryptography/hazmat/primitives/asymmetric/ec.py",
-      "src/cryptography/utils.py",
-      "src/rust/src/backend/ec.rs",
-      "tests/hazmat/primitives/test_ec.py"
+      "src/requests/utils.py"
     ],
     "import_aliases": [
-      "from cryptography.src.cryptography.hazmat.primitives.asymmetric.ec import get_curve_for_oid",
-      "from cryptography import ec",
-      "from cryptography.src.cryptography.utils import CryptographyDeprecationWarning",
-      "from cryptography import utils"
+      "from requests.src.requests.utils import extract_zipped_paths",
+      "from requests import utils"
     ],
-    "package": "cryptography",
-    "patch_commit": "0eebb9dbb6343d9bc1d91e5a2482ed4e054a6d8c",
-    "patch_repo": "pyca/cryptography",
-    "patch_url": "https://github.com/pyca/cryptography/commit/0eebb9dbb6343d9bc1d91e5a2482ed4e054a6d8c",
+    "package": "requests",
+    "patch_commit": "66d21cb07bd6255b1280291c4fafb71803cdb3b7",
+    "patch_repo": "psf/requests",
+    "patch_url": "https://github.com/psf/requests/commit/66d21cb07bd6255b1280291c4fafb71803cdb3b7",
     "sources_tried": [
       "trivy",
       "nvd",
@@ -3301,105 +3221,56 @@
     "status": "ok",
     "vulnerable_symbols": [
       {
-        "after_signature": "def get_curve_for_oid(...)",
-        "before_signature": "def get_curve_for_oid(...)",
+        "after_signature": "def extract_zipped_paths(...)",
+        "before_signature": "def extract_zipped_paths(...)",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/cryptography/hazmat/primitives/asymmetric/ec.py",
-        "fully_qualified_name": "cryptography.src.cryptography.hazmat.primitives.asymmetric.ec.get_curve_for_oid",
+        "file_in_patch": "src/requests/utils.py",
+        "fully_qualified_name": "requests.src.requests.utils.extract_zipped_paths",
         "kind": "function",
-        "lines_added": 23,
-        "lines_removed": 0,
-        "short_name": "get_curve_for_oid",
-        "summary": "Internal logic updated in get_curve_for_oid (+23/-0 lines in hunk)"
-      },
-      {
-        "after_signature": "class CryptographyDeprecationWarning",
-        "before_signature": "class CryptographyDeprecationWarning",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/cryptography/utils.py",
-        "fully_qualified_name": "cryptography.src.cryptography.utils.CryptographyDeprecationWarning",
-        "kind": "class",
-        "lines_added": 1,
-        "lines_removed": 0,
-        "short_name": "CryptographyDeprecationWarning",
-        "summary": "Internal logic updated in CryptographyDeprecationWarning (+1/-0 lines in hunk)"
+        "lines_added": 7,
+        "lines_removed": 6,
+        "short_name": "extract_zipped_paths",
+        "summary": "Internal logic updated in extract_zipped_paths (+7/-6 lines in hunk)"
       }
     ]
   },
-  "CVE-2026-42308": {
-    "cve_id": "CVE-2026-42308",
+  "CVE-2026-21441": {
+    "cve_id": "CVE-2026-21441",
     "fetched_at": "2026-05-21T08:06:45+00:00",
-    "files_changed": [],
-    "import_aliases": [],
-    "package": "Pillow",
-    "patch_commit": null,
-    "patch_repo": null,
-    "patch_url": null,
-    "sources_tried": [],
-    "status": "no_patch_found",
-    "vulnerable_symbols": []
-  },
-  "CVE-2026-42310": {
-    "cve_id": "CVE-2026-42310",
-    "fetched_at": "2026-05-21T08:06:51+00:00",
     "files_changed": [
-      "Tests/images/trailer_loop.pdf",
-      "Tests/test_pdfparser.py",
-      "src/PIL/PdfParser.py"
+      "CHANGES.rst",
+      "dummyserver/app.py",
+      "src/urllib3/response.py",
+      "test/with_dummyserver/test_connectionpool.py"
     ],
     "import_aliases": [
-      "from PIL.src.PIL.PdfParser import read_trailer",
-      "from PIL import PdfParser",
-      "from PIL.src.PIL.PdfParser import read_prev_trailer"
+      "from urllib3.src.urllib3.response import drain_conn",
+      "from urllib3 import response"
     ],
-    "package": "Pillow",
-    "patch_commit": "3bf614e4b8615d0ce1d5039efaf6db447fe7c468",
-    "patch_repo": "python-pillow/Pillow",
-    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bf614e4b8615d0ce1d5039efaf6db447fe7c468",
+    "package": "urllib3",
+    "patch_commit": "8864ac407bba8607950025e0979c4c69bc7abc7b",
+    "patch_repo": "urllib3/urllib3",
+    "patch_url": "https://github.com/urllib3/urllib3/commit/8864ac407bba8607950025e0979c4c69bc7abc7b",
     "sources_tried": [
       "trivy",
+      "osv",
       "ghsa"
     ],
     "status": "ok",
     "vulnerable_symbols": [
       {
-        "after_signature": "def read_prev_trailer(...)",
-        "before_signature": "def read_prev_trailer(...)",
+        "after_signature": "def drain_conn(...)",
+        "before_signature": "def drain_conn(...)",
         "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/PdfParser.py",
-        "fully_qualified_name": "PIL.src.PIL.PdfParser.read_prev_trailer",
+        "file_in_patch": "src/urllib3/response.py",
+        "fully_qualified_name": "urllib3.src.urllib3.response.drain_conn",
         "kind": "function",
         "lines_added": 5,
         "lines_removed": 1,
-        "short_name": "read_prev_trailer",
-        "summary": "Internal logic updated in read_prev_trailer (+5/-1 lines in hunk)"
-      },
-      {
-        "after_signature": "def read_trailer(...)",
-        "before_signature": "def read_trailer(...)",
-        "change_classification": "INTERNAL_CHANGE",
-        "file_in_patch": "src/PIL/PdfParser.py",
-        "fully_qualified_name": "PIL.src.PIL.PdfParser.read_trailer",
-        "kind": "function",
-        "lines_added": 3,
-        "lines_removed": 1,
-        "short_name": "read_trailer",
-        "summary": "Internal logic updated in read_trailer (+3/-1 lines in hunk)"
+        "short_name": "drain_conn",
+        "summary": "Internal logic updated in drain_conn (+5/-1 lines in hunk)"
       }
     ]
-  },
-  "CVE-2026-34073": {
-    "cve_id": "CVE-2026-34073",
-    "fetched_at": "2026-05-21T08:06:44+00:00",
-    "files_changed": [],
-    "import_aliases": [],
-    "package": "cryptography",
-    "patch_commit": null,
-    "patch_repo": null,
-    "patch_url": null,
-    "sources_tried": [],
-    "status": "no_patch_found",
-    "vulnerable_symbols": []
   },
   "CVE-2026-27205": {
     "cve_id": "CVE-2026-27205",
@@ -3535,12 +3406,79 @@
       }
     ]
   },
-  "GHSA-4FX9-VC88-Q2XC": {
-    "cve_id": "GHSA-4FX9-VC88-Q2XC",
+  "CVE-2026-26007": {
+    "cve_id": "CVE-2026-26007",
     "fetched_at": "2026-05-21T08:06:49+00:00",
+    "files_changed": [
+      "CHANGELOG.rst",
+      "src/cryptography/hazmat/primitives/asymmetric/ec.py",
+      "src/cryptography/utils.py",
+      "src/rust/src/backend/ec.rs",
+      "tests/hazmat/primitives/test_ec.py"
+    ],
+    "import_aliases": [
+      "from cryptography.src.cryptography.hazmat.primitives.asymmetric.ec import get_curve_for_oid",
+      "from cryptography import ec",
+      "from cryptography.src.cryptography.utils import CryptographyDeprecationWarning",
+      "from cryptography import utils"
+    ],
+    "package": "cryptography",
+    "patch_commit": "0eebb9dbb6343d9bc1d91e5a2482ed4e054a6d8c",
+    "patch_repo": "pyca/cryptography",
+    "patch_url": "https://github.com/pyca/cryptography/commit/0eebb9dbb6343d9bc1d91e5a2482ed4e054a6d8c",
+    "sources_tried": [
+      "trivy",
+      "nvd",
+      "osv",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def get_curve_for_oid(...)",
+        "before_signature": "def get_curve_for_oid(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/cryptography/hazmat/primitives/asymmetric/ec.py",
+        "fully_qualified_name": "cryptography.src.cryptography.hazmat.primitives.asymmetric.ec.get_curve_for_oid",
+        "kind": "function",
+        "lines_added": 23,
+        "lines_removed": 0,
+        "short_name": "get_curve_for_oid",
+        "summary": "Internal logic updated in get_curve_for_oid (+23/-0 lines in hunk)"
+      },
+      {
+        "after_signature": "class CryptographyDeprecationWarning",
+        "before_signature": "class CryptographyDeprecationWarning",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/cryptography/utils.py",
+        "fully_qualified_name": "cryptography.src.cryptography.utils.CryptographyDeprecationWarning",
+        "kind": "class",
+        "lines_added": 1,
+        "lines_removed": 0,
+        "short_name": "CryptographyDeprecationWarning",
+        "summary": "Internal logic updated in CryptographyDeprecationWarning (+1/-0 lines in hunk)"
+      }
+    ]
+  },
+  "CVE-2026-42308": {
+    "cve_id": "CVE-2026-42308",
+    "fetched_at": "2026-05-21T08:06:45+00:00",
     "files_changed": [],
     "import_aliases": [],
     "package": "Pillow",
+    "patch_commit": null,
+    "patch_repo": null,
+    "patch_url": null,
+    "sources_tried": [],
+    "status": "no_patch_found",
+    "vulnerable_symbols": []
+  },
+  "CVE-2026-34073": {
+    "cve_id": "CVE-2026-34073",
+    "fetched_at": "2026-05-21T08:06:44+00:00",
+    "files_changed": [],
+    "import_aliases": [],
+    "package": "cryptography",
     "patch_commit": null,
     "patch_repo": null,
     "patch_url": null,
@@ -3561,12 +3499,61 @@
     "status": "no_patch_found",
     "vulnerable_symbols": []
   },
-  "GHSA-5CPQ-8WJ7-HF2V": {
-    "cve_id": "GHSA-5CPQ-8WJ7-HF2V",
+  "CVE-2026-42310": {
+    "cve_id": "CVE-2026-42310",
+    "fetched_at": "2026-05-21T08:06:51+00:00",
+    "files_changed": [
+      "Tests/images/trailer_loop.pdf",
+      "Tests/test_pdfparser.py",
+      "src/PIL/PdfParser.py"
+    ],
+    "import_aliases": [
+      "from PIL.src.PIL.PdfParser import read_trailer",
+      "from PIL import PdfParser",
+      "from PIL.src.PIL.PdfParser import read_prev_trailer"
+    ],
+    "package": "Pillow",
+    "patch_commit": "3bf614e4b8615d0ce1d5039efaf6db447fe7c468",
+    "patch_repo": "python-pillow/Pillow",
+    "patch_url": "https://github.com/python-pillow/Pillow/commit/3bf614e4b8615d0ce1d5039efaf6db447fe7c468",
+    "sources_tried": [
+      "trivy",
+      "ghsa"
+    ],
+    "status": "ok",
+    "vulnerable_symbols": [
+      {
+        "after_signature": "def read_prev_trailer(...)",
+        "before_signature": "def read_prev_trailer(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/PdfParser.py",
+        "fully_qualified_name": "PIL.src.PIL.PdfParser.read_prev_trailer",
+        "kind": "function",
+        "lines_added": 5,
+        "lines_removed": 1,
+        "short_name": "read_prev_trailer",
+        "summary": "Internal logic updated in read_prev_trailer (+5/-1 lines in hunk)"
+      },
+      {
+        "after_signature": "def read_trailer(...)",
+        "before_signature": "def read_trailer(...)",
+        "change_classification": "INTERNAL_CHANGE",
+        "file_in_patch": "src/PIL/PdfParser.py",
+        "fully_qualified_name": "PIL.src.PIL.PdfParser.read_trailer",
+        "kind": "function",
+        "lines_added": 3,
+        "lines_removed": 1,
+        "short_name": "read_trailer",
+        "summary": "Internal logic updated in read_trailer (+3/-1 lines in hunk)"
+      }
+    ]
+  },
+  "GHSA-4FX9-VC88-Q2XC": {
+    "cve_id": "GHSA-4FX9-VC88-Q2XC",
     "fetched_at": "2026-05-21T08:06:49+00:00",
     "files_changed": [],
     "import_aliases": [],
-    "package": "cryptography",
+    "package": "Pillow",
     "patch_commit": null,
     "patch_repo": null,
     "patch_url": null,
@@ -3580,6 +3567,19 @@
     "files_changed": [],
     "import_aliases": [],
     "package": "Pillow",
+    "patch_commit": null,
+    "patch_repo": null,
+    "patch_url": null,
+    "sources_tried": [],
+    "status": "no_patch_found",
+    "vulnerable_symbols": []
+  },
+  "GHSA-5CPQ-8WJ7-HF2V": {
+    "cve_id": "GHSA-5CPQ-8WJ7-HF2V",
+    "fetched_at": "2026-05-21T08:06:49+00:00",
+    "files_changed": [],
+    "import_aliases": [],
+    "package": "cryptography",
     "patch_commit": null,
     "patch_repo": null,
     "patch_url": null,

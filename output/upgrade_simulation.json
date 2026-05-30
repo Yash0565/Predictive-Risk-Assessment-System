@@ -1,5 +1,5 @@
 {
-  "simulated_at": "2026-05-28T07:38:55+00:00",
+  "simulated_at": "2026-05-28T09:21:59+00:00",
   "status": "ok",
   "python_version": "3.14.0",
   "current_tree": {
@@ -229,11 +229,10 @@
       "python_requires": ">=3.8"
     },
     "jinja2": {
-      "version": "3.1.6",
+      "version": "2.10.1",
       "requires": {
-        "markupsafe": ">=2.0"
-      },
-      "python_requires": ">=3.7"
+        "markupsafe": ">=0.23"
+      }
     },
     "jmespath": {
       "version": "0.10.0",
@@ -312,7 +311,7 @@
       {
         "package": "jinja2",
         "from": "2.10",
-        "to": "3.1.6"
+        "to": "2.10.1"
       },
       {
         "package": "pillow",
@@ -406,7 +405,7 @@
       {
         "package": "jinja2",
         "from": "2.10",
-        "to": "3.1.6",
+        "to": "2.10.1",
         "forced_by": "flask"
       },
       {
@@ -443,13 +442,6 @@
     "total_packages_affected": 8
   },
   "runtime_conflicts": [
-    {
-      "package": "jinja2",
-      "version": "3.1.6",
-      "requires_python": ">=3.7",
-      "project_python": "3.14.0",
-      "compatible": true
-    },
     {
       "package": "urllib3",
       "version": "2.6.0",
@@ -628,6 +620,13 @@
       "version": "2.31.0"
     },
     {
+      "cve": "GHSA-cpwx-vrp4-4pq7",
+      "cvss": 0.0,
+      "note": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
       "cve": "GHSA-cqhg-xjhh-p8hf",
       "cvss": 0.0,
       "note": "Out-of-bounds reads in Pillow",
@@ -649,6 +648,13 @@
       "version": "6.2.2"
     },
     {
+      "cve": "GHSA-g3rq-g295-4j3m",
+      "cvss": 0.0,
+      "note": "Regular Expression Denial of Service (ReDoS) in Jinja2",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
       "cve": "GHSA-g6rj-rv7j-xwp4",
       "cvss": 0.0,
       "note": "Pillow denial of service",
@@ -661,6 +667,20 @@
       "note": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
       "package": "requests",
       "version": "2.31.0"
+    },
+    {
+      "cve": "GHSA-h5c8-rqwp-cp95",
+      "cvss": 0.0,
+      "note": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "GHSA-h75v-3vvj-5mfj",
+      "cvss": 0.0,
+      "note": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+      "package": "jinja2",
+      "version": "2.10.1"
     },
     {
       "cve": "GHSA-hf64-x4gq-p99h",
@@ -731,6 +751,13 @@
       "note": "Improper Initialization in Pillow",
       "package": "pillow",
       "version": "6.2.2"
+    },
+    {
+      "cve": "GHSA-q2x7-8rv6-6q7h",
+      "cvss": 0.0,
+      "note": "Jinja has a sandbox breakout through indirect reference to format method",
+      "package": "jinja2",
+      "version": "2.10.1"
     },
     {
       "cve": "GHSA-q5hq-fp76-qmrc",
@@ -929,6 +956,13 @@
       "version": "6.2.2"
     },
     {
+      "cve": "PYSEC-2021-66",
+      "cvss": 0.0,
+      "note": "",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
       "cve": "PYSEC-2021-69",
       "cvss": 0.0,
       "note": "",
@@ -1067,20 +1101,27 @@
       },
       {
         "order": 4,
+        "package": "jinja2",
+        "from": "2.10",
+        "to": "2.10.1",
+        "reason": "Primary upgrade target."
+      },
+      {
+        "order": 5,
         "package": "pillow",
         "from": "6.0.0",
         "to": "6.2.2",
         "reason": "Primary upgrade target."
       },
       {
-        "order": 5,
+        "order": 6,
         "package": "pyyaml",
         "from": "5.1",
         "to": "5.3.1",
         "reason": "Primary upgrade target."
       },
       {
-        "order": 6,
+        "order": 7,
         "package": "urllib3",
         "from": "1.24.1",
         "to": "2.6.0",
@@ -1088,8 +1129,8 @@
       }
     ],
     "estimated_test_surface": {
-      "packages_changed": 13,
-      "transitive_packages_touched": 8,
+      "packages_changed": 14,
+      "transitive_packages_touched": 7,
       "recommendation": "Run integration tests for code paths using upgraded packages and shared dependencies (e.g. urllib3, boto3 sessions)."
     }
   },

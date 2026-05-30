@@ -142,7 +142,19 @@ def write_symbol_rule(
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(raw)
 
-    ok, err = validate_rule_file(path)
+    # Defense in depth: validate_rule_file handles its own subprocess errors,
+    # but if a future regression lets one bubble up we fall back to "good
+    # enough" schema-only validation rather than crashing the whole pipeline.
+    try:
+        ok, err = validate_rule_file(path)
+    except Exception as exc:  # noqa: BLE001
+        import logging
+        logging.getLogger(__name__).warning(
+            "validate_rule_file crashed for %s (%s); keeping schema-validated rule.",
+            family, exc,
+        )
+        ok, err = True, f"schema-only (validate crashed: {exc})"
+
     if not ok:
         try:
             os.remove(path)

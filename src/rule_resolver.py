@@ -209,7 +209,12 @@ async def _run_llm_batch(items, language, api_key, rules_dir, max_concurrent,
     results = {}
     for pair in pairs:
         if isinstance(pair, Exception):
-            print(f"  [!] LLM error: {pair}")
+            kind = type(pair).__name__
+            msg = str(pair)
+            if "semgrep" in msg.lower() or "WinError 1455" in msg or "paging file" in msg.lower():
+                print(f"  [!] Semgrep subprocess failure ({kind}): {msg}")
+            else:
+                print(f"  [!] LLM rule-gen error ({kind}): {msg}")
             continue
         if pair:
             name, info = pair

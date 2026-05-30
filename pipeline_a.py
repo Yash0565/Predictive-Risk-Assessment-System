@@ -62,7 +62,19 @@ from src.executor import run_scans
 from src.explainer import explain_risk, save_explanations
 from src.graph_builder import build_graph
 from src.graph_queries import get_neo4j_driver, run_all_queries
-from src.html_reporter import render_html
+from src.html_reporter import render_html as _render_html_v1
+from src.html_reporter_v2 import render_html as _render_html_v2
+from src.html_reporter_final_v2 import render_html as _render_html_final_v2
+
+_REPORT_RENDERERS = {
+    "v1": _render_html_v1,
+    "v2": _render_html_v2,
+    "final": _render_html_final_v2,
+}
+
+
+def _resolve_renderer(version: str):
+    return _REPORT_RENDERERS.get(version, _render_html_final_v2)
 from src.normalizer import normalize
 from src.patch_fetcher import fetch_patches_batch
 from src.pipeline_console import (
@@ -432,7 +444,8 @@ async def run_pipeline(args: argparse.Namespace) -> None:
         symbol_path if os.path.exists(symbol_path) else None
     )
     upgrade_path = args.upgrade_sim or upgrade_sim_path
-    report_path = render_html(
+    renderer = _resolve_renderer(getattr(args, "report_version", "final"))
+    report_path = renderer(
         assessment,
         explanations,
         graph_meta,
@@ -486,6 +499,9 @@ def main() -> None:
                    help="Connect to Neo4j at bolt://localhost:7687")
     p.add_argument("--offline", action="store_true",
                    help="Inline JS/CSS vendor assets in HTML report")
+    p.add_argument("--report-version", default="final",
+                   choices=["v1", "v2", "final"],
+                   help="HTML report layout: final (default, tabbed) / v2 / v1")
     p.add_argument("--symbol-scan", default=None, help="Override symbol_scan.json for HTML report")
     p.add_argument("--upgrade-sim", default=None, help="Override upgrade_simulation.json for HTML")
     p.add_argument("--verbose", action="store_true")

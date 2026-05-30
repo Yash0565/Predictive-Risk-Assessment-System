@@ -505,6 +505,7 @@ def scripted_fallback(
     *,
     verbose: bool = True,
     output_dir: Optional[str] = None,
+    report_version: str = "final",
 ) -> dict[str, Any]:
     """Run the hard-coded pipeline when the agent fails."""
     started = time.perf_counter()
@@ -512,6 +513,7 @@ def scripted_fallback(
     state: dict[str, Any] = {
         "target_repo": str(Path(target_repo).resolve()),
         "output_dir": output_dir or str(_REPO_ROOT / "data"),
+        "report_version": report_version,
         "collected_data": _empty_collected_data(),
     }
     trace: list[dict[str, Any]] = []
@@ -642,17 +644,22 @@ def run_agent(
     no_llm: bool = False,
     output_dir: Optional[str] = None,
     trace_path: Optional[str] = None,
+    report_version: str = "final",
 ) -> dict[str, Any]:
     """Main entry point. Returns the agent output schema."""
     target = str(Path(target_repo).resolve())
     if no_llm:
-        return scripted_fallback(target, verbose=verbose, output_dir=output_dir)
+        return scripted_fallback(
+            target, verbose=verbose, output_dir=output_dir,
+            report_version=report_version,
+        )
 
     started = time.perf_counter()
     started_at = _utc_now_iso()
     state: dict[str, Any] = {
         "target_repo": target,
         "output_dir": output_dir or str(_REPO_ROOT / "data"),
+        "report_version": report_version,
         "collected_data": _empty_collected_data(),
     }
     scratchpad: list[dict[str, Any]] = []
@@ -711,7 +718,10 @@ def run_agent(
                             f"[red]Ollama error:[/red] {last_err}\n"
                             "[yellow]Falling back to scripted pipeline…[/yellow]"
                         )
-                    fb = scripted_fallback(target, verbose=verbose, output_dir=output_dir)
+                    fb = scripted_fallback(
+                        target, verbose=verbose, output_dir=output_dir,
+                        report_version=report_version,
+                    )
                     fb["agent_metadata"]["schema_violations"] = schema_violations
                     fb["agent_metadata"]["entity_violations"] = entity_violations
                     fb["agent_metadata"]["llm_model"] = llm_model
@@ -734,7 +744,10 @@ def run_agent(
             if consecutive_invalid >= 2 and fallback_on_error:
                 if verbose:
                     console.print("[yellow]Falling back to scripted pipeline…[/yellow]")
-                fb = scripted_fallback(target, verbose=verbose, output_dir=output_dir)
+                fb = scripted_fallback(
+                    target, verbose=verbose, output_dir=output_dir,
+                    report_version=report_version,
+                )
                 fb["agent_metadata"]["schema_violations"] = schema_violations
                 fb["agent_metadata"]["entity_violations"] = entity_violations
                 return fb
@@ -815,8 +828,12 @@ def main() -> None:
     parser.add_argument("--quiet", action="store_true", help="Disable rich output")
     parser.add_argument("--no-llm", action="store_true", help="Scripted fallback only")
     parser.add_argument("--no-fallback", action="store_true", help="Do not fall back on LLM errors")
-    parser.add_argument("--output-dir", default=None, help="Directory for report.html")
+    parser.add_argument("--output-dir", default=None, help="Directory for risk_report.html")
     parser.add_argument("--trace", default=None, help="Path for agent trace JSON")
+    parser.add_argument(
+        "--report-version", default="final", choices=["v1", "v2", "final"],
+        help="HTML report layout: final (default, tabbed) / v2 / v1",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
@@ -830,6 +847,7 @@ def main() -> None:
         no_llm=args.no_llm,
         output_dir=args.output_dir,
         trace_path=args.trace,
+        report_version=args.report_version,
     )
     console.print(f"\n[bold]Report:[/bold] {result.get('report_path') or '—'}")
     console.print(f"[bold]Summary:[/bold] {result.get('final_summary') or '—'}")

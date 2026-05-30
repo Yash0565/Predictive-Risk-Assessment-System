@@ -1,0 +1,9 @@
+rules:
+  - id: symbol-code_injection-python
+    languages: [python]
+    message: Patch-aware sink for code_injection
+    severity: ERROR
+    pattern-either:
+      - pattern: Image.open(...)
+      - pattern: ImageMath(...)
+      - pattern: eval(...)

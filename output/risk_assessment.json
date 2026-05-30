@@ -1,6 +1,6 @@
 {
   "scorer_version": "1.0.0",
-  "generated_at": "2026-05-28T07:38:55.639941+00:00",
+  "generated_at": "2026-05-28T09:45:12.761429+00:00",
   "thresholds": {
     "BLOCK": 70,
     "REVIEW": 40
@@ -10,15 +10,15 @@
     "overall_raw_risk": 69,
     "total_cves_scored": 81,
     "block_count": 0,
-    "review_count": 47
+    "review_count": 46
   },
   "upgrade_order": [
     "CVE-2020-14343",
     "CVE-2020-1747",
     "CVE-2018-1000656",
+    "CVE-2019-10906",
     "CVE-2025-66471",
     "CVE-2020-5313",
-    "CVE-2020-26137",
     "CVE-2023-32681",
     "CVE-2019-20477",
     "CVE-2020-5311",
@@ -35,7 +35,6 @@
     "CVE-2023-4863",
     "CVE-2025-27516",
     "CVE-2019-1010083",
-    "CVE-2019-10906",
     "CVE-2019-19911",
     "CVE-2020-11538",
     "CVE-2023-43804",
@@ -61,6 +60,7 @@
     "CVE-2026-21441",
     "GHSA-jgpv-4h4c-xhw3",
     "CVE-2020-35653",
+    "CVE-2020-26137",
     "CVE-2021-25292",
     "CVE-2022-22815",
     "CVE-2022-22816",
@@ -150,11 +150,11 @@
         "reachability_kind": "direct",
         "reachable_paths": [
           {
-            "service": "config_loader.py",
-            "vuln_fn": "load_admin_config",
+            "service": "/admin/config",
+            "vuln_fn": "load_config",
             "file": "config_loader.py",
-            "line": 21,
-            "hops": 2
+            "line": 29,
+            "hops": 1
           }
         ],
         "impacted_services": 0,
@@ -185,31 +185,50 @@
         "reachability_kind": "direct",
         "reachable_paths": [
           {
-            "service": "/auth/login",
-            "vuln_fn": "auth_login",
+            "service": "/api/data",
+            "vuln_fn": "api_data",
             "file": "app.py",
-            "line": 23,
+            "line": 27,
             "hops": 1
+          }
+        ],
+        "impacted_services": 0,
+        "service_names": [],
+        "dependency_chains": []
+      }
+    },
+    {
+      "cve_id": "CVE-2019-10906",
+      "package": "Jinja2",
+      "severity": "HIGH",
+      "cvss_score": 8.6,
+      "cwe": [],
+      "scores": {
+        "severity_score": 34,
+        "exploit_score": 0,
+        "reachability_score": 25,
+        "blast_radius_score": 0,
+        "raw_risk": 59
+      },
+      "recommendation": "REVIEW",
+      "evidence": {
+        "epss": 0.0,
+        "epss_percentile": 0.0,
+        "in_kev": false,
+        "reachability_kind": "direct",
+        "reachable_paths": [
+          {
+            "service": "tasks.py",
+            "vuln_fn": "jinja2.sandbox.SandboxedEnvironment",
+            "file": "tasks.py",
+            "line": 7,
+            "hops": 2
           },
           {
-            "service": "/tasks",
-            "vuln_fn": "tasks_create",
-            "file": "app.py",
+            "service": "/tasks/<id>",
+            "vuln_fn": "task_detail",
+            "file": "tasks.py",
             "line": 41,
-            "hops": 1
-          },
-          {
-            "service": "/webhook/notify",
-            "vuln_fn": "webhook_notify",
-            "file": "app.py",
-            "line": 62,
-            "hops": 1
-          },
-          {
-            "service": "/admin/config",
-            "vuln_fn": "admin_config",
-            "file": "app.py",
-            "line": 86,
             "hops": 1
           }
         ],
@@ -241,24 +260,17 @@
         "reachability_kind": "direct",
         "reachable_paths": [
           {
-            "service": "/tasks",
-            "vuln_fn": "tasks_list",
-            "file": "app.py",
-            "line": 34,
-            "hops": 1
+            "service": "tasks.py",
+            "vuln_fn": "_load_template_source",
+            "file": "tasks.py",
+            "line": 17,
+            "hops": 2
           },
           {
-            "service": "/reports/export",
-            "vuln_fn": "reports_export",
-            "file": "app.py",
-            "line": 77,
-            "hops": 1
-          },
-          {
-            "service": "auth.py",
-            "vuln_fn": "current_user_id",
-            "file": "auth.py",
-            "line": 74,
+            "service": "uploads.py",
+            "vuln_fn": "_get_upload_stream",
+            "file": "uploads.py",
+            "line": 10,
             "hops": 2
           }
         ],
@@ -290,46 +302,11 @@
         "reachability_kind": "direct",
         "reachable_paths": [
           {
-            "service": "uploads.py",
-            "vuln_fn": "_generate_thumbnail",
+            "service": "/tasks/<id>/upload",
+            "vuln_fn": "upload_task_image",
             "file": "uploads.py",
-            "line": 59,
-            "hops": 2
-          }
-        ],
-        "impacted_services": 0,
-        "service_names": [],
-        "dependency_chains": []
-      }
-    },
-    {
-      "cve_id": "CVE-2020-26137",
-      "package": "urllib3",
-      "severity": "MEDIUM",
-      "cvss_score": 6.5,
-      "cwe": [
-        "CWE-74"
-      ],
-      "scores": {
-        "severity_score": 26,
-        "exploit_score": 0,
-        "reachability_score": 25,
-        "blast_radius_score": 0,
-        "raw_risk": 51
-      },
-      "recommendation": "REVIEW",
-      "evidence": {
-        "epss": 0.0,
-        "epss_percentile": 0.0,
-        "in_kev": false,
-        "reachability_kind": "direct",
-        "reachable_paths": [
-          {
-            "service": "db.py",
-            "vuln_fn": "_conn",
-            "file": "db.py",
-            "line": 12,
-            "hops": 2
+            "line": 54,
+            "hops": 1
           }
         ],
         "impacted_services": 0,
@@ -363,15 +340,15 @@
             "service": "auth.py",
             "vuln_fn": "requests.sessions.Session.rebuild_auth",
             "file": "auth.py",
-            "line": 11,
+            "line": 10,
             "hops": 2
           },
           {
-            "service": "auth.py",
+            "service": "/auth/login",
             "vuln_fn": "login_user",
             "file": "auth.py",
-            "line": 41,
-            "hops": 2
+            "line": 42,
+            "hops": 1
           }
         ],
         "impacted_services": 0,
@@ -831,35 +808,6 @@
         "reachable_paths": [
           {
             "note": "package Flask affected, no code path"
-          }
-        ],
-        "impacted_services": 0,
-        "service_names": [],
-        "dependency_chains": []
-      }
-    },
-    {
-      "cve_id": "CVE-2019-10906",
-      "package": "Jinja2",
-      "severity": "HIGH",
-      "cvss_score": 8.6,
-      "cwe": [],
-      "scores": {
-        "severity_score": 34,
-        "exploit_score": 0,
-        "reachability_score": 10,
-        "blast_radius_score": 0,
-        "raw_risk": 44
-      },
-      "recommendation": "REVIEW",
-      "evidence": {
-        "epss": 0.0,
-        "epss_percentile": 0.0,
-        "in_kev": false,
-        "reachability_kind": "transitive",
-        "reachable_paths": [
-          {
-            "note": "package Jinja2 affected, no code path"
           }
         ],
         "impacted_services": 0,
@@ -1631,6 +1579,37 @@
         "reachable_paths": [
           {
             "note": "package Pillow affected, no code path"
+          }
+        ],
+        "impacted_services": 0,
+        "service_names": [],
+        "dependency_chains": []
+      }
+    },
+    {
+      "cve_id": "CVE-2020-26137",
+      "package": "urllib3",
+      "severity": "MEDIUM",
+      "cvss_score": 6.5,
+      "cwe": [
+        "CWE-74"
+      ],
+      "scores": {
+        "severity_score": 26,
+        "exploit_score": 0,
+        "reachability_score": 10,
+        "blast_radius_score": 0,
+        "raw_risk": 36
+      },
+      "recommendation": "PROCEED",
+      "evidence": {
+        "epss": 0.0,
+        "epss_percentile": 0.0,
+        "in_kev": false,
+        "reachability_kind": "transitive",
+        "reachable_paths": [
+          {
+            "note": "package urllib3 affected, no code path"
           }
         ],
         "impacted_services": 0,
