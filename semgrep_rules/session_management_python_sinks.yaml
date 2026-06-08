@@ -1,0 +1,10 @@
+rules:
+  - id: symbol-session_management-python
+    languages: [python]
+    message: Patch-aware sink for session_management
+    severity: ERROR
+    pattern-either:
+      - pattern: render_template_string(...)
+      - pattern: request.get_json(...)
+      - pattern: save_session(...)
+      - pattern: sessions(...)
