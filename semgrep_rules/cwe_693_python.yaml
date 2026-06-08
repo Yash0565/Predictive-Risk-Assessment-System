@@ -1,0 +1,6 @@
+rules:
+  - id: detect-cwe_693-python
+    languages: [python]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: jinja2.runtime.pass_environment\(.+, \{.*\}\)
