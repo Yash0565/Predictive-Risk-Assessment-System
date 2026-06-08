@@ -12,19 +12,12 @@ from typing import Any, Callable, Optional
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from src.explainer import explain_risk
-from src.html_reporter import (
-    build_report_data as _build_report_data_v1,
-    generate_report as _generate_report_v1,
-)
-from src.html_reporter_v2 import (
-    build_report_data as _build_report_data_v2,
-    generate_report as _generate_report_v2,
-)
 from src.html_reporter_final_v2 import (
     build_report_data as _build_report_data_final,
     generate_report as _generate_report_final,
 )
 from src.patch_fetcher import fetch_patch, fetch_patches_batch
+from src.reachability_evidence import build_graph_evidence
 from src.scorer import score_cves
 from src.symbol_scanner import scan_symbols
 from src.project_deps import DependencyDiscoveryError, discover_dependency_pins
@@ -189,25 +182,9 @@ def run_trivy_on_repo(repo_path: str) -> tuple[list[dict[str, Any]], str]:
 
 
 def _symbol_scan_to_graph_evidence(symbol_findings: dict[str, Any]) -> dict[str, Any]:
-    findings = symbol_findings.get("findings_by_cve")
-    if findings is None and isinstance(symbol_findings.get("symbol_findings"), dict):
-        findings = symbol_findings["symbol_findings"].get("findings_by_cve")
-    findings = findings or {}
-    reachability: list[dict[str, Any]] = []
-    for cve_id, finding in findings.items():
-        if not finding.get("is_reachable"):
-            continue
-        for ref in finding.get("references") or []:
-            ep = ref.get("entry_point_info") or {}
-            reachability.append({
-                "cve_id": cve_id,
-                "service": ep.get("route") or ref.get("file", ""),
-                "vuln_fn": ref.get("enclosing_function") or finding.get("vulnerable_symbol", ""),
-                "file": ref.get("file", ""),
-                "line_start": ref.get("line", 0),
-                "hops": 1 if ref.get("in_entry_point") else 2,
-            })
-    return {"reachability": reachability, "blast_radius": {}, "dependency_chains": []}
+    # Delegates to the shared builder so the agent and Pipeline A produce
+    # identical reachability evidence (and therefore identical scores).
+    return build_graph_evidence(symbol_findings)
 
 
 def _patches_to_symbol_input(patches: dict[str, Any]) -> dict[str, Any]:
@@ -334,7 +311,14 @@ def tool_compute_score(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any
     cves = data.get("cves") or []
     if not cves:
         raise ToolError("No CVEs collected; run scan_vulnerabilities first")
+    from src.reachability_evidence import enrich_with_call_graph
     graph_evidence = _symbol_scan_to_graph_evidence(data.get("symbol_findings") or {})
+    enrich_with_call_graph(
+        state.get("target_repo", "."),
+        data.get("symbol_findings") or {},
+        graph_evidence,
+        patches=data.get("patches"),
+    )
     assessment = score_cves(cves, graph_evidence)
     data["scores"] = assessment
     explanations = explain_risk(assessment)
@@ -345,8 +329,6 @@ def tool_compute_score(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any
 
 
 _REPORT_BUILDERS = {
-    "v1": (_build_report_data_v1, _generate_report_v1),
-    "v2": (_build_report_data_v2, _generate_report_v2),
     "final": (_build_report_data_final, _generate_report_final),
 }
 
