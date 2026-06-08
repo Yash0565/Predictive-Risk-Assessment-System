@@ -33,6 +33,7 @@ def analyze_project(project_dir):
     project_dir = os.path.abspath(project_dir)
     all_functions = []
     all_calls = []
+    all_entry_points = []
 
     for root, dirs, files in os.walk(project_dir):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
@@ -44,8 +45,13 @@ def analyze_project(project_dir):
             result = _analyze_file(fpath, rel)
             all_functions.extend(result["functions"])
             all_calls.extend(result["calls"])
+            all_entry_points.extend(result["entry_points"])
 
-    return {"functions": all_functions, "calls": all_calls}
+    return {
+        "functions": all_functions,
+        "calls": all_calls,
+        "entry_points": all_entry_points,
+    }
 
 
 def _analyze_file(fpath, rel_path):
@@ -55,11 +61,12 @@ def _analyze_file(fpath, rel_path):
     try:
         tree = ast.parse(source, filename=fpath)
     except SyntaxError:
-        return {"functions": [], "calls": []}
+        return {"functions": [], "calls": [], "entry_points": []}
 
     functions = []
     calls = []
     name_to_qualified = {}
+    line_by_func = {}
 
     class Visitor(ast.NodeVisitor):
         def __init__(self):
@@ -73,6 +80,7 @@ def _analyze_file(fpath, rel_path):
         def visit_FunctionDef(self, node):
             qname = self._qual(node.name)
             name_to_qualified[node.name] = qname
+            line_by_func[node.name] = node.lineno
             functions.append({
                 "qualified_name": qname,
                 "file": rel_path,
@@ -102,7 +110,28 @@ def _analyze_file(fpath, rel_path):
             self.generic_visit(node)
 
     Visitor().visit(tree)
-    return {"functions": functions, "calls": calls}
+
+    # Auto-discover framework entry points (Flask/FastAPI/Django/Celery) from
+    # route decorators, reusing the symbol scanner's detector. This makes
+    # services.yaml an optional override rather than a requirement.
+    entry_points = []
+    try:
+        from src.symbol_scanner import detect_entry_points
+
+        for fn_name, ep in detect_entry_points(rel_path, tree).items():
+            entry_points.append({
+                "function": name_to_qualified.get(fn_name, fn_name),
+                "short_name": fn_name,
+                "file": rel_path,
+                "line_start": line_by_func.get(fn_name, 0),
+                "framework": ep.framework,
+                "route": ep.route,
+                "method": ep.method,
+            })
+    except Exception:
+        pass
+
+    return {"functions": functions, "calls": calls, "entry_points": entry_points}
 
 
 def _resolve_callee(func_node, name_to_qualified):
