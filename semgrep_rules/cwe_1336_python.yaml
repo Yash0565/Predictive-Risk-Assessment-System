@@ -1,0 +1,6 @@
+rules:
+  - id: detect-cwe_1336-python
+    languages: ['python']
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: $FUNC(...) in Jinja2 templates
