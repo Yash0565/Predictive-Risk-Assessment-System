@@ -1,0 +1,6 @@
+rules:
+  - id: detect-timing_attack-python
+    languages: [python]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: $FUNC(...)
