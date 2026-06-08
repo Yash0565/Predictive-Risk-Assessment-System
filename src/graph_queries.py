@@ -111,13 +111,25 @@ def run_all_queries(driver=None, snapshot=None, cve_ids=None, services=None):
 
 
 def get_neo4j_driver(uri=None, user=None, password=None):
-    """Create a Neo4j driver or return None on failure."""
+    """Create a Neo4j driver or return None on failure.
+
+    The password is never hard-coded: it is read from ``NEO4J_PASSWORD`` (or the
+    explicit argument). If no password is configured the function fails closed
+    and returns None, so callers transparently fall back to the JSON snapshot.
+    """
+    import logging
     import os
+
+    password = password or os.environ.get("NEO4J_PASSWORD")
+    if not password:
+        logging.getLogger(__name__).warning(
+            "NEO4J_PASSWORD not set; skipping Neo4j and using snapshot BFS fallback."
+        )
+        return None
     try:
         from neo4j import GraphDatabase
         uri = uri or os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         user = user or os.environ.get("NEO4J_USER", "neo4j")
-        password = password or os.environ.get("NEO4J_PASSWORD", "demo-password")
         driver = GraphDatabase.driver(uri, auth=(user, password))
         driver.verify_connectivity()
         return driver
