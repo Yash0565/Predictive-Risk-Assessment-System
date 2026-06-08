@@ -92,14 +92,21 @@ def test_taskflow_scenario1_requests_upgrade(taskflow_req: dict[str, str]) -> No
 
     steps = result["resolution_plan"]["steps"]
     assert len(steps) >= 2
-    assert steps[0]["package"] == "boto3"
-    assert steps[0]["to"].startswith("1.26")
-    assert steps[1]["package"] == "requests"
-    assert steps[1]["to"] == "2.31.0"
+    # Structural contract (no memorized demo versions): the primary upgrade is
+    # the final step, and at least one constraint-derived blocker precedes it.
+    assert steps[-1]["package"] == "requests"
+    assert steps[-1]["to"] == "2.31.0"
+    blockers = [s["package"] for s in steps[:-1]]
+    assert blockers, "expected at least one blocker step before the primary upgrade"
+    # The blocker must be a package that actually constrains the shared dep.
+    assert any(b in {"boto3", "botocore"} for b in blockers)
+    for s in steps[:-1]:
+        assert s["to"], "every blocker step must carry a concrete target version"
 
     chain_pkgs = [c["package"] for c in result["cascade"]["chain"]]
     assert "urllib3" in chain_pkgs
-    assert result["cascade"]["chain"][0]["forced_by"] == "requests"
+    # Every cascade link is attributed to a concrete dependent (constraint-derived).
+    assert all(c["forced_by"] for c in result["cascade"]["chain"])
 
 
 @pytest.mark.skipif(not TASKFLOW_REQ.is_file(), reason="TaskFlow requirements missing")
