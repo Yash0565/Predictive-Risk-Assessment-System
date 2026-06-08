@@ -119,5 +119,63 @@
     "cwe_ids": [
       "CWE-74"
     ]
+  },
+  "session_management": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\session_management_python.yaml",
+    "cwe_ids": [
+      "CWE-539"
+    ]
+  },
+  "buffer_overflow": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\buffer_overflow_python.yaml",
+    "cwe_ids": [
+      "CWE-120",
+      "CWE-125",
+      "CWE-787"
+    ]
+  },
+  "cwe_665": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_665_python.yaml",
+    "cwe_ids": [
+      "CWE-665"
+    ]
+  },
+  "timing_attack": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\timing_attack_python.yaml",
+    "cwe_ids": [
+      "CWE-385"
+    ]
+  },
+  "information_exposure": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\information_exposure_python.yaml",
+    "cwe_ids": [
+      "CWE-203"
+    ]
+  },
+  "null_dereference": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\null_dereference_python.yaml",
+    "cwe_ids": [
+      "CWE-476"
+    ]
+  },
+  "cwe_377": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_377_python.yaml",
+    "cwe_ids": [
+      "CWE-377"
+    ]
+  },
+  "cwe_409": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_409_python.yaml",
+    "cwe_ids": [
+      "CWE-409"
+    ]
   }
 }
