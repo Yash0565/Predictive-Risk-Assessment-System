@@ -1,0 +1,6 @@
+rules:
+  - id: detect-cwe_409-python
+    languages: ["python"]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: $FUNCTION('https://', 'urllib3')
