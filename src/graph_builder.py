@@ -89,9 +89,12 @@ def build_graph(
                 "to": callee_fn["id"],
             })
 
-    # 4. services.yaml → Service + EXPOSES
+    # 4. Entry points → Service + EXPOSES. services.yaml is an optional override;
+    #    when absent, discover routes automatically from framework decorators.
     if services_path and os.path.exists(services_path):
         _ingest_services(services_path, project_dir, ast_result, nodes, edges)
+    else:
+        _ingest_discovered_entry_points(ast_result, nodes, edges)
 
     # 5. Semgrep → Function + VULNERABLE_IN (link CVEs via family/CWE)
     _ingest_semgrep(semgrep_report, families, ast_result, nodes, edges)
@@ -112,16 +115,18 @@ def build_graph(
     neo4j_ok = False
     uri = neo4j_uri or os.environ.get("NEO4J_URI", "bolt://localhost:7687")
     user = neo4j_user or os.environ.get("NEO4J_USER", "neo4j")
-    password = neo4j_password or os.environ.get("NEO4J_PASSWORD", "demo-password")
+    # No hardcoded secret: only attempt Neo4j when a password is configured.
+    password = neo4j_password or os.environ.get("NEO4J_PASSWORD")
 
-    try:
-        _upsert_neo4j(snapshot, uri, user, password)
-        neo4j_ok = True
-        snapshot["meta"]["mode"] = "neo4j"
-        with open(snapshot_path, "w", encoding="utf-8") as f:
-            json.dump(snapshot, f, indent=2)
-    except Exception as e:
-        print(f"  [!] Neo4j unavailable ({e}); using snapshot only.")
+    if password:
+        try:
+            _upsert_neo4j(snapshot, uri, user, password)
+            neo4j_ok = True
+            snapshot["meta"]["mode"] = "neo4j"
+            with open(snapshot_path, "w", encoding="utf-8") as f:
+                json.dump(snapshot, f, indent=2)
+        except Exception as e:
+            print(f"  [!] Neo4j unavailable ({e}); using snapshot only.")
 
     summary = {
         "snapshot_path": snapshot_path,
@@ -240,6 +245,40 @@ def _ingest_services(services_path, project_dir, ast_result, nodes, edges):
                     "line_end": fn["line_end"],
                 })
             edges["exposes"].append({"from": sid, "to": fid})
+
+
+def _ingest_discovered_entry_points(ast_result, nodes, edges):
+    """Create Service + EXPOSES from auto-discovered framework entry points."""
+    for ep in ast_result.get("entry_points", []):
+        route = ep.get("route") or f"/{ep.get('short_name', 'entry')}"
+        method = (ep.get("method") or "GET").upper()
+        sid = _svc_id(route, method)
+        file_rel = ep.get("file", "").replace("\\", "/")
+        if not any(s["id"] == sid for s in nodes["services"]):
+            nodes["services"].append({
+                "id": sid,
+                "name": ep.get("short_name", ""),
+                "route": route,
+                "method": method,
+                "handler": ep.get("short_name", ""),
+                "file": file_rel,
+                "framework": ep.get("framework", ""),
+                "discovered": True,
+            })
+
+        fn = _find_handler_function(ast_result["functions"], file_rel, ep.get("short_name", ""))
+        if fn:
+            fid = _fn_id(fn["file"], fn["qualified_name"], fn["line_start"])
+            if not any(f["id"] == fid for f in nodes["functions"]):
+                nodes["functions"].append({
+                    "id": fid,
+                    "qualified_name": fn["qualified_name"],
+                    "file": fn["file"],
+                    "line_start": fn["line_start"],
+                    "line_end": fn["line_end"],
+                })
+            if not any(e["from"] == sid and e["to"] == fid for e in edges["exposes"]):
+                edges["exposes"].append({"from": sid, "to": fid})
 
 
 def _ingest_semgrep(semgrep_report, families, ast_result, nodes, edges):
