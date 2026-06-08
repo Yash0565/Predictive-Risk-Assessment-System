@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import time
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,8 +33,25 @@ DEFAULT_IGNORE_PATTERNS = (
 
 MAX_FILE_BYTES = 2 * 1024 * 1024
 
-# Parsed AST cache: abs_path -> (mtime_ns, tree, source_lines)
-_AST_CACHE: dict[str, tuple[int, ast.AST, list[str]]] = {}
+# Bounded LRU AST cache: abs_path -> (mtime_ns, tree, source_lines).
+# Capped so long-running / monorepo scans do not grow memory without limit.
+_AST_CACHE_MAX = 2048
+_AST_CACHE: "OrderedDict[str, tuple[int, ast.AST, list[str]]]" = OrderedDict()
+
+
+def _ast_cache_get(abs_path: str, mtime: int) -> Optional[tuple[ast.AST, list[str]]]:
+    cached = _AST_CACHE.get(abs_path)
+    if cached and cached[0] == mtime:
+        _AST_CACHE.move_to_end(abs_path)
+        return cached[1], cached[2]
+    return None
+
+
+def _ast_cache_put(abs_path: str, mtime: int, tree: ast.AST, lines: list[str]) -> None:
+    _AST_CACHE[abs_path] = (mtime, tree, lines)
+    _AST_CACHE.move_to_end(abs_path)
+    while len(_AST_CACHE) > _AST_CACHE_MAX:
+        _AST_CACHE.popitem(last=False)
 
 
 @dataclass(frozen=True)
@@ -338,6 +356,7 @@ class _FileAnalyzer:
         source: str,
         index: SymbolIndex,
         package: Optional[str],
+        tree: ast.AST,
     ) -> None:
         self.rel_path = rel_path.replace("\\", "/")
         self.lines = source.splitlines()
@@ -346,7 +365,8 @@ class _FileAnalyzer:
         self.findings: list[dict[str, Any]] = []
         self.scope = _Scope()
         self.func_stack: list[str] = []
-        self.entry_points = detect_entry_points(rel_path, ast.parse(source, filename=rel_path))
+        # Reuse the already-parsed tree (no second ast.parse of the same source).
+        self.entry_points = detect_entry_points(rel_path, tree)
 
     def analyze(self, tree: ast.AST) -> list[dict[str, Any]]:
         self._visit_scope(tree, self.scope)
@@ -572,10 +592,9 @@ def scan_file(
     abs_path = str(path.resolve())
     mtime = path.stat().st_mtime_ns
 
-    cached = _AST_CACHE.get(abs_path)
-    if cached and cached[0] == mtime:
-        tree = cached[1]
-        lines = cached[2]
+    cached = _ast_cache_get(abs_path, mtime)
+    if cached is not None:
+        tree, lines = cached
     else:
         try:
             tree = ast.parse(source, filename=abs_path)
@@ -583,9 +602,9 @@ def scan_file(
             logger.warning("Syntax error in %s: %s", rel, exc)
             return []
         lines = source.splitlines()
-        _AST_CACHE[abs_path] = (mtime, tree, lines)
+        _ast_cache_put(abs_path, mtime, tree, lines)
 
-    analyzer = _FileAnalyzer(rel, source, symbol_index, package)
+    analyzer = _FileAnalyzer(rel, source, symbol_index, package, tree)
     return analyzer.analyze(tree)
 
 
@@ -685,6 +704,8 @@ def scan_symbols(
     target_dir: str,
     vulnerable_symbols_by_cve: dict[str, Any],
     ignore_patterns: Optional[list[str]] = None,
+    *,
+    cache_dir: Optional[str] = None,
 ) -> dict[str, Any]:
     """Scan target_dir for all references to vulnerable symbols.
 
@@ -704,18 +725,42 @@ def scan_symbols(
     files_scanned = 0
     files_parsed_ok = 0
     files_failed = 0
+    cache_hits = 0
     all_raw: list[dict[str, Any]] = []
 
-    for fpath in _iter_py_files(target_dir, patterns):
-        files_scanned += 1
+    scan_cache = None
+    if cache_dir:
         try:
-            findings = scan_file(fpath, index, project_root=target_dir)
+            from src.scan_cache import ScanCache
+            scan_cache = ScanCache(cache_dir)
+        except Exception:
+            scan_cache = None
+
+    def _scan_one(fpath: str) -> list[dict[str, Any]]:
+        return scan_file(fpath, index, project_root=target_dir) or []
+
+    if scan_cache:
+        paths = list(_iter_py_files(target_dir, patterns))
+        files_scanned = len(paths)
+        report = scan_cache.scan_incremental(
+            paths, "symbol_scanner", "2.0.0", _scan_one,
+        )
+        cache_hits = report.get("stats", {}).get("cache_hits", 0)
+        for findings in report.get("results", {}).values():
             if findings is not None:
                 files_parsed_ok += 1
                 all_raw.extend(findings)
-        except Exception as exc:
-            files_failed += 1
-            logger.warning("Failed to scan %s: %s", fpath, exc)
+    else:
+        for fpath in _iter_py_files(target_dir, patterns):
+            files_scanned += 1
+            try:
+                findings = _scan_one(fpath)
+                if findings is not None:
+                    files_parsed_ok += 1
+                    all_raw.extend(findings)
+            except Exception as exc:
+                files_failed += 1
+                logger.warning("Failed to scan %s: %s", fpath, exc)
 
     findings_by_cve = _aggregate_findings(all_raw, index)
     reachable = sorted([c for c, v in findings_by_cve.items() if v["is_reachable"]])
@@ -731,6 +776,7 @@ def scan_symbols(
             "files_scanned": files_scanned,
             "files_parsed_ok": files_parsed_ok,
             "files_failed": files_failed,
+            "cache_hits": cache_hits,
             "total_findings": sum(v["reference_count"] for v in findings_by_cve.values()),
             "duration_ms": duration_ms,
         },
