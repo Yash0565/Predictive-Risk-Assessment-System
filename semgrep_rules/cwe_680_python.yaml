@@ -1,0 +1,10 @@
+rules:
+  - id: detect-cwe_680-python
+    languages: ['python']
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: >-
+      def $FUNC\(\*\):
+        if \_\_name__ == '\_\_main\_\_':
+          with open\(r'\$\{tempdir\}\', 'wb') as f:
+            f.write\(imgdata\)
