@@ -7,6 +7,7 @@ Network access is only used on cache miss or ``force_refresh=True``.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import logging
 import os
@@ -20,6 +21,8 @@ import requests
 from dateutil import parser as date_parser
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from unidiff import PatchSet
+
+from src.dist_metadata import primary_import_root
 
 logger = logging.getLogger(__name__)
 
@@ -35,49 +38,10 @@ GITHUB_COMMIT_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Last-resort hints for offline demos (public fix commits; discovery usually finds these first)
-_DEMO_COMMIT_HINTS: dict[str, list[str]] = {
-    "CVE-2023-32681": [
-        "https://github.com/psf/requests/commit/74ea7cf7a6a27a4eeb2ae24e162bcc942a6706d5",
-    ],
-    "CVE-2019-10906": [
-        "https://github.com/pallets/jinja/commit/a2a6c930bcca591a25d2b316fcfd2d6793897b26",
-    ],
-    "CVE-2020-1747": [
-        "https://github.com/yaml/pyyaml/commit/5080ba513377b6355a0502104846ee804656f1e0",
-    ],
-    "CVE-2020-5313": [
-        "https://github.com/python-pillow/Pillow/commit/a09acd0decd8a87ccce939d5ff65dab59e7d365b",
-    ],
-    "CVE-2018-1000656": [
-        "https://github.com/pallets/flask/commit/b178e89e4456e777b1a7ac6d7199052d0dfdbbbe",
-    ],
-    "CVE-2019-11324": [
-        "https://github.com/urllib3/urllib3/commit/1efadf43dc63317cd9eaa3e0fdb9e05ab07254b1",
-    ],
-    "CVE-2020-26137": [
-        "https://github.com/urllib3/urllib3/commit/1dd69c5c5982fae7c87a620d487c2ebf7a6b436b",
-    ],
-    "CVE-2020-25659": [
-        "https://github.com/pyca/cryptography/commit/58494b41d6ecb0f56b7c5f05d5f5e3ca0320d494",
-    ],
-}
-
 _PR_COMMIT_RE = re.compile(
     r"github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+)/pull/\d+/commits/(?P<sha>[a-f0-9]+)",
     re.IGNORECASE,
 )
-
-# Package → import root for alias generation
-_PACKAGE_IMPORT_ROOT: dict[str, str] = {
-    "requests": "requests",
-    "jinja2": "jinja2",
-    "pyyaml": "yaml",
-    "pillow": "PIL",
-    "flask": "flask",
-    "urllib3": "urllib3",
-    "cryptography": "cryptography",
-}
 
 VALID_CLASSIFICATIONS = frozenset({
     "RENAMED",
@@ -90,74 +54,6 @@ VALID_CLASSIFICATIONS = frozenset({
 })
 
 VALID_STATUSES = frozenset({"ok", "partial", "no_patch_found", "network_error"})
-
-# Public API symbols for demo CVEs when patches touch internal helpers (deterministic)
-_DEMO_API_SYMBOLS: dict[str, list[dict[str, Any]]] = {
-    "CVE-2023-32681": [{
-        "fully_qualified_name": "requests.sessions.Session.rebuild_auth",
-        "short_name": "rebuild_auth",
-        "kind": "function",
-        "file_in_patch": "requests/sessions.py",
-        "change_classification": "INTERNAL_CHANGE",
-        "summary": "Proxy-Authorization handling on redirect; patch hardens rebuild_proxies",
-    }],
-    "CVE-2019-10906": [{
-        "fully_qualified_name": "jinja2.sandbox.SandboxedEnvironment",
-        "short_name": "SandboxedEnvironment",
-        "kind": "class",
-        "file_in_patch": "jinja2/sandbox.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "Sandbox escape fix via format_map handling in SandboxedEnvironment",
-    }],
-    "CVE-2020-1747": [{
-        "fully_qualified_name": "yaml.load",
-        "short_name": "load",
-        "kind": "function",
-        "file_in_patch": "lib/yaml/constructor.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "FullLoader constructor hardened; yaml.load uses affected loader",
-    }],
-    "CVE-2020-5313": [{
-        "fully_qualified_name": "PIL.Image.open",
-        "short_name": "open",
-        "kind": "function",
-        "file_in_patch": "src/libImaging/FliDecode.c",
-        "change_classification": "INTERNAL_CHANGE",
-        "summary": "FLI buffer overrun fix in native decoder reached via Image.open",
-    }],
-    "CVE-2018-1000656": [{
-        "fully_qualified_name": "flask.wrappers.Request.get_json",
-        "short_name": "get_json",
-        "kind": "function",
-        "file_in_patch": "flask/wrappers.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "JSON decoding DoS fix via encoding detection",
-    }],
-    "CVE-2019-11324": [{
-        "fully_qualified_name": "urllib3.util.ssl_.ssl_wrap_socket",
-        "short_name": "ssl_wrap_socket",
-        "kind": "function",
-        "file_in_patch": "src/urllib3/util/ssl_.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "Certificate validation hardening in TLS wrap",
-    }],
-    "CVE-2020-26137": [{
-        "fully_qualified_name": "urllib3.connection.HTTPConnection.putrequest",
-        "short_name": "putrequest",
-        "kind": "function",
-        "file_in_patch": "src/urllib3/connection.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "CRLF injection blocked in request line construction",
-    }],
-    "CVE-2020-25659": [{
-        "fully_qualified_name": "cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey.decrypt",
-        "short_name": "decrypt",
-        "kind": "function",
-        "file_in_patch": "src/cryptography/hazmat/backends/openssl/rsa.py",
-        "change_classification": "HARDENED_ONLY",
-        "summary": "RSA OAEP decryption timing attack mitigation",
-    }],
-}
 
 _CODE_EXTENSIONS = {".py", ".c", ".h", ".pyx", ".pxd", ".cc", ".cpp"}
 
@@ -436,9 +332,6 @@ def _discover_commit_urls(
         sources_tried.append("ghsa")
         all_urls.extend(ghsa_urls)
 
-    hints = _DEMO_COMMIT_HINTS.get(cve_id, [])
-    all_urls.extend(hints)
-
     return _dedupe_preserve_order(all_urls)
 
 
@@ -451,6 +344,146 @@ def _fetch_patch_text(owner: str, repo: str, sha: str) -> Optional[str]:
     if resp.status_code != 200:
         return None
     return resp.text
+
+
+def _fetch_commit_parent(owner: str, repo: str, sha: str) -> Optional[str]:
+    """Return the first parent SHA of a commit (for before/after file comparison)."""
+    url = f"https://api.github.com/repos/{owner}/{repo}/commits/{sha}"
+    try:
+        resp = _http_get(url, accept="application/vnd.github+json")
+    except _NetworkError:
+        return None
+    if resp.status_code != 200:
+        return None
+    try:
+        parents = resp.json().get("parents") or []
+        return parents[0]["sha"] if parents else None
+    except (KeyError, ValueError, TypeError):
+        return None
+
+
+def _fetch_file_at_ref(owner: str, repo: str, path: str, ref: str) -> Optional[str]:
+    """Fetch a file's UTF-8 text at a specific commit ref via the GitHub contents API."""
+    norm = path.lstrip("./").replace("\\", "/")
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{norm}?ref={ref}"
+    try:
+        resp = _http_get(url, accept="application/vnd.github+json")
+    except _NetworkError:
+        return None
+    if resp.status_code != 200:
+        return None
+    try:
+        body = resp.json()
+        import base64
+        raw = body.get("content", "")
+        if body.get("encoding") == "base64" and raw:
+            return base64.b64decode(raw).decode("utf-8", errors="replace")
+    except Exception:
+        return None
+    return None
+
+
+def _diff_full_file_symbols(
+    before_src: str,
+    after_src: str,
+    file_path: str,
+    package: Optional[str],
+) -> list[dict[str, Any]]:
+    """Compare complete-file ASTs at parent vs fix commit (no hunk fragmentation)."""
+    mod_path = _module_path_from_file(file_path, package)
+    before_defs = _extract_defs_from_source(before_src)
+    after_defs = _extract_defs_from_source(after_src)
+    symbols: list[dict[str, Any]] = []
+    for name in sorted(set(before_defs) | set(after_defs)):
+        before_node = before_defs.get(name)
+        after_node = after_defs.get(name)
+        if before_node is None and after_node is None:
+            continue
+        kind = "class" if isinstance(after_node or before_node, ast.ClassDef) else "function"
+        classification = _classify_ast_change(
+            before_node, after_node, before_name=name, after_name=name,
+        )
+        symbols.append({
+            "fully_qualified_name": f"{mod_path}.{name}",
+            "short_name": name,
+            "kind": kind,
+            "file_in_patch": file_path,
+            "change_classification": classification,
+            "before_signature": _format_signature(before_node) if before_node else "",
+            "after_signature": _format_signature(after_node) if after_node else "",
+            "lines_added": 0,
+            "lines_removed": 0,
+            "summary": _summarize_symbol(name, classification, 0, 0),
+            "extraction": "full_file_ast",
+        })
+    return symbols
+
+
+def _enrich_symbols_from_full_files(
+    owner: str,
+    repo: str,
+    sha: str,
+    package: Optional[str],
+    files_changed: list[str],
+    hunk_symbols: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Supplement hunk-based symbols with full-file AST diff where possible."""
+    parent = _fetch_commit_parent(owner, repo, sha)
+    if not parent:
+        return hunk_symbols
+
+    by_fqn = {s["fully_qualified_name"]: s for s in hunk_symbols}
+    for path in files_changed:
+        norm = path.replace("\\", "/")
+        if not norm.endswith(".py"):
+            continue
+        if norm.startswith("test") or "/tests/" in norm or norm.endswith("_test.py"):
+            continue
+        before = _fetch_file_at_ref(owner, repo, norm, parent)
+        after = _fetch_file_at_ref(owner, repo, norm, sha)
+        if not before or not after:
+            continue
+        for sym in _diff_full_file_symbols(before, after, norm, package):
+            fqn = sym["fully_qualified_name"]
+            if fqn not in by_fqn:
+                by_fqn[fqn] = sym
+            elif by_fqn[fqn].get("extraction") != "full_file_ast":
+                by_fqn[fqn] = sym
+    return sorted(by_fqn.values(), key=lambda s: s["fully_qualified_name"])
+
+
+def _build_vulnerability_signature(symbols: list[dict[str, Any]]) -> dict[str, Any]:
+    """Structural signature for matching across refactors."""
+    fqns = sorted({s["fully_qualified_name"] for s in symbols if s.get("fully_qualified_name")})
+    classes = {s["fully_qualified_name"]: s.get("change_classification", "INTERNAL_CHANGE")
+               for s in symbols}
+    payload = json.dumps({"fqns": fqns, "classes": classes}, sort_keys=True)
+    return {
+        "changed_fqns": fqns,
+        "change_types": classes,
+        "structural_hash": hashlib.sha256(payload.encode()).hexdigest()[:16],
+    }
+
+
+def _build_exploitability_fingerprint(symbols: list[dict[str, Any]]) -> dict[str, Any]:
+    """Capture the security guard pattern introduced by the patch."""
+    hardened = [s for s in symbols if s.get("change_classification") == "HARDENED_ONLY"]
+    guards = [s["fully_qualified_name"] for s in hardened]
+    return {
+        "hardened_symbols": guards,
+        "guard_absent_state": "vulnerable when listed guards are missing in deployed code",
+        "fingerprint_hash": hashlib.sha256("|".join(guards).encode()).hexdigest()[:12] if guards else "",
+    }
+
+
+def _ensure_patch_metadata(data: dict[str, Any]) -> dict[str, Any]:
+    """Backfill signature fields on older cache entries (no re-fetch required)."""
+    symbols = data.get("vulnerable_symbols") or []
+    if symbols and not data.get("vulnerability_signature"):
+        data["vulnerability_signature"] = _build_vulnerability_signature(symbols)
+    if symbols and not data.get("exploitability_fingerprint"):
+        data["exploitability_fingerprint"] = _build_exploitability_fingerprint(symbols)
+    return data
 
 
 def _arg_names(args: ast.arguments) -> list[str]:
@@ -606,7 +639,10 @@ def _module_path_from_file(file_path: str, package: Optional[str]) -> str:
     if path.endswith(".py"):
         path = path[:-3]
     parts = path.split("/")
-    root = _PACKAGE_IMPORT_ROOT.get((package or "").lower(), parts[0] if parts else "")
+    root = primary_import_root(package) if package else (parts[0] if parts else "")
+    # Strip common source-layout prefixes so the module path starts at the import root.
+    while parts and parts[0] in ("src", "lib") and len(parts) > 1 and parts[1] == root:
+        parts = parts[1:]
     if parts and parts[0] == root:
         return ".".join(parts)
     if root and parts and parts[0] != root:
@@ -636,7 +672,7 @@ def _generate_import_aliases(
                 seen.add(stmt)
                 aliases.append(stmt)
         if package:
-            pkg_root = _PACKAGE_IMPORT_ROOT.get(package.lower(), package.lower())
+            pkg_root = primary_import_root(package)
             top_stmt = f"from {pkg_root} import {parts[-2] if len(parts) > 1 else pkg_root}"
             if top_stmt not in seen and len(parts) > 2:
                 seen.add(top_stmt)
@@ -719,9 +755,10 @@ def _parse_patch_symbols(
         if ext not in (".py",):
             if ext in _CODE_EXTENSIONS:
                 short_file = os.path.basename(path)
+                _root = primary_import_root(package) if package else ""
                 symbols.append({
                     "fully_qualified_name": (
-                        f"{_PACKAGE_IMPORT_ROOT.get((package or '').lower(), '')}.{short_file}"
+                        f"{_root}.{short_file}" if _root else short_file
                     ),
                     "short_name": short_file,
                     "kind": "file",
@@ -841,40 +878,6 @@ def _looks_like_hardening(before: str, after: str) -> bool:
     return all(any(tok in line for tok in guard_tokens) or line.strip().startswith("#") for line in added)
 
 
-def _enrich_demo_symbols(
-    cve_id: str,
-    symbols: list[dict[str, Any]],
-    files_changed: list[str],
-) -> list[dict[str, Any]]:
-    """Add well-known public API symbols for demo CVEs when the patch touches related code."""
-    extras = _DEMO_API_SYMBOLS.get(cve_id.upper(), [])
-    if not extras:
-        return symbols
-    existing_fqn = {s.get("fully_qualified_name") for s in symbols}
-    existing_short = {s.get("short_name") for s in symbols}
-    out = list(symbols)
-    for template in extras:
-        file_hint = template.get("file_in_patch", "")
-        if file_hint and not any(
-            file_hint in f.replace("\\", "/") for f in files_changed
-        ):
-            continue
-        fqn = template["fully_qualified_name"]
-        short = template.get("short_name")
-        if fqn in existing_fqn or short in existing_short:
-            continue
-        entry = dict(template)
-        entry.setdefault("before_signature", "")
-        entry.setdefault("after_signature", "")
-        entry.setdefault("lines_added", 0)
-        entry.setdefault("lines_removed", 0)
-        out.append(entry)
-        existing_fqn.add(fqn)
-        if short:
-            existing_short.add(short)
-    return out
-
-
 def _resolve_osv_fix_commit(cve_id: str) -> list[str]:
     """Extra pass: resolve bare SHAs from OSV with repo URL."""
     url = f"https://api.osv.dev/v1/vulns/{cve_id}"
@@ -915,7 +918,7 @@ def fetch_patch(
         cached = load_cache(cve_id)
         if cached and _cache_is_fresh(cached):
             logger.info("Cache hit for %s", cve_id)
-            return cached
+            return _ensure_patch_metadata(cached)
 
     result = _empty_result(cve_id, package)
     sources_tried: list[str] = []
@@ -962,17 +965,9 @@ def fetch_patch(
         owner, repo, sha = chosen
         files_changed, symbols, is_partial = _parse_patch_symbols(patch_text, package)
 
-        # Deduplicate symbols by FQN
-        seen_fqn: set[str] = set()
-        unique_symbols: list[dict[str, Any]] = []
-        for sym in symbols:
-            fqn = sym["fully_qualified_name"]
-            if fqn in seen_fqn:
-                continue
-            seen_fqn.add(fqn)
-            unique_symbols.append(sym)
-
-        unique_symbols = _enrich_demo_symbols(cve_id, unique_symbols, files_changed)
+        unique_symbols = _enrich_symbols_from_full_files(
+            owner, repo, sha, package, files_changed, symbols,
+        )
 
         status = "partial" if is_partial or (files_changed and not unique_symbols) else "ok"
         if not files_changed:
@@ -988,8 +983,10 @@ def fetch_patch(
             "patch_commit": sha,
             "patch_repo": f"{owner}/{repo}",
             "files_changed": sorted(set(files_changed)),
-            "vulnerable_symbols": sorted(unique_symbols, key=lambda s: s["fully_qualified_name"]),
+            "vulnerable_symbols": unique_symbols,
             "import_aliases": _generate_import_aliases(unique_symbols, package),
+            "vulnerability_signature": _build_vulnerability_signature(unique_symbols),
+            "exploitability_fingerprint": _build_exploitability_fingerprint(unique_symbols),
         }
         save_cache(cve_id, result)
         return result
