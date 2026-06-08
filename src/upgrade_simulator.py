@@ -436,6 +436,32 @@ def _satisfied_versions(spec: str, sample: Optional[list[str]] = None) -> list[s
     return [str(spec)]
 
 
+_VERSION_LITERAL_RE = re.compile(r"\d+(?:\.\d+){0,3}(?:[a-zA-Z]+\d*)?")
+
+
+def _candidate_versions(reqs: list[dict[str, str]], resolved_ver: str) -> list[str]:
+    """Derive a candidate version sample from the constraints themselves.
+
+    Pulls every version literal that appears in the conflicting constraints (and
+    the resolved version) so the "satisfied_by" evidence is grounded in real
+    data instead of a hardcoded sample list.
+    """
+    found: set[str] = set()
+    for r in reqs:
+        for m in _VERSION_LITERAL_RE.findall(r.get("constraint", "")):
+            found.add(m)
+    if resolved_ver:
+        found.add(resolved_ver)
+
+    def _key(v: str):
+        try:
+            return Version(v)
+        except Exception:
+            return Version("0")
+
+    return sorted(found, key=_key)
+
+
 def detect_conflicts(
     tree: dict[str, dict[str, Any]],
     scope_packages: Optional[set[str]] = None,
@@ -490,9 +516,7 @@ def detect_conflicts(
             if not (parent_names & scope_packages) and shared not in scope_packages:
                 continue
 
-        sample_versions = [
-            "1.21.1", "1.22.0", "1.23.0", "1.24.1", "1.25.2", "1.26.20", "2.0.7", "2.7.0",
-        ]
+        sample_versions = _candidate_versions(reqs, resolved_ver)
         satisfied_per_pkg = [
             {
                 "package": r["package"],
@@ -530,6 +554,77 @@ def detect_conflicts(
 # ── Phase 6: cascade detection ───────────────────────────────────────
 
 
+def _forced_by(
+    pkg: str,
+    bump: dict[str, str],
+    trigger: str,
+    current_tree: dict[str, dict[str, Any]],
+    target_tree: dict[str, dict[str, Any]],
+) -> str:
+    """Attribute a forced bump to the dependent that requires the new version.
+
+    Purely constraint-derived: the responsible parent is whichever package's
+    requirement on ``pkg`` admits the new version but excluded the old one.
+    """
+    cur_spec = (current_tree.get(trigger, {}).get("requires") or {}).get(pkg)
+    tgt_spec = (target_tree.get(trigger, {}).get("requires") or {}).get(pkg)
+    if cur_spec != tgt_spec:
+        return trigger
+    if tgt_spec:
+        try:
+            ss = SpecifierSet(tgt_spec)
+            if ss.contains(bump["to"], prereleases=True) and not ss.contains(
+                bump["from"], prereleases=True
+            ):
+                return trigger
+        except Exception:
+            pass
+    for parent, entry in sorted(target_tree.items()):
+        if parent == trigger:
+            continue
+        spec = (entry.get("requires") or {}).get(pkg)
+        if not spec:
+            continue
+        try:
+            ss = SpecifierSet(spec)
+            if ss.contains(bump["to"], prereleases=True) and not ss.contains(
+                bump["from"], prereleases=True
+            ):
+                return parent
+        except Exception:
+            continue
+    for rb in target_tree.get(pkg, {}).get("required_by") or []:
+        if isinstance(rb, dict) and rb.get("package"):
+            return str(rb["package"])
+    return trigger
+
+
+def _topo_order(packages: set[str], tree: dict[str, dict[str, Any]]) -> list[str]:
+    """Order packages so dependencies precede their dependents (Kahn's algorithm).
+
+    Derived entirely from resolved ``requires`` edges. Cycles and ties break
+    deterministically (alphabetical), with no package-name allow-lists.
+    """
+    deps: dict[str, set[str]] = {p: set() for p in packages}
+    for p in packages:
+        for req in (tree.get(p, {}).get("requires") or {}):
+            if req in packages:
+                deps[p].add(req)
+
+    ordered: list[str] = []
+    placed: set[str] = set()
+    remaining = set(packages)
+    while remaining:
+        ready = sorted(p for p in remaining if deps[p] <= placed)
+        if not ready:  # dependency cycle: break deterministically
+            ready = [sorted(remaining)[0]]
+        for p in ready:
+            ordered.append(p)
+            placed.add(p)
+            remaining.discard(p)
+    return ordered
+
+
 def detect_cascade(
     current_tree: dict[str, dict[str, Any]],
     target_tree: dict[str, dict[str, Any]],
@@ -537,81 +632,25 @@ def detect_cascade(
     trigger_from: str,
     trigger_to: str,
 ) -> dict[str, Any]:
-    """Identify forced upgrade chain after applying the primary upgrade."""
-    diff = _tree_diff(current_tree, target_tree)
-    chain: list[dict[str, str]] = []
-    trigger = _normalize_name(trigger_package)
+    """Identify the forced upgrade chain after applying the primary upgrade.
 
-    order_hint = ["urllib3", "botocore", "boto3", "s3transfer", "jinja2", "werkzeug", "markupsafe"]
+    The chain is the set of transitively bumped packages (resolved-graph diff),
+    ordered topologically by dependency edges, with constraint-derived
+    attribution. No package-specific heuristics.
+    """
+    diff = _tree_diff(current_tree, target_tree)
+    trigger = _normalize_name(trigger_package)
     bumps = {b["package"]: b for b in diff["bumped"] if b["package"] != trigger}
 
-    def _forced_by(pkg: str, bump: dict[str, str]) -> str:
-        cur_spec = (current_tree.get(trigger, {}).get("requires") or {}).get(pkg)
-        tgt_spec = (target_tree.get(trigger, {}).get("requires") or {}).get(pkg)
-        if cur_spec != tgt_spec:
-            return trigger
-        trigger_spec = tgt_spec
-        if trigger_spec:
-            try:
-                if SpecifierSet(trigger_spec).contains(bump["to"], prereleases=True):
-                    if not SpecifierSet(trigger_spec).contains(bump["from"], prereleases=True):
-                        return trigger
-            except Exception:
-                pass
-        for parent, entry in target_tree.items():
-            if parent == trigger:
-                continue
-            spec = (entry.get("requires") or {}).get(pkg)
-            if not spec:
-                continue
-            try:
-                if SpecifierSet(spec).contains(bump["to"], prereleases=True):
-                    if not SpecifierSet(spec).contains(bump["from"], prereleases=True):
-                        return parent
-            except Exception:
-                continue
-        for rb in target_tree.get(pkg, {}).get("required_by") or []:
-            if isinstance(rb, dict) and rb.get("package"):
-                return str(rb["package"])
-        return trigger
-
-    for pkg in order_hint:
-        if pkg not in bumps:
-            continue
-        bump = bumps.pop(pkg)
+    chain: list[dict[str, str]] = []
+    for pkg in _topo_order(set(bumps), target_tree):
+        bump = bumps[pkg]
         chain.append({
             "package": pkg,
             "from": bump["from"],
             "to": bump["to"],
-            "forced_by": _forced_by(pkg, bump),
+            "forced_by": _forced_by(pkg, bump, trigger, current_tree, target_tree),
         })
-
-    for pkg, bump in sorted(bumps.items()):
-        chain.append({
-            "package": pkg,
-            "from": bump["from"],
-            "to": bump["to"],
-            "forced_by": _forced_by(pkg, bump),
-        })
-
-    # Logical cascade for urllib3 / boto3 stacks when only urllib3 version bumps
-    if any(c.get("package") == "urllib3" for c in chain) and "boto3" in current_tree:
-        present = {c["package"] for c in chain}
-        if "botocore" in current_tree and "botocore" not in present:
-            bc_tgt = target_tree.get("botocore", current_tree["botocore"])
-            chain.append({
-                "package": "botocore",
-                "from": current_tree["botocore"]["version"],
-                "to": bc_tgt.get("version", current_tree["botocore"]["version"]),
-                "forced_by": "urllib3",
-            })
-        if "boto3" not in present:
-            chain.append({
-                "package": "boto3",
-                "from": current_tree["boto3"]["version"],
-                "to": "1.28.0",
-                "forced_by": "botocore",
-            })
 
     return {
         "trigger": f"{trigger} {trigger_from} -> {trigger_to}",
@@ -797,13 +836,18 @@ def compute_resolution_plan(
     primary = target_upgrades[0] if target_upgrades else {}
     primary_pkg = _normalize_name(primary.get("package", ""))
 
-    # Prefer top-level consumer (boto3) over transitive (botocore) as blocker
-    if "botocore" in blocker_names and "boto3" in current_tree:
-        blocker_names = ["boto3"] + [
-            b for b in blocker_names if b not in ("botocore", "boto3", primary_pkg)
-        ]
-    else:
-        blocker_names = [b for b in blocker_names if b not in (primary_pkg,)]
+    # Upgrade top-level consumers before the transitive deps they constrain, so a
+    # consumer's relaxed requirements let the shared dependency move. "Consumer
+    # first" = blockers that depend on more other blockers come first. Derived
+    # purely from the resolved dependency edges; no package-name allow-lists.
+    blocker_names = [b for b in blocker_names if b != primary_pkg]
+    blocker_set = set(blocker_names)
+
+    def _consumer_rank(pkg: str) -> int:
+        requires = current_tree.get(pkg, {}).get("requires") or {}
+        return -len([d for d in requires if d in blocker_set])
+
+    blocker_names.sort(key=lambda b: (_consumer_rank(b), b))
 
     for blocker in blocker_names:
         if blocker == primary_pkg or blocker in upgraded:
@@ -814,8 +858,6 @@ def compute_resolution_plan(
             if link["package"] == blocker:
                 tgt_v = link["to"]
                 break
-        if blocker == "boto3" and cur_v.startswith("1.10"):
-            tgt_v = "1.26.0"
         order += 1
         steps.append({
             "order": order,
