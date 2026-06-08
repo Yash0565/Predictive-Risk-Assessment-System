@@ -1,0 +1,7 @@
+rules:
+  - id: symbol-cwe_680-python
+    languages: [python]
+    message: Patch-aware sink for cwe_680
+    severity: ERROR
+    pattern-either:
+      - pattern: Image.open(...)
