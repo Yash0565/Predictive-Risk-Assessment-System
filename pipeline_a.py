@@ -62,21 +62,12 @@ from src.executor import run_scans
 from src.explainer import explain_risk, save_explanations
 from src.graph_builder import build_graph
 from src.graph_queries import get_neo4j_driver, run_all_queries
-from src.html_reporter import render_html as _render_html_v1
-from src.html_reporter_v2 import render_html as _render_html_v2
-from src.html_reporter_final_v2 import render_html as _render_html_final_v2
-
-_REPORT_RENDERERS = {
-    "v1": _render_html_v1,
-    "v2": _render_html_v2,
-    "final": _render_html_final_v2,
-}
-
-
-def _resolve_renderer(version: str):
-    return _REPORT_RENDERERS.get(version, _render_html_final_v2)
+# Single canonical renderer. The html_reporter / html_reporter_v2 modules remain
+# only as internal helper libraries that this renderer imports.
+from src.html_reporter_final_v2 import render_html as render_report_html
 from src.normalizer import normalize
 from src.patch_fetcher import fetch_patches_batch
+from src.reachability_evidence import enrich_with_call_graph, merge_into_graph_evidence
 from src.pipeline_console import (
     configure as configure_console,
     print_banner,
@@ -181,34 +172,6 @@ def _pick_upgrade_targets(
             continue
         proposed.setdefault(pkg, str(fixed).split(",")[0].strip())
     return [{"package": p, "target_version": ver} for p, ver in proposed.items()]
-
-
-def _merge_symbol_reachability(
-    graph_evidence: dict[str, Any],
-    symbol_findings: dict[str, Any],
-    reachable_cves: set[str],
-) -> None:
-    """Append symbol-scanner paths to graph evidence (scorer indexes by cve_id)."""
-    existing = {
-        row.get("cve_id") or row.get("cve")
-        for row in graph_evidence.get("reachability", [])
-    }
-    for cve in reachable_cves:
-        if cve in existing:
-            continue
-        finding = symbol_findings.get("findings_by_cve", {}).get(cve, {})
-        for ref in finding.get("references") or []:
-            ep = ref.get("entry_point_info") or {}
-            graph_evidence.setdefault("reachability", []).append({
-                "cve_id": cve,
-                "service": ep.get("route") or ref.get("file", ""),
-                "vuln_fn": ref.get("enclosing_function")
-                or finding.get("vulnerable_symbol", ""),
-                "file": ref.get("file", ""),
-                "line_start": ref.get("line", 0),
-                "hops": 1 if ref.get("in_entry_point") else 2,
-                "source": "symbol_scanner",
-            })
 
 
 async def run_pipeline(args: argparse.Namespace) -> None:
@@ -334,7 +297,10 @@ async def run_pipeline(args: argparse.Namespace) -> None:
             },
         }
     else:
-        symbol_findings = scan_symbols(project_dir, vulnerable_symbols_by_cve)
+        cache_dir = os.path.join(output_dir, ".scan_cache")
+        symbol_findings = scan_symbols(
+            project_dir, vulnerable_symbols_by_cve, cache_dir=cache_dir,
+        )
         save_findings(symbol_findings, symbol_path)
         stats = symbol_findings.get("stats", {})
         summary = symbol_findings.get("summary", {})
@@ -424,12 +390,66 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     else:
         print_stat_row("Graph", "phases 8–9 skipped (--no-graph)", style="dim")
 
-    _merge_symbol_reachability(graph_evidence, symbol_findings, reachable_cves)
+    merge_into_graph_evidence(graph_evidence, symbol_findings)
+    enrich_with_call_graph(project_dir, symbol_findings, graph_evidence, patches=patches)
 
-    _section("Phase 10  Risk Scoring (deterministic v1.0.0)")
+    # Feed knowledge-graph PageRank centrality into the blast-radius factor.
+    if snapshot:
+        try:
+            from src.graph_centrality import augment_blast_with_centrality
+            augment_blast_with_centrality(graph_evidence["blast_radius"], snapshot)
+        except Exception:
+            pass
+
+    _section("Phase 10  Risk Scoring (probabilistic v2.0.0)")
     assessment = score_cves(trivy_vulns, graph_evidence)
     save_assessment(assessment, output_dir)
     print_risk_summary(assessment)
+
+    # Automated fix plan from upgrade simulation (validated PR-ready diff).
+    if upgrade_sim and upgrade_sim.get("resolution_plan", {}).get("steps"):
+        try:
+            from src.fix_plan import generate_fix_plan
+            from src.project_deps import discover_dependency_pins
+
+            reqs_text = ""
+            try:
+                pins, label = discover_dependency_pins(project_dir)
+                req_path = os.path.join(project_dir, label if label.endswith(".txt") else "requirements.txt")
+                if os.path.isfile(req_path):
+                    with open(req_path, encoding="utf-8") as fh:
+                        reqs_text = fh.read()
+            except Exception:
+                pass
+            if reqs_text:
+                plan = generate_fix_plan(
+                    reqs_text,
+                    upgrade_sim["resolution_plan"]["steps"],
+                    assessment,
+                    feasible=upgrade_sim["resolution_plan"].get("feasible", True),
+                )
+                fix_path = os.path.join(output_dir, "fix_plan.json")
+                with open(fix_path, "w", encoding="utf-8") as fh:
+                    json.dump(plan, fh, indent=2)
+                print_stat_row("Fix plan", fix_path, style="green")
+        except Exception as exc:
+            print_stat_row("Fix plan", f"skipped ({exc})", style="dim")
+
+    # Privacy-safe aggregate flywheel (cross-scan learning).
+    try:
+        from src.ml.data_flywheel import record_scan_outcome
+        record_scan_outcome(assessment, symbol_findings, upgrade_sim)
+    except Exception:
+        pass
+
+    # Emit standards-compliant machine-readable outputs (SARIF / VEX / SBOM).
+    try:
+        from src.exporters import write_all as _write_standard_exports
+        export_paths = _write_standard_exports(assessment, output_dir)
+        for _kind, _path in export_paths.items():
+            print_stat_row(f"{_kind.upper()} export", _path, style="green")
+    except Exception as _exc:  # pragma: no cover - export must never fail the run
+        print_stat_row("Standards export", f"skipped ({_exc})", style="dim")
 
     _section("Phase 11  Template Explanations")
     explanations = explain_risk(assessment)
@@ -444,8 +464,7 @@ async def run_pipeline(args: argparse.Namespace) -> None:
         symbol_path if os.path.exists(symbol_path) else None
     )
     upgrade_path = args.upgrade_sim or upgrade_sim_path
-    renderer = _resolve_renderer(getattr(args, "report_version", "final"))
-    report_path = renderer(
+    report_path = render_report_html(
         assessment,
         explanations,
         graph_meta,
@@ -499,9 +518,8 @@ def main() -> None:
                    help="Connect to Neo4j at bolt://localhost:7687")
     p.add_argument("--offline", action="store_true",
                    help="Inline JS/CSS vendor assets in HTML report")
-    p.add_argument("--report-version", default="final",
-                   choices=["v1", "v2", "final"],
-                   help="HTML report layout: final (default, tabbed) / v2 / v1")
+    p.add_argument("--report-version", default="final", choices=["final"],
+                   help="HTML report layout (single canonical tabbed report)")
     p.add_argument("--symbol-scan", default=None, help="Override symbol_scan.json for HTML report")
     p.add_argument("--upgrade-sim", default=None, help="Override upgrade_simulation.json for HTML")
     p.add_argument("--verbose", action="store_true")
