@@ -1,0 +1,28 @@
+rules:
+  - id: symbol-input_validation-python
+    languages: [python]
+    message: Patch-aware sink for input_validation
+    severity: ERROR
+    pattern-either:
+      - pattern: BlpImagePlugin(...)
+      - pattern: IcnsImagePlugin(...)
+      - pattern: IcoImagePlugin(...)
+      - pattern: Image.open(...)
+      - pattern: _decode_jpeg_stream(...)
+      - pattern: _load_arg_defaults(...)
+      - pattern: check_data(...)
+      - pattern: construct_python_object_new(...)
+      - pattern: construct_undefined(...)
+      - pattern: constructor(...)
+      - pattern: frame(...)
+      - pattern: get_json(...)
+      - pattern: json(...)
+      - pattern: load(...)
+      - pattern: loads(...)
+      - pattern: make_python_instance(...)
+      - pattern: read_png_or_jpeg2000(...)
+      - pattern: render_template_string(...)
+      - pattern: request.get_json(...)
+      - pattern: set_python_instance_state(...)
+      - pattern: wrappers(...)
+      - pattern: yaml.load(...)
