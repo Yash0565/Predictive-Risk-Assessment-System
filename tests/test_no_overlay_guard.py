@@ -65,3 +65,32 @@ def test_scoring_model_file_exists_and_is_versioned() -> None:
     assert "model_version" in model
     for section in ("exploitability", "impact", "reachability", "blast", "asset", "thresholds"):
         assert section in model, f"scoring model missing '{section}' section"
+
+
+def test_graph_hop_limit_is_model_driven() -> None:
+    """Reachability search depth must come from the model, not magic literals."""
+    src = _read("graph_queries.py")
+    assert "max_call_hops" in src, "graph hop depth must be model-driven"
+    # The Neo4j Cypher must use the sentinel, not a baked-in numeric depth.
+    assert "*0..__HOPS__" in src
+    assert "*0..10" not in src and "*0..15" not in src, (
+        "graph hop depth literals must be substituted from the scoring model"
+    )
+
+    model_path = SRC.parent / "data" / "scoring_model.json"
+    import json
+
+    model = json.loads(model_path.read_text(encoding="utf-8"))
+    assert "max_call_hops" in model["reachability"], (
+        "scoring model 'reachability' must define max_call_hops"
+    )
+
+
+def test_report_formula_matches_probabilistic_model() -> None:
+    """The report's audit formula must describe the live multiplicative model."""
+    src = _read("html_reporter_v2.py")
+    # Stale additive scorer text must not return.
+    assert "sum of components" not in src
+    assert "severity_score    = clamp" not in src
+    # And it must reference the expected-loss / risk_unit model.
+    assert "risk_unit" in src

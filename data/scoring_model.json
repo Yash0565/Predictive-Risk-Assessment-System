@@ -19,8 +19,9 @@
     "weights": {"confidentiality": 0.3334, "integrity": 0.3333, "availability": 0.3333}
   },
   "reachability": {
-    "_doc": "R in [0,1] from call-graph evidence. Confirmed path: R = resolution_confidence * exp(-lambda*(hops-1)) * (1+taint_boost). No path: low prior carried with low confidence.",
+    "_doc": "R in [0,1] from call-graph evidence. Confirmed path: R = resolution_confidence * exp(-lambda*(hops-1)) * (1+taint_boost). No path: low prior carried with low confidence. max_call_hops bounds graph reachability search depth (entry-point -> sink) and is shared by Neo4j Cypher and the in-memory BFS so both agree.",
     "hop_decay_lambda": 0.5,
+    "max_call_hops": 10,
     "resolution_confidence_numeric": {"HIGH": 1.0, "MEDIUM": 0.6, "LOW": 0.3},
     "taint_boost": 0.15,
     "transitive_estimate": 0.15,

@@ -6,26 +6,45 @@ the risk scorer.
 
 from collections import deque
 
+_DEFAULT_MAX_CALL_HOPS = 10
+
+
+def max_call_hops() -> int:
+    """Reachability search depth (entry-point -> sink), from the scoring model.
+
+    Shared by the Neo4j Cypher queries and the in-memory BFS fallback so both
+    agree on how far a call chain may travel before it is considered too distant
+    to matter (consistent with the scorer's hop-decay assumption).
+    """
+    try:
+        from src.scorer import load_model
+        return int(load_model()["reachability"].get("max_call_hops", _DEFAULT_MAX_CALL_HOPS))
+    except Exception:
+        return _DEFAULT_MAX_CALL_HOPS
+
+
 # ── Cypher queries ───────────────────────────────────────────────────
+# ``__HOPS__`` is substituted with ``max_call_hops()`` at call time. A sentinel
+# is used (not str.format) because Cypher bodies contain literal ``{ }`` blocks.
 
 CYPHER_REACHABILITY = """
 MATCH (s:Service)-[:EXPOSES]->(entry:Function)
 MATCH (v:Function)<-[:VULNERABLE_IN]-(c:CVE)
 WHERE ($cve_id IS NULL OR c.cve_id = $cve_id)
   AND EXISTS {
-    MATCH p = shortestPath((entry)-[:CALLS*0..10]->(v))
+    MATCH p = shortestPath((entry)-[:CALLS*0..__HOPS__]->(v))
     RETURN p
   }
 RETURN s.name AS service, c.cve_id AS cve_id,
        v.qualified_name AS vuln_fn, v.file AS file,
        v.line_start AS line_start,
-       length(shortestPath((entry)-[:CALLS*0..10]->(v))) AS hops
+       length(shortestPath((entry)-[:CALLS*0..__HOPS__]->(v))) AS hops
 """
 
 CYPHER_BLAST_RADIUS = """
 MATCH (c:CVE {cve_id: $cve_id})-[:VULNERABLE_IN]->(v:Function)
 MATCH (s:Service)-[:EXPOSES]->(entry:Function)
-WHERE EXISTS { MATCH (entry)-[:CALLS*0..10]->(v) RETURN 1 }
+WHERE EXISTS { MATCH (entry)-[:CALLS*0..__HOPS__]->(v) RETURN 1 }
    OR EXISTS { MATCH (s)-[:EXPOSES]->(vf:Function)<-[:VULNERABLE_IN]-(c) RETURN 1 }
 RETURN count(DISTINCT s) AS impacted_services,
        collect(DISTINCT s.name) AS service_names
@@ -34,12 +53,16 @@ RETURN count(DISTINCT s) AS impacted_services,
 CYPHER_DEPENDENCY_CHAIN = """
 MATCH (s:Service {name: $service})-[:EXPOSES]->(entry:Function)
 MATCH (v:Function)<-[:VULNERABLE_IN]-(c:CVE {cve_id: $cve_id})
-MATCH p = shortestPath((entry)-[:CALLS*0..15]->(v))
+MATCH p = shortestPath((entry)-[:CALLS*0..__HOPS__]->(v))
 RETURN s.name AS service, c.cve_id AS cve_id,
        [n IN nodes(p) | n.qualified_name] AS path,
        v.file AS file, v.line_start AS line_start,
        length(p) AS hops
 """
+
+
+def _cypher(query: str) -> str:
+    return query.replace("__HOPS__", str(max_call_hops()))
 
 
 # ── Public API ───────────────────────────────────────────────────────
@@ -49,7 +72,7 @@ def query_reachability(driver=None, snapshot=None, cve_id=None):
     if driver:
         with driver.session() as session:
             rows = session.run(
-                CYPHER_REACHABILITY, cve_id=cve_id
+                _cypher(CYPHER_REACHABILITY), cve_id=cve_id
             ).data()
             return [_normalize_reach_row(r) for r in rows]
     return _snapshot_reachability(snapshot, cve_id)
@@ -59,7 +82,7 @@ def query_blast_radius(driver=None, snapshot=None, cve_id=None):
     """Return impacted service count and names for a CVE."""
     if driver:
         with driver.session() as session:
-            row = session.run(CYPHER_BLAST_RADIUS, cve_id=cve_id).single()
+            row = session.run(_cypher(CYPHER_BLAST_RADIUS), cve_id=cve_id).single()
             if row:
                 return {
                     "cve_id": cve_id,
@@ -75,7 +98,7 @@ def query_dependency_chain(driver=None, snapshot=None, service=None, cve_id=None
     if driver:
         with driver.session() as session:
             rows = session.run(
-                CYPHER_DEPENDENCY_CHAIN, service=service, cve_id=cve_id
+                _cypher(CYPHER_DEPENDENCY_CHAIN), service=service, cve_id=cve_id
             ).data()
             return [_normalize_chain_row(r) for r in rows]
     return _snapshot_dependency_chain(snapshot, service, cve_id)
@@ -154,7 +177,9 @@ def _cve_lookup(snapshot):
     return {c["id"]: c for c in snapshot.get("nodes", {}).get("cves", [])}
 
 
-def _shortest_path(adj, start, goal, max_depth=15):
+def _shortest_path(adj, start, goal, max_depth=None):
+    if max_depth is None:
+        max_depth = max_call_hops()
     if start == goal:
         return [start]
     queue = deque([(start, [start])])

@@ -535,7 +535,3 @@ def assemble_sample_report(
         project_dir=str(_REPO_ROOT / "vulnerable-task-tracker"),
     )
     return generate_report(data, output_path=output_path, offline=offline)
-
-
-# Backward-compatible alias
-assemble_and_generate_demo = assemble_sample_report

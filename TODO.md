@@ -70,8 +70,9 @@ Agent is missing Semgrep, graph phases, and batch patch fetch.
 - [x] Rich terminal UI (`--present`)
 - [x] Patch-aware Semgrep sink rules
 - [x] SARIF / VEX / SBOM exports
-- [x] 157 tests + GitHub Actions CI
+- [x] 159 tests + GitHub Actions CI
 - [x] README + ARCHITECTURE docs
+- [x] Repo-agnostic hardcoded-value cleanup (2026-06-09): graph hop depth now model-driven (`reachability.max_call_hops`), report audit panel + score breakdown show the real probabilistic factors (no stale additive bands), upgrade simulator uses the active target's Trivy data (no cross-repo leakage), `RISK_TOOL_URI` env override for exports, dead demo aliases removed
 
 ---
 

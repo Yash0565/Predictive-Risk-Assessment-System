@@ -30,16 +30,21 @@ _TEMPLATES = _REPO_ROOT / "templates"
 _PATCHES = _REPO_ROOT / "data" / "patches"
 _DEPSDEV = _REPO_ROOT / "data" / "depsdev"
 
-SCORER_FORMULA = """severity_score    = clamp(round(cvss * 4), 0, 40)
-exploit_score     = EPSS/KEV bands (max 20)
-reachability_score = 25 if reachable, 10 transitive, 0 none
-blast_radius_score = min(15, 2 * impacted_services)
+SCORER_FORMULA = """Probabilistic expected-loss model (data/scoring_model.json):
 
-raw_risk = sum of components (0–100)
+  risk_unit   = clamp(E * I * R_eff * A * B, 0, 1)
+  score(0-100) = round(100 * risk_unit)
 
-BLOCK   if reachability >= 25 AND ((cvss >= 9 AND in_kev) OR raw_risk >= 70)
-REVIEW  if 40 <= raw_risk < 70 (or policy thresholds)
-PROCEED if raw_risk < 40 and no hard blockers"""
+  E  Exploitability  = 1 - (1-EPSS)(1-KEV)(1-cvss_prior)(1-ml)   (noisy-OR)
+  I  Impact          = CVSS CIA magnitude (else cvss/10)
+  R  Reachability    = c_res * exp(-lambda*(hops-1)) * (1+taint)
+  R_eff              = Phi*R + (1-Phi)*no_path_prior              (confidence-blended)
+  A  Asset           = criticality multiplier (default 1.0)
+  B  Blast           = 1 + beta*saturation(impacted_services, centrality)
+  Phi Confidence     = geometric mean of evidence confidences
+
+  BLOCK if score >= threshold.BLOCK; REVIEW if >= threshold.REVIEW; else PROCEED.
+The LLM never sets the verdict; thresholds live in the versioned model file."""
 
 
 def _jinja_env() -> Environment:
@@ -248,6 +253,10 @@ def build_report_data(
                 "reachability_score": scores.get("reachability_score", 0),
                 "blast_radius_score": scores.get("blast_radius_score", 0),
             },
+            # Full probabilistic factor trace from the scorer, so the report
+            # shows the real multiplicative factors instead of stale heuristics.
+            "probabilistic": row.get("probabilistic") or {},
+            "score_confidence": row.get("confidence", 0),
             "is_reachable": finding.get("is_reachable", bool(refs)),
             "confidence": finding.get("confidence", "LOW"),
             "vulnerable_symbol": finding.get("vulnerable_symbol") or primary_sym.get("short_name", ""),
@@ -461,6 +470,3 @@ def assemble_sample_report(
         project_dir=str(_REPO_ROOT / "vulnerable-task-tracker"),
     )
     return generate_report(data, output_path=output_path, offline=offline)
-
-
-assemble_and_generate_demo = assemble_sample_report

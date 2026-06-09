@@ -68,6 +68,7 @@ _DEFAULT_MODEL: dict[str, Any] = {
     },
     "reachability": {
         "hop_decay_lambda": 0.5,
+        "max_call_hops": 10,
         "resolution_confidence_numeric": {"HIGH": 1.0, "MEDIUM": 0.6, "LOW": 0.3},
         "taint_boost": 0.0,
         "transitive_estimate": 0.15,

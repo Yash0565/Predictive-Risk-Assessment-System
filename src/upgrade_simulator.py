@@ -761,29 +761,38 @@ def detect_target_cves(
     found: list[dict[str, Any]] = []
     seen: set[str] = set()
 
-    if cve_data_source is None and TRIVY_ENRICHED.is_file():
+    if cve_data_source is None:
+        # Resolve the *active* target's Trivy output (set by the pipeline) so a
+        # standalone call never leaks the assessment tool repo's own CVE list
+        # into another project's analysis. Falls back to the bundled default.
         try:
-            with TRIVY_ENRICHED.open(encoding="utf-8") as fh:
-                rows = json.load(fh)
-            for row in rows:
-                pkg = _normalize_name(row.get("package", ""))
-                ver = row.get("fixed_version") or row.get("installed_version", "")
-                cve = row.get("cve", "")
-                if pkg in target_tree and cve:
-                    tv = target_tree[pkg].get("version", "")
-                    if ver and tv and Version(tv) >= Version(ver.split(",")[0].strip()):
-                        key = f"{cve}:{pkg}"
-                        if key not in seen:
-                            seen.add(key)
-                            found.append({
-                                "cve": cve,
-                                "package": pkg,
-                                "version": tv,
-                                "cvss": row.get("cvss_score", 0),
-                                "note": "Listed in enriched Trivy output for target version",
-                            })
-        except (json.JSONDecodeError, OSError, ValueError):
-            pass
+            from src.patch_fetcher import _trivy_enriched_path
+            _trivy_src = _trivy_enriched_path()
+        except Exception:
+            _trivy_src = TRIVY_ENRICHED
+        if _trivy_src.is_file():
+            try:
+                with _trivy_src.open(encoding="utf-8") as fh:
+                    rows = json.load(fh)
+                for row in rows:
+                    pkg = _normalize_name(row.get("package", ""))
+                    ver = row.get("fixed_version") or row.get("installed_version", "")
+                    cve = row.get("cve", "")
+                    if pkg in target_tree and cve:
+                        tv = target_tree[pkg].get("version", "")
+                        if ver and tv and Version(tv) >= Version(ver.split(",")[0].strip()):
+                            key = f"{cve}:{pkg}"
+                            if key not in seen:
+                                seen.add(key)
+                                found.append({
+                                    "cve": cve,
+                                    "package": pkg,
+                                    "version": tv,
+                                    "cvss": row.get("cvss_score", 0),
+                                    "note": "Listed in enriched Trivy output for target version",
+                                })
+            except (json.JSONDecodeError, OSError, ValueError):
+                pass
 
     for pkg, entry in target_tree.items():
         if packages_filter is not None and pkg not in packages_filter:

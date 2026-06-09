@@ -20,7 +20,9 @@ from typing import Any, Optional
 
 TOOL_NAME = "Predictive-Risk-Assessment-System"
 TOOL_VERSION = "2.0.0"
-TOOL_URI = "https://github.com/your-org/predictive-risk-assessment-system"
+# Overridable so forks/deployments can point at their own repository URL without
+# a code change; defaults to an empty string rather than a placeholder org.
+TOOL_URI = os.environ.get("RISK_TOOL_URI", "")
 
 # recommendation -> SARIF level
 _SARIF_LEVEL = {"BLOCK": "error", "REVIEW": "warning", "PROCEED": "note"}

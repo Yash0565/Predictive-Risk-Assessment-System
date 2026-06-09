@@ -1379,6 +1379,94 @@ def _build_mitigations(
 # ─────────────────────────────────────────────────────────────────────
 
 
+def _factor_band(value: float) -> tuple[str, str]:
+    """Map a normalized [0,1] factor to an (impact label, color) pair."""
+    if value >= 0.66:
+        return "HIGH", "danger"
+    if value >= 0.33:
+        return "MODERATE", "warning"
+    return "LOW", "success"
+
+
+def _probabilistic_rows(f: dict[str, Any]) -> list[dict[str, Any]]:
+    """Score-breakdown rows from the scorer's real multiplicative factors."""
+    e = float(f.get("exploitability", 0) or 0)
+    i = float(f.get("impact", 0) or 0)
+    r = float(f.get("reachability_eff", 0) or 0)
+    b_norm = float(f.get("blast_normalized", 0) or 0)
+    b_fac = float(f.get("blast_factor", 1) or 1)
+    phi = float(f.get("confidence", 0) or 0)
+
+    def _row(dim: str, value: float, raw: str, weight: str, *, neutral: bool = False) -> dict[str, Any]:
+        impact, color = _factor_band(value)
+        return {
+            "dimension": dim,
+            "raw_value": raw,
+            "weight": weight,
+            "contribution_pts": round(value * 100),
+            "contribution_max": 100,
+            "impact": impact,
+            "color": "info" if neutral else color,
+        }
+
+    return [
+        _row("Exploitability (E)", e, _fmt_num(e, 2), "× factor"),
+        _row("Impact (I)", i, _fmt_num(i, 2), "× factor"),
+        _row("Reachability (R_eff)", r, _fmt_num(r, 2), "× factor"),
+        _row("Blast (B)", b_norm, f"×{_fmt_num(b_fac, 2)}", "amplifier"),
+        _row("Confidence (Φ)", phi, _fmt_num(phi, 2), "evidence", neutral=True),
+    ]
+
+
+def _legacy_score_rows(top: dict[str, Any]) -> list[dict[str, Any]]:
+    """Fallback rows for assessments without a probabilistic factor trace."""
+    scores = top.get("scores") or {}
+    cvss = top.get("cvss", 0) or 0
+    epss = top.get("epss", 0) or 0
+    in_kev = top.get("in_kev", False)
+    ev = top.get("evidence") or {}
+    impacted = ev.get("impacted_services", 0) or 0
+    reach_refs = len(top.get("references") or [])
+    return [
+        {
+            "dimension": "CVSS Severity",
+            "raw_value": _fmt_num(cvss, 1),
+            "weight": "severity",
+            "contribution_pts": scores.get("severity_score", 0),
+            "contribution_max": 40,
+            "impact": "CRITICAL" if cvss >= 9 else "HIGH" if cvss >= 7 else "MODERATE",
+            "color": "danger",
+        },
+        {
+            "dimension": "EPSS Exploitability",
+            "raw_value": _fmt_pct(epss),
+            "weight": "exploit",
+            "contribution_pts": scores.get("exploit_score", 0),
+            "contribution_max": 20,
+            "impact": "HIGH" if (epss >= 0.3 or in_kev) else "MODERATE" if epss > 0 else "LOW",
+            "color": "warning",
+        },
+        {
+            "dimension": "Reachability",
+            "raw_value": f"{reach_refs} hits" if reach_refs else "Not reachable",
+            "weight": "reach",
+            "contribution_pts": scores.get("reachability_score", 0),
+            "contribution_max": 25,
+            "impact": "HIGH" if reach_refs else "LOW",
+            "color": "warning",
+        },
+        {
+            "dimension": "Blast Radius",
+            "raw_value": f"{impacted} service{'s' if impacted != 1 else ''}",
+            "weight": "blast",
+            "contribution_pts": scores.get("blast_radius_score", 0),
+            "contribution_max": 15,
+            "impact": "HIGH" if impacted >= 3 else "MODERATE" if impacted else "LOW",
+            "color": "warning",
+        },
+    ]
+
+
 def _build_score_breakdown(base: dict[str, Any]) -> dict[str, Any]:
     cves = base.get("cves") or []
     if not cves:
@@ -1388,52 +1476,8 @@ def _build_score_breakdown(base: dict[str, Any]) -> dict[str, Any]:
             "verdict": base.get("overall", {}).get("recommendation", "PROCEED"),
         }
     top = max(cves, key=lambda c: c.get("raw_risk", 0))
-    scores = top.get("scores") or {}
-    cvss = top.get("cvss", 0) or 0
-    epss = top.get("epss", 0) or 0
-    in_kev = top.get("in_kev", False)
-    ev = top.get("evidence") or {}
-    impacted = ev.get("impacted_services", 0) or 0
-    reach_refs = len(top.get("references") or [])
-
-    rows = [
-        {
-            "dimension": "CVSS Severity",
-            "raw_value": _fmt_num(cvss, 1),
-            "weight": "0.30",
-            "contribution_pts": scores.get("severity_score", 0),
-            "contribution_max": 40,
-            "impact": "CRITICAL" if cvss >= 9 else "HIGH" if cvss >= 7 else "MODERATE",
-            "color": "danger",
-        },
-        {
-            "dimension": "EPSS Exploitability",
-            "raw_value": _fmt_pct(epss),
-            "weight": "0.25",
-            "contribution_pts": scores.get("exploit_score", 0),
-            "contribution_max": 20,
-            "impact": "HIGH" if (epss >= 0.3 or in_kev) else "MODERATE" if epss > 0 else "LOW",
-            "color": "warning",
-        },
-        {
-            "dimension": "Reachability",
-            "raw_value": f"{reach_refs} hits" if reach_refs else "Not reachable",
-            "weight": "0.20",
-            "contribution_pts": scores.get("reachability_score", 0),
-            "contribution_max": 25,
-            "impact": "HIGH" if reach_refs else "LOW",
-            "color": "warning",
-        },
-        {
-            "dimension": "Blast Radius",
-            "raw_value": f"{impacted} service{'s' if impacted != 1 else ''}",
-            "weight": "0.15",
-            "contribution_pts": scores.get("blast_radius_score", 0),
-            "contribution_max": 15,
-            "impact": "HIGH" if impacted >= 3 else "MODERATE" if impacted else "LOW",
-            "color": "warning",
-        },
-    ]
+    factors = top.get("probabilistic") or {}
+    rows = _probabilistic_rows(factors) if factors else _legacy_score_rows(top)
     total = top.get("raw_risk", 0) or sum(r["contribution_pts"] for r in rows)
     verdict = top.get("recommendation") or base.get("overall", {}).get("recommendation", "PROCEED")
     return {"rows": rows, "total": total, "verdict": verdict}
