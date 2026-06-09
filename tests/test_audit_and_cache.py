@@ -37,6 +37,35 @@ def test_audit_detects_tampering(tmp_path) -> None:
     assert result["broken_at"] == 1
 
 
+def test_scan_cache_symbol_target_roundtrip() -> None:
+    """Symbol scanner cache entries must be JSON-serializable."""
+    from src.symbol_scanner import SymbolTarget, _findings_for_cache, _findings_from_cache
+
+    target = SymbolTarget(
+        cve_id="CVE-TEST-1",
+        package="flask",
+        fully_qualified_name="flask.jsonify",
+        short_name="jsonify",
+        kind="function",
+        change_classification="API_CHANGE",
+    )
+    raw = [{
+        "target": target,
+        "matched_fqn": target.fully_qualified_name,
+        "kind": "call",
+        "file": "app.py",
+        "line": 10,
+        "col": 4,
+        "source": "jsonify()",
+        "confidence": "HIGH",
+    }]
+    cached = _findings_for_cache(raw)
+    json.dumps(cached)
+    restored = _findings_from_cache(cached)
+    assert isinstance(restored[0]["target"], SymbolTarget)
+    assert restored[0]["target"].cve_id == "CVE-TEST-1"
+
+
 def test_scan_cache_incremental_hits(tmp_path) -> None:
     f1 = tmp_path / "a.py"
     f2 = tmp_path / "b.py"

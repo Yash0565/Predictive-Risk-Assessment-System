@@ -65,6 +65,27 @@ class SymbolTarget:
     kind: str
     change_classification: str
 
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "cve_id": self.cve_id,
+            "package": self.package,
+            "fully_qualified_name": self.fully_qualified_name,
+            "short_name": self.short_name,
+            "kind": self.kind,
+            "change_classification": self.change_classification,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> SymbolTarget:
+        return cls(
+            cve_id=data["cve_id"],
+            package=data["package"],
+            fully_qualified_name=data["fully_qualified_name"],
+            short_name=data["short_name"],
+            kind=data.get("kind", "function"),
+            change_classification=data.get("change_classification", "INTERNAL_CHANGE"),
+        )
+
 
 @dataclass
 class Binding:
@@ -633,6 +654,30 @@ def _iter_py_files(target_dir: str, ignore_patterns: tuple[str, ...]) -> Iterato
             yield fpath
 
 
+def _findings_for_cache(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """JSON-safe per-file findings for ``ScanCache`` persistence."""
+    out: list[dict[str, Any]] = []
+    for item in findings:
+        row = dict(item)
+        target = row.get("target")
+        if isinstance(target, SymbolTarget):
+            row["target"] = target.to_dict()
+        out.append(row)
+    return out
+
+
+def _findings_from_cache(cached: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Restore ``SymbolTarget`` objects after cache load."""
+    out: list[dict[str, Any]] = []
+    for item in cached:
+        row = dict(item)
+        target = row.get("target")
+        if isinstance(target, dict) and "cve_id" in target:
+            row["target"] = SymbolTarget.from_dict(target)
+        out.append(row)
+    return out
+
+
 def _aggregate_findings(
     raw: list[dict[str, Any]],
     index: SymbolIndex,
@@ -736,25 +781,28 @@ def scan_symbols(
         except Exception:
             scan_cache = None
 
-    def _scan_one(fpath: str) -> list[dict[str, Any]]:
+    def _scan_one_raw(fpath: str) -> list[dict[str, Any]]:
         return scan_file(fpath, index, project_root=target_dir) or []
+
+    def _scan_one_cached(fpath: str) -> list[dict[str, Any]]:
+        return _findings_for_cache(_scan_one_raw(fpath))
 
     if scan_cache:
         paths = list(_iter_py_files(target_dir, patterns))
         files_scanned = len(paths)
         report = scan_cache.scan_incremental(
-            paths, "symbol_scanner", "2.0.0", _scan_one,
+            paths, "symbol_scanner", "2.0.0", _scan_one_cached,
         )
         cache_hits = report.get("stats", {}).get("cache_hits", 0)
         for findings in report.get("results", {}).values():
             if findings is not None:
                 files_parsed_ok += 1
-                all_raw.extend(findings)
+                all_raw.extend(_findings_from_cache(findings))
     else:
         for fpath in _iter_py_files(target_dir, patterns):
             files_scanned += 1
             try:
-                findings = _scan_one(fpath)
+                findings = _scan_one_raw(fpath)
                 if findings is not None:
                     files_parsed_ok += 1
                     all_raw.extend(findings)

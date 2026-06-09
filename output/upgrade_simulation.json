@@ -1,5 +1,5 @@
 {
-  "simulated_at": "2026-05-28T09:21:59+00:00",
+  "simulated_at": "2026-06-08T13:16:10+00:00",
   "status": "ok",
   "python_version": "3.14.0",
   "current_tree": {
@@ -359,11 +359,8 @@
           "version": "1.13.50",
           "constraint": ">=1.20,<1.26",
           "satisfied_by": [
-            "1.21.1",
-            "1.22.0",
-            "1.23.0",
-            "1.24.1",
-            "1.25.2"
+            "1.20",
+            "1.21.1"
           ]
         },
         {
@@ -372,22 +369,13 @@
           "constraint": "<3,>=1.21.1",
           "satisfied_by": [
             "1.21.1",
-            "1.22.0",
-            "1.23.0",
-            "1.24.1",
-            "1.25.2",
-            "1.26.20",
-            "2.0.7",
-            "2.7.0"
+            "1.26",
+            "2.6.0"
           ]
         }
       ],
       "intersection": [
-        "1.21.1",
-        "1.22.0",
-        "1.23.0",
-        "1.24.1",
-        "1.25.2"
+        "1.21.1"
       ],
       "would_break_build": true,
       "human_explanation": "Packages botocore, requests impose incompatible version ranges on urllib3; resolved urllib3 2.6.0 violates at least one constraint."
@@ -396,12 +384,6 @@
   "cascade": {
     "trigger": "flask 0.12 -> 0.12.3",
     "chain": [
-      {
-        "package": "urllib3",
-        "from": "1.24.1",
-        "to": "2.6.0",
-        "forced_by": "boto3"
-      },
       {
         "package": "jinja2",
         "from": "2.10",
@@ -421,25 +403,19 @@
         "forced_by": "flask"
       },
       {
+        "package": "urllib3",
+        "from": "1.24.1",
+        "to": "2.6.0",
+        "forced_by": "boto3"
+      },
+      {
         "package": "requests",
         "from": "2.20.0",
         "to": "2.31.0",
         "forced_by": "flask"
-      },
-      {
-        "package": "botocore",
-        "from": "1.13.50",
-        "to": "1.13.50",
-        "forced_by": "urllib3"
-      },
-      {
-        "package": "boto3",
-        "from": "1.10.0",
-        "to": "1.28.0",
-        "forced_by": "botocore"
       }
     ],
-    "total_packages_affected": 8
+    "total_packages_affected": 6
   },
   "runtime_conflicts": [
     {
@@ -1080,9 +1056,9 @@
     "steps": [
       {
         "order": 1,
-        "package": "boto3",
-        "from": "1.10.0",
-        "to": "1.26.0",
+        "package": "botocore",
+        "from": "1.13.50",
+        "to": "1.13.50",
         "reason": "Latest version that relaxes shared-deps before flask upgrade."
       },
       {
@@ -1129,15 +1105,15 @@
       }
     ],
     "estimated_test_surface": {
-      "packages_changed": 14,
-      "transitive_packages_touched": 7,
+      "packages_changed": 12,
+      "transitive_packages_touched": 5,
       "recommendation": "Run integration tests for code paths using upgraded packages and shared dependencies (e.g. urllib3, boto3 sessions)."
     }
   },
   "unresolved_packages": [],
   "summary": {
     "verdict": "PROCEED_AFTER_RESOLUTION",
-    "headline": "Upgrade blocked as requested: requires upgrading boto3 first.",
-    "one_line": "BLOCKED. Cascade required: 8 packages must be upgraded in order."
+    "headline": "Upgrade blocked as requested: requires upgrading botocore first.",
+    "one_line": "BLOCKED. Cascade required: 6 packages must be upgraded in order."
   }
 }

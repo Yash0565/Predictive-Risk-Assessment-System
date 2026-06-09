@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = _REPO_ROOT / "data" / "patches"
 TRIVY_ENRICHED = _REPO_ROOT / "enriched_trivy_output.json"
+_active_trivy_enriched: Optional[Path] = None
+_active_trivy_rows: Optional[list[dict[str, Any]]] = None
 CACHE_MAX_AGE_DAYS = 30
 MAX_FILES_PARTIAL = 20
 REQUEST_TIMEOUT = 10
@@ -56,6 +58,29 @@ VALID_CLASSIFICATIONS = frozenset({
 VALID_STATUSES = frozenset({"ok", "partial", "no_patch_found", "network_error"})
 
 _CODE_EXTENSIONS = {".py", ".c", ".h", ".pyx", ".pxd", ".cc", ".cpp"}
+
+
+def set_trivy_enriched_source(path: str | Path | None) -> None:
+    """Point patch commit hints at the active target's Trivy JSON."""
+    global _active_trivy_enriched, _active_trivy_rows
+    if path:
+        _active_trivy_enriched = Path(path).resolve()
+    else:
+        _active_trivy_enriched = None
+    _active_trivy_rows = None
+
+
+def set_trivy_enriched_rows(rows: list[dict[str, Any]] | None) -> None:
+    """Use in-memory Trivy rows (agent path) instead of a file on disk."""
+    global _active_trivy_enriched, _active_trivy_rows
+    _active_trivy_rows = rows
+    _active_trivy_enriched = None
+
+
+def _trivy_enriched_path() -> Path:
+    if _active_trivy_enriched and _active_trivy_enriched.is_file():
+        return _active_trivy_enriched
+    return TRIVY_ENRICHED
 
 
 def _utc_now_iso() -> str:
@@ -183,13 +208,16 @@ def _dedupe_preserve_order(urls: list[str]) -> list[str]:
 
 
 def _load_trivy_commits(cve_id: str, package: Optional[str]) -> list[str]:
-    if not TRIVY_ENRICHED.is_file():
-        return []
-    try:
-        with TRIVY_ENRICHED.open(encoding="utf-8") as fh:
-            rows = json.load(fh)
-    except (json.JSONDecodeError, OSError):
-        return []
+    rows: list[dict[str, Any]] | None = _active_trivy_rows
+    if rows is None:
+        trivy_path = _trivy_enriched_path()
+        if not trivy_path.is_file():
+            return []
+        try:
+            with trivy_path.open(encoding="utf-8") as fh:
+                rows = json.load(fh)
+        except (json.JSONDecodeError, OSError):
+            return []
     urls: list[str] = []
     for row in rows:
         if row.get("cve") != cve_id:

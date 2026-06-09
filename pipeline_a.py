@@ -23,10 +23,11 @@ PIPELINE PHASES
 USAGE
 ─────
   python pipeline_a.py \\
-      --project-dir ./vulnerable-task-tracker \\
-      --services services.yaml \\
-      --output-dir ./output \\
+      --project-dir /path/to/your-python-repo \\
       --skip-llm --present --offline
+
+  # Artifacts default to <project-dir>/.risk-scan/
+  # Optional: place services.yaml in the target repo for graph entry points
 """
 
 from __future__ import annotations
@@ -90,6 +91,12 @@ from src.scorer import save_assessment, score_cves
 from src.symbol_rule_builder import enrich_rules_with_patch_sinks
 from src.symbol_scanner import save_findings, scan_symbols
 from src.upgrade_simulator import simulate_upgrade
+from src.scan_paths import (
+    default_output_dir,
+    resolve_services_path,
+    resolve_trivy_input,
+)
+
 from src.utils import detect_language
 
 log = logging.getLogger("pipeline_a")
@@ -114,14 +121,6 @@ def _configure_logging(verbose: bool, quiet: bool) -> None:
         logging.getLogger("src.patch_fetcher").setLevel(logging.WARNING)
 
 
-def _resolve_input(raw: str, project_dir: str) -> str:
-    if os.path.isabs(raw):
-        return raw
-    if os.path.exists(raw):
-        return os.path.abspath(raw)
-    return os.path.join(project_dir, raw)
-
-
 def _ensure_trivy_input(
     input_path: str,
     project_dir: str,
@@ -130,6 +129,7 @@ def _ensure_trivy_input(
     """Return path to enriched Trivy JSON; run live scan when missing."""
     if os.path.isfile(input_path):
         return input_path
+    from src.patch_fetcher import set_trivy_enriched_source
     from src.tool_registry import run_trivy_on_repo
 
     print(f"   No Trivy JSON at {input_path}; running live scan on {project_dir}…")
@@ -140,11 +140,11 @@ def _ensure_trivy_input(
             "Install Trivy (https://github.com/aquasecurity/trivy) or pass "
             "--input path/to/enriched_trivy_output.json"
         )
-    out = os.path.join(output_dir, "enriched_trivy_output.json")
-    with open(out, "w", encoding="utf-8") as fh:
+    with open(input_path, "w", encoding="utf-8") as fh:
         json.dump(cves, fh, indent=2)
-    print(f"   Wrote {len(cves)} CVEs to {out} (scan mode: {mode})")
-    return out
+    print(f"   Wrote {len(cves)} CVEs to {input_path} (scan mode: {mode})")
+    set_trivy_enriched_source(input_path)
+    return input_path
 
 
 def _cve_id_to_package(trivy_vulns: list[dict[str, Any]]) -> dict[str, str]:
@@ -181,20 +181,26 @@ async def run_pipeline(args: argparse.Namespace) -> None:
     _configure_logging(args.verbose, quiet)
 
     project_dir = os.path.abspath(args.project_dir)
-    output_dir = os.path.abspath(args.output_dir) if args.output_dir else os.getcwd()
+    output_dir = os.path.abspath(args.output_dir) if args.output_dir else default_output_dir(project_dir)
     os.makedirs(output_dir, exist_ok=True)
 
     skip_llm = args.skip_llm
     use_graph = not args.no_graph
     use_neo4j = args.neo4j and use_graph
 
-    input_path = _resolve_input(args.input, project_dir)
-
+    input_path = resolve_trivy_input(
+        args.input,
+        project_dir=project_dir,
+        output_dir=output_dir,
+    )
     input_path = _ensure_trivy_input(input_path, project_dir, output_dir)
+
+    from src.patch_fetcher import set_trivy_enriched_source
+    set_trivy_enriched_source(input_path)
 
     api_key = args.api_key or os.environ.get("GOOGLE_API_KEY")
     rules_dir = os.path.join(output_dir, "semgrep_rules")
-    services_path = args.services or "services.yaml"
+    services_path = resolve_services_path(args.services, project_dir=project_dir)
 
     started_at = _utc_iso()
     t0 = time.perf_counter()
@@ -503,11 +509,15 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    p.add_argument("--input", default="enriched_trivy_output.json",
-                   help="Trivy enriched JSON (live Trivy scan if missing)")
+    p.add_argument("--input", default=None,
+                   help="Trivy enriched JSON (default: <output-dir>/enriched_trivy_output.json; "
+                        "live Trivy scan on --project-dir when missing)")
     p.add_argument("--project-dir", default=".", help="Target project to analyze")
-    p.add_argument("--output-dir", default=None, help="Artifact output directory (default: cwd)")
-    p.add_argument("--services", default="services.yaml", help="Service entry-points YAML")
+    p.add_argument("--output-dir", default=None,
+                   help="Artifact output directory (default: <project-dir>/.risk-scan)")
+    p.add_argument("--services", default="auto",
+                   help="Service entry-points YAML (default: auto — "
+                        "<project-dir>/services.yaml if present, else route auto-discovery)")
     p.add_argument("--api-key", default=None, help="Gemini API key (overrides GOOGLE_API_KEY)")
     p.add_argument("--llm", default="ollama", choices=["gemini", "ollama"])
     p.add_argument("--ollama-model", default="qwen2.5:3b")

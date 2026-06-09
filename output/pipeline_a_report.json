@@ -34,8 +34,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\buffer_overflow_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-buffer_overflow-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "code_injection",
@@ -50,8 +58,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\code_injection_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-code_injection-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_1333",
@@ -66,8 +82,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_1333_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_1333-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_1336",
@@ -82,8 +106,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_1336_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_1336-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_200",
@@ -102,8 +134,23 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_200_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 39,
+        "line_end": 39,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_200-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_200-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_252",
@@ -118,24 +165,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_252_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "cwe_295",
-    "cwe_ids": [
-      "CWE-295"
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_252-python"
+      }
     ],
-    "cves": [
-      "CVE-2019-11324"
-    ],
-    "packages": [
-      "urllib3"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_295_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_345",
@@ -152,8 +191,16 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_345_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_345-python"
+      }
+    ],
+    "ready_for_codeql": true
   },
   {
     "family": "cwe_377",
@@ -168,6 +215,1076 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_377_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_377-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_665",
+    "cwe_ids": [
+      "CWE-665"
+    ],
+    "cves": [
+      "CVE-2022-22815"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_665_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_665-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_670",
+    "cwe_ids": [
+      "CWE-670"
+    ],
+    "cves": [
+      "CVE-2024-35195"
+    ],
+    "packages": [
+      "requests"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_670_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_670-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_680",
+    "cwe_ids": [
+      "CWE-680"
+    ],
+    "cves": [
+      "CVE-2024-28219"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_680_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_680-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_693",
+    "cwe_ids": [
+      "CWE-693"
+    ],
+    "cves": [
+      "CVE-2024-56326"
+    ],
+    "packages": [
+      "Jinja2"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_693_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_693-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_835",
+    "cwe_ids": [
+      "CWE-835"
+    ],
+    "cves": [
+      "CVE-2021-28676",
+      "CVE-2026-42310"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_835_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-cwe_835-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "deserialization",
+    "cwe_ids": [
+      "CWE-502"
+    ],
+    "cves": [
+      "CVE-2019-20477"
+    ],
+    "packages": [
+      "PyYAML"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\deserialization_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 29,
+        "line_end": 29,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-deserialization-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "information_exposure",
+    "cwe_ids": [
+      "CWE-203"
+    ],
+    "cves": [
+      "CVE-2023-50782"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\information_exposure_python.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 11,
+        "line_end": 11,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 12,
+        "line_end": 12,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 14,
+        "line_end": 14,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 15,
+        "line_end": 15,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 16,
+        "line_end": 16,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 19,
+        "line_end": 19,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 24,
+        "line_end": 24,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 27,
+        "line_end": 27,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 12,
+        "line_end": 12,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 33,
+        "line_end": 33,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 36,
+        "line_end": 36,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 39,
+        "line_end": 39,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 40,
+        "line_end": 40,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 6,
+        "line_end": 6,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 18,
+        "line_end": 18,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 26,
+        "line_end": 26,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 28,
+        "line_end": 28,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 29,
+        "line_end": 29,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 30,
+        "line_end": 30,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 7,
+        "line_end": 7,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 14,
+        "line_end": 14,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 9,
+        "line_end": 9,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 17,
+        "line_end": 17,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 21,
+        "line_end": 21,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 22,
+        "line_end": 22,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 38,
+        "line_end": 38,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 41,
+        "line_end": 41,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 44,
+        "line_end": 44,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 45,
+        "line_end": 45,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 6,
+        "line_end": 6,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 49,
+        "line_end": 49,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 51,
+        "line_end": 51,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 55,
+        "line_end": 55,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 56,
+        "line_end": 56,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-information_exposure-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "input_validation",
+    "cwe_ids": [
+      "CWE-20"
+    ],
+    "cves": [
+      "CVE-2018-1000656",
+      "CVE-2021-27921",
+      "CVE-2021-27922",
+      "CVE-2021-27923",
+      "CVE-2020-14343",
+      "CVE-2020-1747"
+    ],
+    "packages": [
+      "Flask",
+      "Pillow",
+      "PyYAML"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\input_validation_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 27,
+        "line_end": 27,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-input_validation-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 29,
+        "line_end": 29,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-input_validation-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-input_validation-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-input_validation-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "integer_overflow",
+    "cwe_ids": [
+      "CWE-190"
+    ],
+    "cves": [
+      "CVE-2020-5310",
+      "CVE-2019-19911",
+      "CVE-2026-42308"
+    ],
+    "packages": [
+      "Pillow"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\integer_overflow_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-integer_overflow-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "null_dereference",
+    "cwe_ids": [
+      "CWE-476"
+    ],
+    "cves": [
+      "CVE-2024-0727"
+    ],
+    "packages": [
+      "cryptography"
+    ],
+    "rule_source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\null_dereference_python.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 11,
+        "line_end": 11,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 12,
+        "line_end": 12,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 14,
+        "line_end": 14,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 15,
+        "line_end": 15,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 16,
+        "line_end": 16,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 19,
+        "line_end": 19,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 24,
+        "line_end": 24,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 27,
+        "line_end": 27,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 12,
+        "line_end": 12,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 33,
+        "line_end": 33,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 36,
+        "line_end": 36,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 39,
+        "line_end": 39,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 40,
+        "line_end": 40,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 6,
+        "line_end": 6,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 18,
+        "line_end": 18,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 26,
+        "line_end": 26,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 28,
+        "line_end": 28,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 29,
+        "line_end": 29,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\config_loader.py",
+        "line_start": 30,
+        "line_end": 30,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 7,
+        "line_end": 7,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 13,
+        "line_end": 13,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\reports.py",
+        "line_start": 14,
+        "line_end": 14,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 9,
+        "line_end": 9,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 17,
+        "line_end": 17,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 21,
+        "line_end": 21,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 22,
+        "line_end": 22,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 38,
+        "line_end": 38,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 41,
+        "line_end": 41,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 43,
+        "line_end": 43,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 44,
+        "line_end": 44,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 45,
+        "line_end": 45,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 6,
+        "line_end": 6,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 10,
+        "line_end": 10,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 49,
+        "line_end": 49,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 51,
+        "line_end": 51,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 55,
+        "line_end": 55,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 56,
+        "line_end": 56,
+        "snippet": "requires login",
+        "rule_id": "semgrep_rules.detect-null_dereference-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "resource_exhaustion",
+    "cwe_ids": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "cves": [
+      "CVE-2020-28493",
+      "CVE-2019-16865",
+      "CVE-2023-44271",
+      "CVE-2025-66418"
+    ],
+    "packages": [
+      "Jinja2",
+      "Pillow",
+      "urllib3"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\resource_exhaustion_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-resource_exhaustion-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\uploads.py",
+        "line_start": 54,
+        "line_end": 54,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-resource_exhaustion-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "session_management",
+    "cwe_ids": [
+      "CWE-539"
+    ],
+    "cves": [
+      "CVE-2023-30861"
+    ],
+    "packages": [
+      "Flask"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\session_management_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\app.py",
+        "line_start": 27,
+        "line_end": 27,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-session_management-python"
+      },
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-session_management-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "weak_credentials",
+    "cwe_ids": [
+      "CWE-522"
+    ],
+    "cves": [
+      "CVE-2024-47081"
+    ],
+    "packages": [
+      "requests"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\weak_credentials_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\auth.py",
+        "line_start": 42,
+        "line_end": 42,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-weak_credentials-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "xss",
+    "cwe_ids": [
+      "CWE-79"
+    ],
+    "cves": [
+      "CVE-2024-22195",
+      "CVE-2024-34064"
+    ],
+    "packages": [
+      "Jinja2"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\xss_python_sinks.yaml",
+    "semgrep_matches": [
+      {
+        "file": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker\\tasks.py",
+        "line_start": 46,
+        "line_end": 46,
+        "snippet": "requires login",
+        "rule_id": "output.semgrep_rules.symbol-xss-python"
+      }
+    ],
+    "ready_for_codeql": true
+  },
+  {
+    "family": "cwe_295",
+    "cwe_ids": [
+      "CWE-295"
+    ],
+    "cves": [
+      "CVE-2019-11324"
+    ],
+    "packages": [
+      "urllib3"
+    ],
+    "rule_source": "symbol",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_295_python_sinks.yaml",
     "semgrep_matches": [],
     "ready_for_codeql": false
   },
@@ -206,22 +1323,6 @@
     "ready_for_codeql": false
   },
   {
-    "family": "cwe_665",
-    "cwe_ids": [
-      "CWE-665"
-    ],
-    "cves": [
-      "CVE-2022-22815"
-    ],
-    "packages": [
-      "Pillow"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_665_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
     "family": "cwe_669",
     "cwe_ids": [
       "CWE-669"
@@ -234,54 +1335,6 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_669_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "cwe_670",
-    "cwe_ids": [
-      "CWE-670"
-    ],
-    "cves": [
-      "CVE-2024-35195"
-    ],
-    "packages": [
-      "requests"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_670_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "cwe_680",
-    "cwe_ids": [
-      "CWE-680"
-    ],
-    "cves": [
-      "CVE-2024-28219"
-    ],
-    "packages": [
-      "Pillow"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_680_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "cwe_693",
-    "cwe_ids": [
-      "CWE-693"
-    ],
-    "cves": [
-      "CVE-2024-56326"
-    ],
-    "packages": [
-      "Jinja2"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_693_python_sinks.yaml",
     "semgrep_matches": [],
     "ready_for_codeql": false
   },
@@ -302,23 +1355,6 @@
     "ready_for_codeql": false
   },
   {
-    "family": "cwe_835",
-    "cwe_ids": [
-      "CWE-835"
-    ],
-    "cves": [
-      "CVE-2021-28676",
-      "CVE-2026-42310"
-    ],
-    "packages": [
-      "Pillow"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\cwe_835_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
     "family": "cwe_93",
     "cwe_ids": [
       "CWE-93"
@@ -335,38 +1371,6 @@
     "ready_for_codeql": false
   },
   {
-    "family": "deserialization",
-    "cwe_ids": [
-      "CWE-502"
-    ],
-    "cves": [
-      "CVE-2019-20477"
-    ],
-    "packages": [
-      "PyYAML"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\deserialization_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "information_exposure",
-    "cwe_ids": [
-      "CWE-203"
-    ],
-    "cves": [
-      "CVE-2023-50782"
-    ],
-    "packages": [
-      "cryptography"
-    ],
-    "rule_source": "none",
-    "rule_path": "",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
     "family": "injection",
     "cwe_ids": [
       "CWE-74"
@@ -379,101 +1383,6 @@
     ],
     "rule_source": "symbol",
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\injection_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "input_validation",
-    "cwe_ids": [
-      "CWE-20"
-    ],
-    "cves": [
-      "CVE-2018-1000656",
-      "CVE-2021-27921",
-      "CVE-2021-27922",
-      "CVE-2021-27923",
-      "CVE-2020-14343",
-      "CVE-2020-1747"
-    ],
-    "packages": [
-      "Flask",
-      "Pillow",
-      "PyYAML"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\input_validation_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "integer_overflow",
-    "cwe_ids": [
-      "CWE-190"
-    ],
-    "cves": [
-      "CVE-2020-5310",
-      "CVE-2019-19911",
-      "CVE-2026-42308"
-    ],
-    "packages": [
-      "Pillow"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\integer_overflow_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "null_dereference",
-    "cwe_ids": [
-      "CWE-476"
-    ],
-    "cves": [
-      "CVE-2024-0727"
-    ],
-    "packages": [
-      "cryptography"
-    ],
-    "rule_source": "none",
-    "rule_path": "",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "resource_exhaustion",
-    "cwe_ids": [
-      "CWE-400",
-      "CWE-770"
-    ],
-    "cves": [
-      "CVE-2020-28493",
-      "CVE-2019-16865",
-      "CVE-2023-44271",
-      "CVE-2025-66418"
-    ],
-    "packages": [
-      "Jinja2",
-      "Pillow",
-      "urllib3"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\resource_exhaustion_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "session_management",
-    "cwe_ids": [
-      "CWE-539"
-    ],
-    "cves": [
-      "CVE-2023-30861"
-    ],
-    "packages": [
-      "Flask"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\session_management_python_sinks.yaml",
     "semgrep_matches": [],
     "ready_for_codeql": false
   },
@@ -506,39 +1415,6 @@
     ],
     "rule_source": "none",
     "rule_path": "",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "weak_credentials",
-    "cwe_ids": [
-      "CWE-522"
-    ],
-    "cves": [
-      "CVE-2024-47081"
-    ],
-    "packages": [
-      "requests"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\weak_credentials_python_sinks.yaml",
-    "semgrep_matches": [],
-    "ready_for_codeql": false
-  },
-  {
-    "family": "xss",
-    "cwe_ids": [
-      "CWE-79"
-    ],
-    "cves": [
-      "CVE-2024-22195",
-      "CVE-2024-34064"
-    ],
-    "packages": [
-      "Jinja2"
-    ],
-    "rule_source": "symbol",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\output\\semgrep_rules\\xss_python_sinks.yaml",
     "semgrep_matches": [],
     "ready_for_codeql": false
   }

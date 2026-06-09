@@ -229,8 +229,11 @@ def tool_list_dependencies(args: dict[str, Any], state: dict[str, Any]) -> tuple
 
 
 def tool_scan_vulnerabilities(args: dict[str, Any], state: dict[str, Any]) -> tuple[Any, str]:
+    from src.patch_fetcher import set_trivy_enriched_rows
+
     parsed = RepoPathArgs.model_validate(args)
     cves, scan_mode = run_trivy_on_repo(parsed.repo_path)
+    set_trivy_enriched_rows(cves)
     state["collected_data"]["cves"] = cves
     state["collected_data"]["cve_scan_mode"] = scan_mode
     sev_high = sum(1 for c in cves if (c.get("severity") or "").upper() in ("HIGH", "CRITICAL"))

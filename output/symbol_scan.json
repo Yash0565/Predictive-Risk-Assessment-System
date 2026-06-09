@@ -536,9 +536,10 @@
       "vulnerable_symbol": "PIL.src.PIL.PdfParser.read_prev_trailer"
     }
   },
-  "scanned_at": "2026-05-28T09:21:59+00:00",
+  "scanned_at": "2026-06-08T13:16:10+00:00",
   "stats": {
-    "duration_ms": 33,
+    "cache_hits": 0,
+    "duration_ms": 14,
     "files_failed": 0,
     "files_parsed_ok": 6,
     "files_scanned": 6,

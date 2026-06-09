@@ -1,0 +1,25 @@
+# Service entry points for graph reachability (vulnerable-task-tracker sample app).
+services:
+  - name: auth_login
+    route: /auth/login
+    method: POST
+    file: auth.py
+    handler: login
+
+  - name: admin_config
+    route: /admin/config
+    method: GET
+    file: config_loader.py
+    handler: load_config
+
+  - name: task_upload
+    route: /tasks/<id>/upload
+    method: POST
+    file: uploads.py
+    handler: upload_task_file
+
+  - name: api_data
+    route: /api/data
+    method: POST
+    file: app.py
+    handler: api_data

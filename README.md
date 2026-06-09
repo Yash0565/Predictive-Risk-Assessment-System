@@ -2,7 +2,7 @@
 
 Pre-upgrade risk analysis for Python projects: discover pinned dependencies, find CVEs (Trivy), map patches to changed symbols, check whether your code reaches those symbols, run Semgrep rules (registry + patch-aware sinks), simulate upgrades, score risk deterministically, and emit a tabbed HTML report.
 
-**Team docs:** [ARCHITECTURE.md](ARCHITECTURE.md) · [TODO.md](TODO.md)
+**Team docs:** [TEAM_GUIDE.md](TEAM_GUIDE.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [TODO.md](TODO.md)
 
 ---
 
@@ -30,6 +30,44 @@ Open `output/risk_report.html` in a browser when the run finishes.
 
 **Presentation mode** (`--present`) = colored Rich tables + compact output + skip graph phases (`--quiet --no-graph`).
 
+### Team demo (5-minute script)
+
+| Slot | Command | What to show |
+|------|---------|--------------|
+| **Instant** (~30 s) | `.\scripts\demo.ps1 -Quick` | Tabbed HTML report from fixtures (no Trivy/Semgrep run) |
+| **Live pipeline** (~10 min) | `.\scripts\demo.ps1` | Full 12-phase run on `vulnerable-task-tracker/`; Rich terminal + `output/risk_report.html` |
+| **With graph** | `.\scripts\demo.ps1 -WithGraph` | Same + Neo4j phases (requires `docker compose up -d`) |
+
+**Suggested talking points:** (1) Trivy finds 80+ CVEs in pins → noise. (2) Symbol reachability cuts to the few CVEs your code actually calls. (3) Deterministic BLOCK/REVIEW/PROCEED score — not LLM guesswork. (4) HTML report tabs: Executive → Technical → Patches → Upgrade → Graph.
+
+**Prerequisites for live demo:** Python venv, `pip install -r requirements-core.txt`, [Semgrep](https://semgrep.dev/) on PATH, [Trivy](https://github.com/aquasecurity/trivy) for live CVE scans.
+
+---
+
+## Scan any Python repo
+
+Point `--project-dir` at **any** Python project. Paths are scoped to that repo — the tool no longer reuses this repo's root `enriched_trivy_output.json` or `services.yaml` when scanning elsewhere.
+
+```powershell
+# One-liner (artifacts → <your-repo>/.risk-scan/)
+.\scripts\scan_repo.ps1 -RepoPath "D:\path\to\your-python-app"
+
+# Or manually
+python pipeline_a.py `
+  --project-dir "D:\path\to\your-python-app" `
+  --skip-llm --present --offline
+```
+
+| Default | Location |
+|---------|----------|
+| Artifacts | `<project-dir>/.risk-scan/` |
+| Trivy input | `<output-dir>/enriched_trivy_output.json` (live `trivy fs` when missing) |
+| Graph entry points | `<project-dir>/services.yaml` if present, else auto-discovered routes |
+
+**Your repo should have:** Python source, pinned deps (`requirements.txt`, `pyproject.toml`, or `Pipfile` with `==` pins for upgrade simulation), and Trivy + Semgrep installed on your machine.
+
+**Optional:** add `services.yaml` in the target repo for manual HTTP entry points (see `vulnerable-task-tracker/services.yaml`).
+
 ---
 
 ## What to install
@@ -54,7 +92,8 @@ Open `output/risk_report.html` in a browser when the run finishes.
 pipeline_a.py              Main 12-phase pipeline entry point
 src/                       Core modules (agent, patch fetcher, symbol scanner, scorer, …)
 vulnerable-task-tracker/   Sample Flask app with real CVE reachability (use as --project-dir)
-services.yaml              Entry-point routes for graph reachability (matches sample app)
+                           Includes services.yaml for graph entry points
+services.yaml              Legacy copy for root-level demos; prefer per-repo services.yaml
 data/patches/              Offline patch cache (auto-refreshed when online)
 data/depsdev/              Offline deps.dev graphs for upgrade simulation
 data/osv/                  OSV snapshots for conflict class D
@@ -63,7 +102,7 @@ templates/                 HTML report Jinja templates
 static/vendor/             Vendored JS/CSS for offline reports
 ```
 
-Generated at runtime (gitignored): `output/`, `semgrep_rules/` under `--output-dir`, `enriched_trivy_output.json`, etc.
+Generated at runtime (gitignored): `<project-dir>/.risk-scan/`, `output/` (demo runs), `semgrep_rules/` under `--output-dir`, etc.
 
 ---
 
@@ -85,8 +124,9 @@ python pipeline_a.py `
 | Flag | Effect |
 |------|--------|
 | `--project-dir` | Target Python project to analyze |
-| `--output-dir` | Where JSON/HTML artifacts are written (default: cwd) |
-| `--input` | Pre-built Trivy JSON; if missing, runs `trivy fs` on project-dir |
+| `--output-dir` | Where JSON/HTML artifacts are written (default: `<project-dir>/.risk-scan`) |
+| `--input` | Trivy enriched JSON (default: `<output-dir>/enriched_trivy_output.json`) |
+| `--services` | Entry-points YAML (`auto` = `<project-dir>/services.yaml` or route auto-discovery) |
 | `--skip-llm` | Use registry + patch-aware symbol rules only (no Ollama/Gemini) |
 | `--present` | Colored compact terminal output; skips graph phases |
 | `--quiet` | Compact tables; suppress per-family logs |
@@ -177,5 +217,5 @@ Set `GITHUB_TOKEN` for higher GitHub API rate limits when fetching patches.
 ## Team notes
 
 - Analyze **any** Python repo by pointing `--project-dir` at it; pins are read from `requirements.txt`, `pyproject.toml`, or `Pipfile`.
-- The bundled `vulnerable-task-tracker/` app is the reference target for integration tests and demos.
+- Use `.\scripts\scan_repo.ps1 -RepoPath <path>` for a repo-scoped run with sensible defaults.
 - Do not commit `output/`, root-level `semgrep_rules/`, or generated JSON/HTML from local runs.
