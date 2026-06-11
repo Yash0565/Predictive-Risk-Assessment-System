@@ -1,0 +1,14 @@
+{
+  "CVE-2018-1000656": {"epss": 0.12, "percentile": 0.85},
+  "CVE-2019-1010083": {"epss": 0.08, "percentile": 0.78},
+  "CVE-2018-18074": {"epss": 0.55, "percentile": 0.95},
+  "CVE-2019-11324": {"epss": 0.22, "percentile": 0.88},
+  "CVE-2018-10903": {"epss": 0.03, "percentile": 0.62},
+  "CVE-2019-19911": {"epss": 0.01, "percentile": 0.45},
+  "CVE-2020-14343": {"epss": 0.65, "percentile": 0.97},
+  "CVE-2019-8341": {"epss": 0.48, "percentile": 0.93},
+  "CVE-2019-14234": {"epss": 0.35, "percentile": 0.90},
+  "CVE-2020-9402": {"epss": 0.18, "percentile": 0.82},
+  "CVE-2021-33503": {"epss": 0.02, "percentile": 0.55},
+  "CVE-2018-20096": {"epss": 0.06, "percentile": 0.70}
+}

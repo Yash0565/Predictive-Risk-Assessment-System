@@ -1,0 +1,6 @@
+rules:
+  - id: detect-cwe_670-python
+    languages: [python]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: requests\.request\(\) # Placeholder for actual sink patterns

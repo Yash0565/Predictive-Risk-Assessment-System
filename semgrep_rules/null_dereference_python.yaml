@@ -1,0 +1,6 @@
+rules:
+  - id: detect-null_dereference-python
+    languages: [python]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: $FUNC(...)

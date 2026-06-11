@@ -1,0 +1,30 @@
+{
+  "key": "556326949367b931627f99edbcb32ee5e20d0666c9207aa1875ce1e6f1020f86",
+  "result": [
+    {
+      "target": {
+        "cve_id": "CVE-2018-1000656",
+        "package": "flask",
+        "fully_qualified_name": "flask.wrappers.get_json",
+        "short_name": "get_json",
+        "kind": "function",
+        "change_classification": "INTERNAL_CHANGE"
+      },
+      "matched_fqn": "flask.wrappers.get_json",
+      "kind": "call",
+      "file": "app.py",
+      "line": 27,
+      "col": 14,
+      "source": "payload = request.get_json(force=True, silent=False)",
+      "enclosing_function": "api_data",
+      "in_entry_point": true,
+      "import_chain": "request (from flask import request).get_json",
+      "confidence": "HIGH",
+      "entry_point_info": {
+        "framework": "flask",
+        "route": "/api/data",
+        "method": "POST"
+      }
+    }
+  ]
+}

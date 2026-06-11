@@ -1,0 +1,38 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# Generated pipeline / agent output
+output/
+demo_out/
+results_test/
+enriched_trivy_output.json
+pipeline_a_report.json
+patches.json
+symbol_scan.json
+upgrade_simulation.json
+risk_assessment.json
+explanations.json
+risk_report.html
+fix_plan.json
+graph_snapshot.json
+data/agent_trace.json
+data/report.html
+report.sarif.json
+report.cyclonedx.json
+report.openvex.json
+
+# Test cache
+.pytest_cache/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+repomix-output.xml

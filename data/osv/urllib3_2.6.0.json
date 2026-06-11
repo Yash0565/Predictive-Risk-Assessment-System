@@ -1,0 +1,39 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-38jv-5279-wg99",
+      "cvss": 0.0,
+      "note": "Decompression-bomb safeguards bypassed when following HTTP redirects (streaming API)",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "GHSA-mf9v-mfxr-j63j",
+      "cvss": 0.0,
+      "note": "urllib3: Decompression-bomb safeguards bypassed in parts of the streaming API",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "GHSA-qccp-gfcp-xxvc",
+      "cvss": 0.0,
+      "note": "urllib3: Sensitive headers forwarded across origins in proxied low-level redirects",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "PYSEC-2026-141",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "2.6.0"
+    },
+    {
+      "cve": "PYSEC-2026-142",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "2.6.0"
+    }
+  ]
+}

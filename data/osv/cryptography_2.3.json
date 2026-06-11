@@ -1,0 +1,81 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-3ww4-gg4f-jr7f",
+      "cvss": 0.0,
+      "note": "Python Cryptography package vulnerable to Bleichenbacher timing oracle attack",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-5cpq-8wj7-hf2v",
+      "cvss": 0.0,
+      "note": "Vulnerable OpenSSL included in cryptography wheels",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-9v9h-cgj8-h64p",
+      "cvss": 0.0,
+      "note": "Null pointer dereference in PKCS12 parsing",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-hggm-jpg3-v476",
+      "cvss": 0.0,
+      "note": "RSA decryption vulnerable to Bleichenbacher timing vulnerability",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-jm77-qphf-c4w8",
+      "cvss": 0.0,
+      "note": "pyca/cryptography's wheels include vulnerable OpenSSL",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-m959-cc7f-wv43",
+      "cvss": 0.0,
+      "note": "cryptography has incomplete DNS name constraint enforcement on peer names",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-r6ph-v2qm-q3c2",
+      "cvss": 0.0,
+      "note": "cryptography Vulnerable to a Subgroup Attack Due to Missing Subgroup Validation for SECT Curves",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-w7pp-m8wf-vj6r",
+      "cvss": 0.0,
+      "note": "Cipher.update_into can corrupt memory if passed an immutable python object as the outbuf",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "GHSA-x4qr-2fvf-3mr5",
+      "cvss": 0.0,
+      "note": "Vulnerable OpenSSL included in cryptography wheels",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "PYSEC-2021-62",
+      "cvss": 0.0,
+      "note": "",
+      "package": "cryptography",
+      "version": "2.3"
+    },
+    {
+      "cve": "PYSEC-2023-11",
+      "cvss": 0.0,
+      "note": "",
+      "package": "cryptography",
+      "version": "2.3"
+    }
+  ]
+}

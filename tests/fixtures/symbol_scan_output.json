@@ -1,0 +1,207 @@
+{
+  "findings_by_cve": {
+    "CVE-2018-1000656": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "flask",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 14,
+          "confidence": "HIGH",
+          "enclosing_function": "api_data",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/api/data"
+          },
+          "file": "app.py",
+          "import_chain": "request (from flask import request).get_json",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 27,
+          "source": "payload = request.get_json(force=True, silent=False)"
+        }
+      ],
+      "vulnerable_symbol": "flask.wrappers.get_json"
+    },
+    "CVE-2019-10906": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "jinja2",
+      "reference_count": 2,
+      "references": [
+        {
+          "col": 0,
+          "confidence": "HIGH",
+          "enclosing_function": null,
+          "file": "tasks.py",
+          "import_chain": "jinja2.sandbox.SandboxedEnvironment",
+          "in_entry_point": false,
+          "kind": "import",
+          "line": 7,
+          "source": "from jinja2.sandbox import SandboxedEnvironment"
+        },
+        {
+          "col": 10,
+          "confidence": "HIGH",
+          "enclosing_function": "task_detail",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/tasks/<id>"
+          },
+          "file": "tasks.py",
+          "import_chain": "SandboxedEnvironment (from jinja2.sandbox import SandboxedEnvironment)",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 41,
+          "source": "env = SandboxedEnvironment()"
+        }
+      ],
+      "vulnerable_symbol": "jinja2.sandbox.SandboxedEnvironment"
+    },
+    "CVE-2019-11324": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode"
+    },
+    "CVE-2020-1747": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "pyyaml",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 13,
+          "confidence": "HIGH",
+          "enclosing_function": "load_config",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "GET",
+            "route": "/admin/config"
+          },
+          "file": "config_loader.py",
+          "import_chain": "yaml (import yaml).load",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 29,
+          "source": "config = yaml.load(raw)"
+        }
+      ],
+      "vulnerable_symbol": "yaml.load"
+    },
+    "CVE-2020-25659": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "cryptography",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey.decrypt"
+    },
+    "CVE-2020-26137": {
+      "change_classification": "HARDENED_ONLY",
+      "confidence": "HIGH",
+      "is_reachable": false,
+      "package": "urllib3",
+      "reference_count": 0,
+      "references": [],
+      "vulnerable_symbol": "urllib3.connection.HTTPConnection.putrequest"
+    },
+    "CVE-2020-5313": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "pillow",
+      "reference_count": 1,
+      "references": [
+        {
+          "col": 10,
+          "confidence": "HIGH",
+          "enclosing_function": "upload_task_image",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/tasks/<id>/upload"
+          },
+          "file": "uploads.py",
+          "import_chain": "Image (from PIL import Image).open",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 54,
+          "source": "img = Image.open(stream)"
+        }
+      ],
+      "vulnerable_symbol": "PIL.Image.open"
+    },
+    "CVE-2023-32681": {
+      "change_classification": "INTERNAL_CHANGE",
+      "confidence": "HIGH",
+      "is_reachable": true,
+      "package": "requests",
+      "reference_count": 2,
+      "references": [
+        {
+          "col": 0,
+          "confidence": "HIGH",
+          "enclosing_function": null,
+          "file": "auth.py",
+          "import_chain": "requests.utils.rebuild_auth",
+          "in_entry_point": false,
+          "kind": "import",
+          "line": 10,
+          "source": "from requests.utils import rebuild_auth"
+        },
+        {
+          "col": 23,
+          "confidence": "HIGH",
+          "enclosing_function": "login_user",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/auth/login"
+          },
+          "file": "auth.py",
+          "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 42,
+          "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
+        }
+      ],
+      "vulnerable_symbol": "requests.sessions.Session.rebuild_auth"
+    }
+  },
+  "scanned_at": "2026-05-19T18:10:13+00:00",
+  "stats": {
+    "duration_ms": 12,
+    "files_failed": 0,
+    "files_parsed_ok": 6,
+    "files_scanned": 6,
+    "total_findings": 7
+  },
+  "summary": {
+    "noise_reduction_percent": 37.5,
+    "reachable_cves": [
+      "CVE-2018-1000656",
+      "CVE-2019-10906",
+      "CVE-2020-1747",
+      "CVE-2020-5313",
+      "CVE-2023-32681"
+    ],
+    "unreachable_cves": [
+      "CVE-2019-11324",
+      "CVE-2020-25659",
+      "CVE-2020-26137"
+    ]
+  },
+  "target_dir": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
+}

@@ -1,0 +1,9 @@
+rules:
+  - id: symbol-integer_overflow-python
+    languages: [python]
+    message: Patch-aware sink for integer_overflow
+    severity: ERROR
+    pattern-either:
+      - pattern: FpxImagePlugin(...)
+      - pattern: Image.open(...)
+      - pattern: _open_index(...)

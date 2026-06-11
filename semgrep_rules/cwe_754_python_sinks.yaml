@@ -1,0 +1,8 @@
+rules:
+  - id: symbol-cwe_754-python
+    languages: [python]
+    message: Patch-aware sink for cwe_754
+    severity: ERROR
+    pattern-either:
+      - pattern: ciphers(...)
+      - pattern: update_into(...)

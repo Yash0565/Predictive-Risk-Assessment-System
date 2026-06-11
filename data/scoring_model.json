@@ -1,0 +1,55 @@
+{
+  "model_version": "2.0.0",
+  "methodology": "expected-loss",
+  "description": "Probabilistic risk = Exploitability x Impact x Reachability_eff x Asset x Blast, each factor normalized to a principled range. Replaces additive point heuristics. Decision thresholds are provisional and intended to be re-derived from the benchmark operating curve (Phase 3).",
+  "exploitability": {
+    "_doc": "Noisy-OR fusion of INDEPENDENT exploit signals so that a missing signal never zeros risk: E = 1 - (1-EPSS)(1-KEV*kev_probability)(1-exploit_evidence)(1-cvss_prior). The CVSS-vector prior is always available and prevents an absent EPSS score from collapsing a genuinely exploitable CVE to zero.",
+    "kev_probability": 0.99,
+    "exploit_evidence_default": 0.0,
+    "epss_floor": 0.0,
+    "cvss_prior_ceiling": 0.85,
+    "av_weight": {"network": 0.85, "adjacent": 0.62, "local": 0.55, "physical": 0.2},
+    "pr_weight": {"none": 0.85, "low": 0.62, "high": 0.27},
+    "ui_weight": {"none": 0.85, "required": 0.62},
+    "use_ml_model": true
+  },
+  "impact": {
+    "_doc": "CVSS environmental impact in [0,1]. Uses parsed CIA components when present (none=0, low=0.5, high=1.0), else falls back to cvss_base/10.",
+    "cia_magnitude": {"high": 1.0, "low": 0.5, "none": 0.0},
+    "weights": {"confidentiality": 0.3334, "integrity": 0.3333, "availability": 0.3333}
+  },
+  "reachability": {
+    "_doc": "R in [0,1] from call-graph evidence. Confirmed path: R = resolution_confidence * exp(-lambda*(hops-1)) * (1+taint_boost). No path: low prior carried with low confidence. max_call_hops bounds graph reachability search depth (entry-point -> sink) and is shared by Neo4j Cypher and the in-memory BFS so both agree.",
+    "hop_decay_lambda": 0.5,
+    "max_call_hops": 10,
+    "resolution_confidence_numeric": {"HIGH": 1.0, "MEDIUM": 0.6, "LOW": 0.3},
+    "taint_boost": 0.15,
+    "transitive_estimate": 0.15,
+    "no_path_prior": 0.05,
+    "default_path_confidence": "HIGH"
+  },
+  "blast": {
+    "_doc": "Bounded amplifier B in [1, 1+beta] from impacted-service saturation (graph centrality replaces this in Phase 5). B = 1 + beta*(1 - exp(-rate*impacted_services)).",
+    "beta": 0.5,
+    "saturation_rate": 0.5
+  },
+  "asset": {
+    "_doc": "Asset criticality multiplier in [min,max]. Default 1.0 until an asset inventory is wired.",
+    "default_criticality": 1.0,
+    "min": 0.5,
+    "max": 2.0
+  },
+  "confidence": {
+    "_doc": "Epistemic confidence Phi in [0,1] = geometric mean of evidence confidences. Reachability_eff = Phi*R + (1-Phi)*no_path_prior.",
+    "weight_has_epss": 1.0,
+    "weight_missing_epss": 0.7,
+    "weight_has_path": 1.0,
+    "weight_no_path": 0.6
+  },
+  "thresholds": {
+    "_doc": "Provisional decision cut points on the 0-100 calibrated score. Re-derive from the benchmark precision/recall curve.",
+    "BLOCK": 70,
+    "REVIEW": 40,
+    "provisional": true
+  }
+}

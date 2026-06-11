@@ -1,0 +1,118 @@
+{
+  "_python_requires": ">= 3.7",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": "<1.30.0,>=1.29.0",
+      "toNode": 1
+    },
+    {
+      "fromNode": 0,
+      "requirement": "<2.0.0,>=0.7.1",
+      "toNode": 2
+    },
+    {
+      "fromNode": 0,
+      "requirement": "<0.7.0,>=0.6.0",
+      "toNode": 4
+    },
+    {
+      "fromNode": 1,
+      "requirement": "<2.0.0,>=0.7.1",
+      "toNode": 2
+    },
+    {
+      "fromNode": 1,
+      "requirement": "<3.0.0,>=2.1",
+      "toNode": 3
+    },
+    {
+      "fromNode": 1,
+      "requirement": "<1.27,>=1.25.4",
+      "toNode": 6
+    },
+    {
+      "fromNode": 3,
+      "requirement": ">=1.5",
+      "toNode": 5
+    },
+    {
+      "fromNode": 4,
+      "requirement": "<2.0a.0,>=1.12.36",
+      "toNode": 1
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "boto3",
+        "system": "PYPI",
+        "version": "1.26.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "botocore",
+        "system": "PYPI",
+        "version": "1.29.165"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "jmespath",
+        "system": "PYPI",
+        "version": "1.1.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "python-dateutil",
+        "system": "PYPI",
+        "version": "2.9.0.post0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "s3transfer",
+        "system": "PYPI",
+        "version": "0.6.2"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "six",
+        "system": "PYPI",
+        "version": "1.17.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "urllib3",
+        "system": "PYPI",
+        "version": "1.26.20"
+      }
+    }
+  ]
+}

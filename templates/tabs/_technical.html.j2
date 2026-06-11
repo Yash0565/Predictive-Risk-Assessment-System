@@ -1,0 +1,68 @@
+<section class="tab-panel hidden" id="tab-technical" role="tabpanel" aria-labelledby="tab-btn-technical" hidden>
+  <div class="toolbar">
+    <label>Filter recommendation
+      <select id="filter-rec">
+        <option value="all">All</option>
+        <option value="BLOCK">BLOCK</option>
+        <option value="REVIEW">REVIEW</option>
+        <option value="PROCEED">PROCEED</option>
+      </select>
+    </label>
+    <label class="chk"><input type="checkbox" id="filter-reachable" /> Reachable only</label>
+    <input type="search" id="filter-search" placeholder="Search CVE or package…" class="search-input" />
+  </div>
+
+  <div class="card table-wrap">
+    <table class="data-table" id="cve-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th data-sort="cve">CVE</th>
+          <th data-sort="cvss">CVSS</th>
+          <th data-sort="epss">EPSS</th>
+          <th>KEV</th>
+          <th data-sort="reach">Reachable</th>
+          <th data-sort="rec">Rec</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cves %}
+        <tr class="cve-row" data-cve="{{ c.cve_id }}" data-rec="{{ c.recommendation }}" data-reachable="{{ '1' if c.is_reachable else '0' }}" data-cvss="{{ c.cvss }}" data-epss="{{ c.epss }}">
+          <td><button type="button" class="btn-expand" aria-expanded="false" data-target="detail-{{ loop.index }}">▶</button></td>
+          <td class="mono">{{ c.cve_id }}</td>
+          <td>{{ c.cvss|fmt_num(1) }}</td>
+          <td>{{ c.epss|fmt_pct }}</td>
+          <td>{% if c.in_kev %}<span class="kev-yes">YES</span>{% else %}—{% endif %}</td>
+          <td>{% if c.is_reachable %}<span class="tag tag-high">HIGH</span>{% else %}<span class="tag tag-muted">NO</span>{% endif %}</td>
+          <td><span class="tag tag-{{ c.recommendation|rec_class }}">{{ c.recommendation }}</span></td>
+        </tr>
+        <tr class="detail-row hidden" id="detail-{{ loop.index }}" hidden>
+          <td colspan="7">
+            <div class="detail-panel">
+              <p><strong>Package:</strong> {{ c.package }} · <strong>Symbol:</strong> {{ c.vulnerable_symbol }} · <strong>Change:</strong> {{ c.change_classification }}</p>
+              {% for ref in c.references %}
+              <p class="ref-line"><strong>{{ ref.file }}:{{ ref.line }}</strong>
+                {% if ref.entry_point_info %} · {{ ref.entry_point_info.method }} {{ ref.entry_point_info.route }}{% endif %}
+              </p>
+              {% endfor %}
+              {% if c.references and c.references[0].code_snippet %}
+              <pre class="code-snippet"><code class="language-python">{{ c.references[0].code_snippet }}</code></pre>
+              {% endif %}
+              <div class="score-bars">
+                {% set s = c.scores %}
+                <div class="score-row"><span>Severity</span><div class="bar"><div class="fill fill-sev" style="width:{{ (s.severity_score / 40 * 100)|int }}%"></div></div><span>{{ s.severity_score }}/40</span></div>
+                <div class="score-row"><span>Exploit</span><div class="bar"><div class="fill fill-exp" style="width:{{ (s.exploit_score / 20 * 100)|int }}%"></div></div><span>{{ s.exploit_score }}/20</span></div>
+                <div class="score-row"><span>Reachability</span><div class="bar"><div class="fill fill-reach" style="width:{{ (s.reachability_score / 25 * 100)|int }}%"></div></div><span>{{ s.reachability_score }}/25</span></div>
+                <div class="score-row"><span>Blast radius</span><div class="bar"><div class="fill fill-blast" style="width:{{ (s.blast_radius_score / 15 * 100)|int }}%"></div></div><span>{{ s.blast_radius_score }}/15</span></div>
+                <p class="total-score">Total {{ s.raw_risk }}/100 → {{ c.recommendation }}</p>
+              </div>
+              {% if c.explanation %}<p class="explain">{{ c.explanation }}</p>{% endif %}
+              <p><a href="https://nvd.nist.gov/vuln/detail/{{ c.cve_id }}" target="_blank" rel="noopener">NVD</a></p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>

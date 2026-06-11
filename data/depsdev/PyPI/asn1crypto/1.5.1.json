@@ -1,0 +1,17 @@
+{
+  "_python_requires": "",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "asn1crypto",
+        "system": "PYPI",
+        "version": "1.5.1"
+      }
+    }
+  ]
+}

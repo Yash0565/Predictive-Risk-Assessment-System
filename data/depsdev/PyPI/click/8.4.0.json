@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.10",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "click",
+        "system": "PYPI",
+        "version": "8.4.0"
+      }
+    }
+  ]
+}

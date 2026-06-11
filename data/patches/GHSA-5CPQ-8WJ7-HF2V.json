@@ -1,0 +1,13 @@
+{
+  "cve_id": "GHSA-5CPQ-8WJ7-HF2V",
+  "fetched_at": "2026-05-21T08:06:49+00:00",
+  "files_changed": [],
+  "import_aliases": [],
+  "package": "cryptography",
+  "patch_commit": null,
+  "patch_repo": null,
+  "patch_url": null,
+  "sources_tried": [],
+  "status": "no_patch_found",
+  "vulnerable_symbols": []
+}

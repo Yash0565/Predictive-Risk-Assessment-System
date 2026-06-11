@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.9",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "markupsafe",
+        "system": "PYPI",
+        "version": "3.0.3"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+neo4j>=5.0,<6.0
+Jinja2>=3.0
+PyYAML>=5.1
+python-dotenv>=0.19

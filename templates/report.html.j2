@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ metadata.target_repo }} — Pre-Upgrade Risk Report</title>
+{% if not offline %}
+{% for a in cdn_assets %}{% if a.kind == 'css' %}<link rel="stylesheet" href="{{ a.href }}">{% endif %}{% endfor %}
+{% for a in cdn_assets %}{% if a.kind == 'js' %}<script src="{{ a.src }}" defer></script>{% endif %}{% endfor %}
+{% endif %}
+<style>
+:root {
+  --primary:#1F4E79; --accent:#2E75B6; --danger:#C53030; --warning:#D69E2E;
+  --success:#38A169; --surface:#F8FAFC; --card:#FFFFFF; --text:#1A202C; --muted:#718096;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--surface);color:var(--text);line-height:1.5}
+.site-header{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid #e2e8f0;padding:1rem 1.5rem}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.header-title h1{font-size:1.25rem;color:var(--primary)}
+.header-meta{font-size:.85rem;color:var(--muted)}
+.header-badge{text-align:right;padding:.5rem 1rem;border-radius:8px;color:#fff}
+.header-badge.rec-BLOCK{background:var(--danger)}
+.header-badge.rec-REVIEW{background:var(--warning);color:var(--text)}
+.header-badge.rec-PROCEED{background:var(--success)}
+.badge-rec{display:block;font-weight:700;font-size:1rem}
+.badge-score{font-size:.9rem;opacity:.95}
+.tab-nav{position:sticky;top:72px;z-index:90;background:var(--card);border-bottom:1px solid #e2e8f0;padding:.5rem 1.5rem;display:flex;gap:.35rem;flex-wrap:wrap;max-width:1280px;margin:0 auto}
+.tab-btn{border:1px solid #cbd5e0;background:#fff;color:var(--text);padding:.45rem .9rem;border-radius:6px;cursor:pointer;font-size:.85rem}
+.tab-btn[aria-selected="true"],.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{max-width:1280px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+.tab-panel.hidden{display:none!important}
+.card{background:var(--card);border-radius:10px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:1rem}
+.banner{text-align:center;padding:1.5rem;border-radius:10px;color:#fff;margin-bottom:1rem}
+.banner.rec-BLOCK{background:var(--danger)}
+.banner.rec-REVIEW{background:var(--warning);color:var(--text)}
+.banner.rec-PROCEED{background:var(--success)}
+.banner-rec{font-size:1.5rem;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem}
+.stat-card{background:var(--card);border-radius:10px;padding:1rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-num{display:block;font-size:2rem;font-weight:700;color:var(--primary)}
+.stat-label{font-size:.8rem;color:var(--muted)}
+.prose{font-size:1rem;color:#2d3748}
+.toolbar{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:1rem}
+.search-input{padding:.4rem .6rem;border:1px solid #cbd5e0;border-radius:6px;min-width:200px}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.data-table th,.data-table td{padding:.5rem .6rem;border-bottom:1px solid #e2e8f0;text-align:left}
+.data-table th{cursor:pointer;background:#edf2f7}
+.mono{font-family:Consolas,Monaco,monospace;font-size:.8rem}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600;color:#fff}
+.tag-BLOCK{background:var(--danger)}
+.tag-REVIEW{background:var(--warning);color:var(--text)}
+.tag-PROCEED{background:var(--success)}
+.tag-high{background:var(--accent)}
+.tag-muted{background:#a0aec0}
+.kev-yes{color:var(--danger);font-weight:700}
+.detail-row.hidden{display:none}
+.detail-panel{padding:1rem;background:#f7fafc;border-radius:8px}
+.code-snippet{font-size:.75rem;overflow:auto}
+.score-row{display:flex;align-items:center;gap:.5rem;margin:.35rem 0}
+.score-row span:first-child{width:100px;font-size:.8rem}
+.bar{flex:1;height:18px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.fill{height:100%}
+.fill-sev{background:var(--danger)}.fill-exp{background:#dd6b20}.fill-reach{background:var(--warning)}.fill-blast{background:#805ad5}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.timeline{padding-left:1.25rem}
+.step-card{border-left:4px solid var(--accent);padding:.75rem 1rem;margin:.5rem 0;background:#f7fafc}
+.step-num{font-weight:700;color:var(--primary);font-size:.75rem}
+.graph-layout{display:grid;grid-template-columns:1fr 280px;gap:1rem}
+.graph-canvas{height:480px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem}
+.leg-entry::before{content:'';display:inline-block;width:10px;height:10px;background:#2E75B6;border-radius:50%;margin-right:4px}
+.leg-fn::before{content:'';display:inline-block;width:10px;height:10px;background:#A0AEC0;border-radius:50%;margin-right:4px}
+.leg-block::before{content:'';display:inline-block;width:10px;height:10px;background:#C53030;border-radius:50%;margin-right:4px}
+.leg-review::before{content:'';display:inline-block;width:10px;height:10px;background:#D69E2E;border-radius:50%;margin-right:4px}
+.site-footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem}
+.btn{padding:.45rem .9rem;border-radius:6px;border:none;cursor:pointer;font-size:.85rem}
+.btn-secondary{background:#edf2f7;color:var(--text)}
+.empty-state{padding:2rem;text-align:center;color:var(--muted)}
+.conflict-diagram{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem;padding:1rem;background:#fff5f5;border-radius:8px}
+@media(max-width:768px){.stat-grid{grid-template-columns:1fr 1fr}.diff-grid,.graph-layout{grid-template-columns:1fr}.tab-nav{top:auto;position:relative}}
+@media print{
+  .tab-nav,.toolbar,.btn,.btn-expand{display:none!important}
+  .tab-panel,.tab-panel.hidden{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+{% include 'partials/_header.html.j2' %}
+{% include 'partials/_tab_nav.html.j2' %}
+<main>
+{% include 'tabs/_executive.html.j2' %}
+{% include 'tabs/_technical.html.j2' %}
+{% include 'tabs/_patches.html.j2' %}
+{% include 'tabs/_upgrade.html.j2' %}
+{% include 'tabs/_graph.html.j2' %}
+</main>
+{% include 'partials/_footer.html.j2' %}
+<script>
+const REPORT_CVES = {{ cves_json|safe }};
+const GRAPH_DATA = {{ graph_json|safe }};
+const CHART_SCORES = {{ chart_json|safe }};
+</script>
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  function showTab(id){
+    tabs.forEach(t=>{const on=t.dataset.tab===id; t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');});
+    panels.forEach(p=>{const on=p.id==='tab-'+id; p.classList.toggle('hidden',!on); p.hidden=!on;});
+    if(id==='graph' && window.initGraph) window.initGraph();
+  }
+  tabs.forEach((t,i)=>{
+    t.addEventListener('click',()=>showTab(t.dataset.tab));
+    t.addEventListener('keydown',e=>{
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=e.key==='ArrowRight'?(i+1)%tabs.length:(i-1+tabs.length)%tabs.length;
+        tabs[n].focus(); showTab(tabs[n].dataset.tab);
+      }
+    });
+  });
+
+  const table=document.getElementById('cve-table');
+  if(table){
+    let sortKey='cvss',sortAsc=false;
+    table.querySelectorAll('th[data-sort]').forEach(th=>{
+      th.addEventListener('click',()=>{
+        const k=th.dataset.sort;
+        if(sortKey===k) sortAsc=!sortAsc; else{sortKey=k;sortAsc=false;}
+        const tbody=table.querySelector('tbody');
+        const pairs=[];
+        tbody.querySelectorAll('tr.cve-row').forEach(row=>{
+          const detail=document.getElementById(row.querySelector('.btn-expand').dataset.target);
+          pairs.push({row,detail});
+        });
+        pairs.sort((a,b)=>{
+          const av=a.row.dataset[sortKey==='cve'?'cve':sortKey==='rec'?'rec':sortKey==='reach'?'reachable':sortKey]||0;
+          const bv=b.row.dataset[sortKey==='cve'?'cve':sortKey==='rec'?'rec':sortKey==='reach'?'reachable':sortKey]||0;
+          if(sortKey==='cvss'||sortKey==='epss') return (parseFloat(av)-parseFloat(bv))*(sortAsc?1:-1);
+          return String(av).localeCompare(String(bv))*(sortAsc?1:-1);
+        });
+        pairs.forEach(p=>{tbody.appendChild(p.row); if(p.detail) tbody.appendChild(p.detail);});
+      });
+    });
+    document.querySelectorAll('.btn-expand').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const tr=document.getElementById(btn.dataset.target);
+        const open=tr.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded',open?'false':'true');
+        btn.textContent=open?'▶':'▼';
+        tr.hidden=open;
+      });
+    });
+    function applyFilters(){
+      const rec=document.getElementById('filter-rec').value;
+      const reach=document.getElementById('filter-reachable').checked;
+      const q=(document.getElementById('filter-search').value||'').toLowerCase();
+      table.querySelectorAll('tr.cve-row').forEach(row=>{
+        const ok=(rec==='all'||row.dataset.rec===rec)&&(!reach||row.dataset.reachable==='1')&&(!q||row.textContent.toLowerCase().includes(q));
+        row.style.display=ok?'':'none';
+        const d=document.getElementById(row.querySelector('.btn-expand').dataset.target);
+        if(d&&!ok) d.style.display='none';
+      });
+    }
+    ['filter-rec','filter-reachable','filter-search'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.addEventListener(el.type==='checkbox'?'change':'input',applyFilters);
+    });
+  }
+
+  const sel=document.getElementById('patch-cve-select');
+  if(sel){
+    sel.addEventListener('change',()=>{
+      document.querySelectorAll('.patch-panel').forEach((p,i)=>{
+        const on=String(i)===sel.value;
+        p.classList.toggle('hidden',!on); p.hidden=!on;
+      });
+      if(window.hljs) document.querySelectorAll('pre code').forEach(el=>hljs.highlightElement(el));
+    });
+  }
+
+  if(typeof Chart!=='undefined'){
+    const ctx=document.getElementById('riskDonut');
+    if(ctx) new Chart(ctx,{type:'doughnut',data:{
+      labels:['Severity','Exploit','Reachability','Blast'],
+      datasets:[{data:[CHART_SCORES.severity||0,CHART_SCORES.exploit||0,CHART_SCORES.reachability||0,CHART_SCORES.blast||0],
+        backgroundColor:['#C53030','#dd6b20','#D69E2E','#805ad5']}]},
+      options:{plugins:{legend:{position:'bottom'}},maintainAspectRatio:true}});
+  }
+
+  let network=null;
+  window.initGraph=function(){
+    if(network||typeof vis==='undefined') return;
+    const nodes=new vis.DataSet((GRAPH_DATA.nodes||[]).map(n=>({
+      id:n.id, label:n.label,
+      color: n.type==='entry_point'?'#2E75B6': n.type==='vulnerable'?(n.recommendation==='BLOCK'?'#C53030':'#D69E2E'):'#A0AEC0',
+      font:{size:12}
+    })));
+    const edges=new vis.DataSet((GRAPH_DATA.edges||[]).map((e,i)=>({id:i,from:e.source,to:e.target,arrows:'to'})));
+    const container=document.getElementById('graph-network');
+    if(!container) return;
+    network=new vis.Network(container,{nodes,edges},{physics:{stabilization:true},interaction:{hover:true}});
+    network.on('click',p=>{
+      const panel=document.getElementById('graph-detail');
+      if(!panel||!p.nodes.length) return;
+      const n=GRAPH_DATA.nodes.find(x=>x.id===p.nodes[0]);
+      if(n) panel.innerHTML='<p><strong>'+n.label+'</strong></p><p>Type: '+n.type+'</p>'+(n.cve?'<p>CVE: '+n.cve+'</p>':'');
+    });
+  };
+  document.getElementById('graph-reset')?.addEventListener('click',()=>network&&network.fit());
+  document.getElementById('graph-block-only')?.addEventListener('change',e=>{
+    if(!network) return;
+    const only=e.target.checked;
+    network.setOptions({filter:{enabled:only,filterFn:node=>{
+      const n=GRAPH_DATA.nodes.find(x=>x.id===node);
+      return !only||n.type!=='vulnerable'||n.recommendation==='BLOCK';
+    }}});
+  });
+
+  if(window.hljs) hljs.highlightAll();
+})();
+</script>
+</body>
+</html>

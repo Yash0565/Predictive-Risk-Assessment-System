@@ -1,0 +1,53 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-562c-5r94-xh97",
+      "cvss": 0.0,
+      "note": "Flask is vulnerable to Denial of Service via incorrect encoding of JSON data",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "GHSA-5wv5-4vpf-pj6m",
+      "cvss": 0.0,
+      "note": "Pallets Project Flask is vulnerable to Denial of Service via Unexpected memory usage",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "GHSA-68rp-wp8r-4726",
+      "cvss": 0.0,
+      "note": "Flask session does not add `Vary: Cookie` header when accessed in some ways",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "GHSA-m2qf-hxjv-5gpq",
+      "cvss": 0.0,
+      "note": "Flask vulnerable to possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "PYSEC-2018-66",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "PYSEC-2019-179",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "0.12"
+    },
+    {
+      "cve": "PYSEC-2023-62",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "0.12"
+    }
+  ]
+}

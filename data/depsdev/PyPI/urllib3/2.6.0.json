@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.9",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "urllib3",
+        "system": "PYPI",
+        "version": "2.6.0"
+      }
+    }
+  ]
+}

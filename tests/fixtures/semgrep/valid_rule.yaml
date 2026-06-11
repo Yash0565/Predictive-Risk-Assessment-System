@@ -1,0 +1,6 @@
+rules:
+  - id: fixture-yaml-load
+    languages: [python]
+    message: Unsafe yaml.load
+    severity: ERROR
+    pattern: yaml.load(...)

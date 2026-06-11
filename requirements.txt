@@ -1,0 +1,2 @@
+# Core dependencies for pipeline, agent, scanners, and HTML reports.
+-r requirements-core.txt

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r requirements-core.txt
+
+      - name: Integrity guard (no demo overlays)
+        run: pytest tests/test_no_overlay_guard.py -q
+
+      - name: Unit tests
+        run: pytest tests/ -q --tb=short
+
+      - name: Benchmark harness
+        run: python -m bench.runner
+
+      - name: Upload SARIF placeholder check
+        run: python -c "from src.exporters import to_sarif; assert 'runs' in to_sarif({'cves':[]})"
+

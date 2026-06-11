@@ -1,0 +1,14 @@
+rules:
+  - id: symbol-cwe_295-python
+    languages: [python]
+    message: Patch-aware sink for cwe_295
+    severity: ERROR
+    pattern-either:
+      - pattern: __init__(...)
+      - pattern: idna_encode(...)
+      - pattern: poolmanager(...)
+      - pattern: pyopenssl(...)
+      - pattern: retry(...)
+      - pattern: ssl_(...)
+      - pattern: ssl_wrap_socket(...)
+      - pattern: urlopen(...)

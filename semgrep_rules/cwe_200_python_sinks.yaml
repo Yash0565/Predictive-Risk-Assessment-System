@@ -1,0 +1,17 @@
+rules:
+  - id: symbol-cwe_200-python
+    languages: [python]
+    message: Patch-aware sink for cwe_200
+    severity: ERROR
+    pattern-either:
+      - pattern: Retry(...)
+      - pattern: Session(...)
+      - pattern: _collections(...)
+      - pattern: connectionpool(...)
+      - pattern: getlist(...)
+      - pattern: poolmanager(...)
+      - pattern: rebuild_auth(...)
+      - pattern: rebuild_proxies(...)
+      - pattern: retry(...)
+      - pattern: sessions(...)
+      - pattern: urlopen(...)

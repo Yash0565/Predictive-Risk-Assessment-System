@@ -1,0 +1,70 @@
+{
+  "key": "fe9b87d0db08b68219e55e404d484d8badd9acb8b6f99ff0e0239692d27481c8",
+  "result": [
+    {
+      "target": {
+        "cve_id": "CVE-2019-10906",
+        "package": "jinja2",
+        "fully_qualified_name": "jinja2.sandbox.SandboxedEnvironment",
+        "short_name": "SandboxedEnvironment",
+        "kind": "class",
+        "change_classification": "HARDENED_ONLY"
+      },
+      "matched_fqn": "jinja2.sandbox.SandboxedEnvironment",
+      "kind": "import",
+      "file": "tasks.py",
+      "line": 7,
+      "col": 0,
+      "source": "from jinja2.sandbox import SandboxedEnvironment",
+      "enclosing_function": null,
+      "in_entry_point": false,
+      "import_chain": "jinja2.sandbox.SandboxedEnvironment",
+      "confidence": "HIGH"
+    },
+    {
+      "target": {
+        "cve_id": "CVE-2025-66471",
+        "package": "urllib3",
+        "fully_qualified_name": "urllib3.src.urllib3.response.get",
+        "short_name": "get",
+        "kind": "function",
+        "change_classification": "INTERNAL_CHANGE"
+      },
+      "matched_fqn": "urllib3.src.urllib3.response.get",
+      "kind": "call",
+      "file": "tasks.py",
+      "line": 17,
+      "col": 11,
+      "source": "return request.args.get(\"template\", \"<p>{{ task_id }}</p>\")",
+      "enclosing_function": "_load_template_source",
+      "in_entry_point": false,
+      "import_chain": "request (from flask import request).args.get",
+      "confidence": "HIGH"
+    },
+    {
+      "target": {
+        "cve_id": "CVE-2019-10906",
+        "package": "jinja2",
+        "fully_qualified_name": "jinja2.sandbox.SandboxedEnvironment",
+        "short_name": "SandboxedEnvironment",
+        "kind": "class",
+        "change_classification": "HARDENED_ONLY"
+      },
+      "matched_fqn": "jinja2.sandbox.SandboxedEnvironment",
+      "kind": "call",
+      "file": "tasks.py",
+      "line": 41,
+      "col": 10,
+      "source": "env = SandboxedEnvironment()",
+      "enclosing_function": "task_detail",
+      "in_entry_point": true,
+      "import_chain": "SandboxedEnvironment (from jinja2.sandbox import SandboxedEnvironment)",
+      "confidence": "HIGH",
+      "entry_point_info": {
+        "framework": "flask",
+        "route": "/tasks/<id>",
+        "method": "GET"
+      }
+    }
+  ]
+}

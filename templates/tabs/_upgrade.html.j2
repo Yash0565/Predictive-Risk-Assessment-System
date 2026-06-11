@@ -1,0 +1,63 @@
+<section class="tab-panel hidden" id="tab-upgrade" role="tabpanel" aria-labelledby="tab-btn-upgrade" hidden>
+  {% if upgrade_simulation and upgrade_simulation.summary %}
+  {% set up = upgrade_simulation %}
+  {% set summ = up.summary %}
+  <div class="card upgrade-header">
+    <h2>Proposed upgrade</h2>
+    <p class="mono">{{ up.cascade.trigger if up.cascade else 'See resolution plan' }}</p>
+    <p><span class="tag tag-{{ summ.verdict|replace('PROCEED_AFTER_RESOLUTION','REVIEW')|rec_class }}">{{ summ.verdict }}</span></p>
+    <p>{{ summ.headline }}</p>
+  </div>
+
+  {% if up.conflicts %}
+  <div class="card">
+    <h2>The conflict</h2>
+    {% for c in up.conflicts %}
+    <div class="conflict-box">
+      <p><strong>{{ c.shared_dependency }}</strong> — {{ c.human_explanation }}</p>
+      <ul>
+        {% for p in c.conflicting_packages %}
+        <li>{{ p.package }} {{ p.version }} requires <code>{{ p.constraint }}</code></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+    <div class="conflict-diagram" aria-hidden="true">
+      <div class="conflict-node">boto3</div>
+      <div class="conflict-clash">urllib3 clash</div>
+      <div class="conflict-node">requests</div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if up.cascade and up.cascade.chain %}
+  <div class="card">
+    <h2>Cascade</h2>
+    <ol class="timeline">
+      {% for step in up.cascade.chain %}
+      <li><strong>{{ step.package }}</strong> {{ step.from }} → {{ step.to }} <em>(forced by {{ step.forced_by }})</em></li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
+  {% if up.resolution_plan and up.resolution_plan.steps %}
+  <div class="card">
+    <h2>Resolution plan</h2>
+    {% for step in up.resolution_plan.steps %}
+    <div class="step-card">
+      <span class="step-num">STEP {{ step.order }}</span>
+      <p class="mono">{{ step.package }} {{ step.from }} → {{ step.to }}</p>
+      <p>{{ step.reason }}</p>
+    </div>
+    {% endfor %}
+    {% set ts = up.resolution_plan.estimated_test_surface %}
+    <h3>Test surface</h3>
+    <p>Packages changed: {{ ts.packages_changed }} · Transitive: {{ ts.transitive_packages_touched }}</p>
+    <p>{{ ts.recommendation }}</p>
+  </div>
+  {% endif %}
+  {% else %}
+  <div class="empty-state card"><p>No upgrade simulation was run for this report.</p></div>
+  {% endif %}
+</section>

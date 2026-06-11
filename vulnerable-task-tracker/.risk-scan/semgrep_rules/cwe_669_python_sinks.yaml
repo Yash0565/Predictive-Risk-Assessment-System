@@ -1,0 +1,8 @@
+rules:
+  - id: symbol-cwe_669-python
+    languages: [python]
+    message: Patch-aware sink for cwe_669
+    severity: ERROR
+    pattern-either:
+      - pattern: Retry(...)
+      - pattern: retry(...)

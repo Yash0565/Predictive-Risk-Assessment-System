@@ -1,0 +1,25 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-68rp-wp8r-4726",
+      "cvss": 0.0,
+      "note": "Flask session does not add `Vary: Cookie` header when accessed in some ways",
+      "package": "flask",
+      "version": "2.3.0"
+    },
+    {
+      "cve": "GHSA-m2qf-hxjv-5gpq",
+      "cvss": 0.0,
+      "note": "Flask vulnerable to possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+      "package": "flask",
+      "version": "2.3.0"
+    },
+    {
+      "cve": "PYSEC-2023-62",
+      "cvss": 0.0,
+      "note": "",
+      "package": "flask",
+      "version": "2.3.0"
+    }
+  ]
+}

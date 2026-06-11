@@ -1,0 +1,18 @@
+{
+  "corpus_version": "0.1.0",
+  "description": "Seed ground-truth corpus for reachability-aware prioritization. Labels were assigned by manually inspecting whether each vulnerable symbol is invoked on a path from an application entry point in the TaskFlow reference app. This is a SEED set (8 cases) intended to be expanded with additional open-source applications; metrics on 8 cases are illustrative, not statistically conclusive.",
+  "label_definitions": {
+    "reachable": "A call path exists from an application entry point to the vulnerable symbol.",
+    "must_fix": "Reachable AND exploitable enough to warrant blocking a release (human triage decision)."
+  },
+  "cases": [
+    {"cve_id": "CVE-2023-32681", "package": "requests", "installed_version": "2.20.0", "cvss": 6.1, "epss": 0.00099, "in_kev": false, "reachable": true,  "must_fix": true,  "source": "manual: login_user -> rebuild_auth"},
+    {"cve_id": "CVE-2019-10906", "package": "jinja2",   "installed_version": "2.10",   "cvss": 9.8, "epss": 0.0203,  "in_kev": false, "reachable": true,  "must_fix": true,  "source": "manual: render path -> SandboxedEnvironment"},
+    {"cve_id": "CVE-2020-1747",  "package": "pyyaml",   "installed_version": "5.1",    "cvss": 9.8, "epss": 0.0241,  "in_kev": false, "reachable": true,  "must_fix": true,  "source": "manual: config_loader -> yaml.load"},
+    {"cve_id": "CVE-2020-5313",  "package": "pillow",   "installed_version": "6.2.0",  "cvss": 6.5, "epss": 0.0041,  "in_kev": false, "reachable": true,  "must_fix": true,  "source": "manual: upload_task_image -> Image.open"},
+    {"cve_id": "CVE-2018-1000656","package": "flask",   "installed_version": "0.12",   "cvss": 7.5, "epss": 0.0112,  "in_kev": false, "reachable": true,  "must_fix": true,  "source": "manual: /api/data -> get_json"},
+    {"cve_id": "CVE-2019-11324", "package": "urllib3",  "installed_version": "1.24.1", "cvss": 7.5, "epss": 0.0054,  "in_kev": false, "reachable": false, "must_fix": false, "source": "manual: ssl_wrap_socket never invoked"},
+    {"cve_id": "CVE-2020-26137", "package": "urllib3",  "installed_version": "1.24.1", "cvss": 6.5, "epss": 0.0061,  "in_kev": false, "reachable": false, "must_fix": false, "source": "manual: putrequest never invoked"},
+    {"cve_id": "CVE-2020-25659", "package": "cryptography", "installed_version": "2.3", "cvss": 5.9, "epss": 0.0021, "in_kev": false, "reachable": false, "must_fix": false, "source": "manual: RSA decrypt never invoked"}
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "_python_requires": ">=3.8",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=1.6.2",
+      "toNode": 1
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=8.1.3",
+      "toNode": 2
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=3.6.0",
+      "toNode": 3
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=2.1.2",
+      "toNode": 4
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=3.1.2",
+      "toNode": 5
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=2.3.0",
+      "toNode": 7
+    },
+    {
+      "fromNode": 3,
+      "requirement": ">=3.20",
+      "toNode": 8
+    },
+    {
+      "fromNode": 5,
+      "requirement": ">=2.0",
+      "toNode": 6
+    },
+    {
+      "fromNode": 7,
+      "requirement": ">=2.1.1",
+      "toNode": 6
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "flask",
+        "system": "PYPI",
+        "version": "2.3.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "blinker",
+        "system": "PYPI",
+        "version": "1.9.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "click",
+        "system": "PYPI",
+        "version": "8.4.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "importlib-metadata",
+        "system": "PYPI",
+        "version": "9.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "itsdangerous",
+        "system": "PYPI",
+        "version": "2.2.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "jinja2",
+        "system": "PYPI",
+        "version": "3.1.6"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "markupsafe",
+        "system": "PYPI",
+        "version": "3.0.3"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "werkzeug",
+        "system": "PYPI",
+        "version": "3.1.8"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "zipp",
+        "system": "PYPI",
+        "version": "3.23.1"
+      }
+    }
+  ]
+}

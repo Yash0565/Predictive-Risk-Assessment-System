@@ -1,0 +1,46 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-cpwx-vrp4-4pq7",
+      "cvss": 0.0,
+      "note": "Jinja2 vulnerable to sandbox breakout through attr filter selecting format method",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "GHSA-g3rq-g295-4j3m",
+      "cvss": 0.0,
+      "note": "Regular Expression Denial of Service (ReDoS) in Jinja2",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "GHSA-h5c8-rqwp-cp95",
+      "cvss": 0.0,
+      "note": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "GHSA-h75v-3vvj-5mfj",
+      "cvss": 0.0,
+      "note": "Jinja vulnerable to HTML attribute injection when passing user input as keys to xmlattr filter",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "GHSA-q2x7-8rv6-6q7h",
+      "cvss": 0.0,
+      "note": "Jinja has a sandbox breakout through indirect reference to format method",
+      "package": "jinja2",
+      "version": "2.10.1"
+    },
+    {
+      "cve": "PYSEC-2021-66",
+      "cvss": 0.0,
+      "note": "",
+      "package": "jinja2",
+      "version": "2.10.1"
+    }
+  ]
+}

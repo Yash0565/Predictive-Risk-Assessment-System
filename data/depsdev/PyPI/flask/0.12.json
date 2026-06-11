@@ -1,0 +1,98 @@
+{
+  "_python_requires": "",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=2.0",
+      "toNode": 1
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=0.21",
+      "toNode": 2
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=2.4",
+      "toNode": 3
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=0.7",
+      "toNode": 5
+    },
+    {
+      "fromNode": 3,
+      "requirement": ">=2.0",
+      "toNode": 4
+    },
+    {
+      "fromNode": 5,
+      "requirement": ">=2.1.1",
+      "toNode": 4
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "flask",
+        "system": "PYPI",
+        "version": "0.12.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "click",
+        "system": "PYPI",
+        "version": "8.4.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "itsdangerous",
+        "system": "PYPI",
+        "version": "2.2.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "jinja2",
+        "system": "PYPI",
+        "version": "3.1.6"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "markupsafe",
+        "system": "PYPI",
+        "version": "3.0.3"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "werkzeug",
+        "system": "PYPI",
+        "version": "3.1.8"
+      }
+    }
+  ]
+}

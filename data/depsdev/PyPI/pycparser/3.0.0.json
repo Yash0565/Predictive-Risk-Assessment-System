@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.10",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "pycparser",
+        "system": "PYPI",
+        "version": "3.0.0"
+      }
+    }
+  ]
+}

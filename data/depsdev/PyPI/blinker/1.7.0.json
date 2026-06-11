@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.8",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "blinker",
+        "system": "PYPI",
+        "version": "1.7.0"
+      }
+    }
+  ]
+}

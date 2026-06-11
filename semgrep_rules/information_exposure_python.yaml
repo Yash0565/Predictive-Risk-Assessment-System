@@ -1,0 +1,6 @@
+rules:
+  - id: detect-information_exposure-python
+    languages: [python]
+    message: Detect vulnerable pattern
+    severity: ERROR
+    pattern: $FUNC(...)

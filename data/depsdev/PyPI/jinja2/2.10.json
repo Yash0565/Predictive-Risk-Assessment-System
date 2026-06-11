@@ -1,0 +1,33 @@
+{
+  "_python_requires": "",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=0.23",
+      "toNode": 1
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "jinja2",
+        "system": "PYPI",
+        "version": "2.10.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "markupsafe",
+        "system": "PYPI",
+        "version": "3.0.3"
+      }
+    }
+  ]
+}

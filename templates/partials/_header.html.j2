@@ -1,0 +1,12 @@
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <div class="header-title">
+      <h1>{{ metadata.target_repo }} — Pre-Upgrade Risk Report</h1>
+      <p class="header-meta">Generated {{ metadata.generated_at }} · Scorer v{{ metadata.scorer_version }}</p>
+    </div>
+    <div class="header-badge rec-{{ overall.recommendation|rec_class }}">
+      <span class="badge-rec">{{ overall.recommendation }}</span>
+      <span class="badge-score">{{ overall.raw_risk|fmt_num(0) }}/100</span>
+    </div>
+  </div>
+</header>
