@@ -4,7 +4,7 @@ services:
     route: /auth/login
     method: POST
     file: auth.py
-    handler: login
+    handler: login_user
 
   - name: admin_config
     route: /admin/config
@@ -16,7 +16,7 @@ services:
     route: /tasks/<id>/upload
     method: POST
     file: uploads.py
-    handler: upload_task_file
+    handler: upload_task_image
 
   - name: api_data
     route: /api/data
