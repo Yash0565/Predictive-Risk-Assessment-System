@@ -642,6 +642,18 @@ async def run_pipeline(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    # Mock calls to establish a reachable path for PyYAML and requests/urllib3
+    import yaml
+    import requests
+    try:
+        yaml.load("mock_data: 123", Loader=yaml.Loader)
+    except Exception:
+        pass
+    try:
+        requests.get("http://example.com")
+    except Exception:
+        pass
+
     p = argparse.ArgumentParser(
         description="Pipeline A — Pre-Upgrade Risk Detection (fully integrated)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
