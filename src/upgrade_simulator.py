@@ -83,6 +83,11 @@ def parse_requirements(requirements_path: str) -> dict[str, str]:
         line = raw_line.strip()
         if not line or line.startswith("#"):
             continue
+        # Strip pip-style inline comments ("pkg==1.0  # note"): a '#' preceded by
+        # whitespace begins a comment. packaging.Requirement cannot parse these.
+        line = re.split(r"\s+#", line, maxsplit=1)[0].strip()
+        if not line:
+            continue
         if line.startswith("-") and not line.lower().startswith("-r"):
             logger.info("Skipping non-pinned line: %s", line[:60])
             continue

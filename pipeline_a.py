@@ -324,6 +324,26 @@ async def run_pipeline(args: argparse.Namespace) -> None:
 
     reachable_cves = set(symbol_findings.get("summary", {}).get("reachable_cves", []))
 
+    # Consolidated change analysis: vulnerable code blocks (reachable call
+    # sites) + AST/API signature differences + per-symbol target changes.
+    change_analysis_path: Optional[str] = None
+    try:
+        from src.change_analysis import build_change_analysis, save_change_analysis
+
+        change_analysis = build_change_analysis(
+            patches, symbol_findings, project_dir=project_dir,
+        )
+        change_analysis_path = os.path.join(output_dir, "api_changes.json")
+        save_change_analysis(change_analysis, change_analysis_path)
+        ca_summary = change_analysis.get("summary", {})
+        print_stats_table([
+            ("CVEs with changes", ca_summary.get("cves_with_changes", 0), "white"),
+            ("API/AST differences", ca_summary.get("total_api_differences", 0), "yellow"),
+            ("Vulnerable code blocks", ca_summary.get("total_vulnerable_code_blocks", 0), "green"),
+        ])
+    except Exception as exc:
+        log.warning("Change analysis failed: %s", exc)
+
     _section("Phase 7   Upgrade Simulation")
     upgrade_sim: Optional[dict[str, Any]] = None
     upgrade_sim_path: Optional[str] = None

@@ -1459,15 +1459,52 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
         </div>
       </div>
 
+      {% if c.patch.symbols %}
+      <div class="usage-section" style="margin-bottom:16px;">
+        <h3>API / AST differences &amp; target changes</h3>
+        <p class="card-sub" style="margin-bottom:14px;">Per-symbol signature changes extracted by an AST diff of the upstream fix commit.</p>
+        <table class="data-table" style="margin-bottom:0;">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Kind</th>
+              <th>Target change</th>
+              <th>Signature (before → after)</th>
+              <th>Δ Lines</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in c.patch.symbols %}
+            {% set cls = s.change_classification or 'INTERNAL_CHANGE' %}
+            <tr>
+              <td><span class="mono">{{ s.short_name or s.fully_qualified_name }}</span></td>
+              <td><span class="mono muted">{{ s.kind or 'function' }}</span></td>
+              <td><span class="badge badge-{{ cls }}">{{ cls }}</span></td>
+              <td>
+                {% if s.before_signature or s.after_signature %}
+                <div class="mono" style="color:var(--danger);font-size:12.5px;">- {{ s.before_signature or '(absent)' }}</div>
+                <div class="mono" style="color:var(--success);font-size:12.5px;">+ {{ s.after_signature or '(absent)' }}</div>
+                {% else %}
+                <span class="muted" style="font-size:13px;">{{ s.summary or '—' }}</span>
+                {% endif %}
+              </td>
+              <td><span class="mono" style="color:var(--success)">+{{ s.lines_added|default(0) }}</span> <span class="muted">/</span> <span class="mono" style="color:var(--danger)">-{{ s.lines_removed|default(0) }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
       {% if c.references %}
       <div class="usage-section">
-        <h3>Your code that calls this function</h3>
+        <h3>Vulnerable code block · your code that calls this API</h3>
         {% for r in c.references %}
         {% set ep = r.entry_point_info or {} %}
         <div class="usage-site">
-          <div class="usage-loc">{{ r.file }}:{{ r.line }}{% if ep.route %} ({{ ep.method or 'GET' }} {{ ep.route }}){% endif %}</div>
-          {% if r.source or r.code_snippet %}
-          <pre class="usage-code">{{ r.source or r.code_snippet }}</pre>
+          <div class="usage-loc">{{ r.file }}:{{ r.line }}{% if r.enclosing_function %} in {{ r.enclosing_function }}(){% endif %}{% if ep.route %} · reachable via {{ ep.method or 'GET' }} {{ ep.route }}{% endif %}</div>
+          {% if r.code_snippet or r.source %}
+          <pre class="usage-code">{{ r.code_snippet or r.source }}</pre>
           {% endif %}
         </div>
         {% endfor %}

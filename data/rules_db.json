@@ -177,5 +177,19 @@
     "cwe_ids": [
       "CWE-409"
     ]
+  },
+  "cwe_680": {
+    "source": "ollama",
+    "rule_path": "D:\\fleet-ops-demo\\.risk-scan\\semgrep_rules\\cwe_680_python.yaml",
+    "cwe_ids": [
+      "CWE-680"
+    ]
+  },
+  "cwe_345": {
+    "source": "ollama",
+    "rule_path": "D:\\fleet-ops-demo\\.risk-scan\\semgrep_rules\\cwe_345_python.yaml",
+    "cwe_ids": [
+      "CWE-345"
+    ]
   }
 }

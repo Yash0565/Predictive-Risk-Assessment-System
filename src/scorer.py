@@ -83,7 +83,15 @@ _DEFAULT_MODEL: dict[str, Any] = {
         "weight_has_path": 1.0,
         "weight_no_path": 0.6,
     },
-    "thresholds": {"BLOCK": 70, "REVIEW": 40, "provisional": True},
+    "thresholds": {
+        "BLOCK": 70,
+        "REVIEW": 40,
+        "provisional": True,
+        # A confirmed-reachable CVE at or above this CVSS is floored to REVIEW
+        # even when EPSS is missing/zero, so a reachable medium-severity finding
+        # is never silently classed PROCEED purely for lack of an EPSS score.
+        "reachable_review_min_cvss": 4.0,
+    },
 }
 
 
@@ -146,6 +154,18 @@ def score_cves(trivy_vulns, graph_evidence, epss_path=None, kev_path=None, model
         recommendation = _recommendation(raw_risk, thresholds)
 
         cvss = float(v.get("cvss_score") or 0.0)
+        # Reachability floor: a confirmed-reachable, medium+ severity CVE warrants
+        # at least human REVIEW even if the expected-loss score is low (e.g. EPSS
+        # absent). Reachability is this pipeline's core triage signal; it must not
+        # be discarded just because no EPSS probability is published. Never
+        # downgrades a BLOCK.
+        reach_min = float(model["thresholds"].get("reachable_review_min_cvss", 4.0))
+        if (
+            recommendation == "PROCEED"
+            and reach_rows
+            and cvss >= reach_min
+        ):
+            recommendation = "REVIEW"
         # Backward-compatible "points" (derived from factors) for legacy consumers.
         legacy_scores = {
             "severity_score": round(factors["impact"] * 40),

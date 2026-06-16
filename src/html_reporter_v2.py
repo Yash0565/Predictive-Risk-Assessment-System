@@ -218,11 +218,12 @@ def build_report_data(
         refs = list(finding.get("references") or [])
         for ref in refs:
             line = ref.get("line") or 0
-            snippet = ref.get("source") or ref.get("code_snippet") or ""
-            if not snippet:
-                snippet = _read_snippet(project_dir, ref.get("file", ""), int(line))
-            ref["source"] = snippet
-            ref["code_snippet"] = snippet
+            matched = ref.get("source") or ref.get("code_snippet") or ""
+            # Keep the matched call line in ``source`` and a surrounding block
+            # (the vulnerable code block) in ``code_snippet`` for the diff view.
+            block = _read_snippet(project_dir, ref.get("file", ""), int(line))
+            ref["source"] = matched or block
+            ref["code_snippet"] = block or matched
 
         patch_raw = _load_json(patch_dir / f"{cve_id}.json") if cve_id else None
         symbols = (patch_raw or {}).get("vulnerable_symbols") or []

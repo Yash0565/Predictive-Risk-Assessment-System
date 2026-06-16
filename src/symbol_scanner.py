@@ -20,6 +20,11 @@ from typing import Any, Iterator, Optional
 
 logger = logging.getLogger(__name__)
 
+# Upstream repo source-layout segments that leak into patch-derived FQNs
+# (e.g. ``yaml.lib.yaml.constructor.X`` from the file ``lib/yaml/constructor.py``).
+# Stripping them yields the importable dotted path application code actually uses.
+_SRC_LAYOUT_SEGMENTS = frozenset({"src", "lib", "lib2", "lib3"})
+
 DEFAULT_IGNORE_PATTERNS = (
     "__pycache__",
     ".venv",
@@ -119,6 +124,61 @@ class SymbolIndex:
     cve_classification: dict[str, str] = field(default_factory=dict)
 
 
+def _normalize_symbol_fqn(fqn: str) -> str:
+    """Strip upstream source-layout noise from a patch-derived FQN.
+
+    Patch signatures are built from the file path inside the upstream repo, so a
+    fix in ``lib/yaml/constructor.py`` for the ``yaml`` package becomes
+    ``yaml.lib.yaml.constructor.<fn>``. This removes ``src``/``lib``/``lib3``
+    segments and collapses an immediately-repeated package segment so the FQN
+    matches the dotted path that application code imports.
+    """
+    if not fqn:
+        return fqn
+    cleaned: list[str] = []
+    for seg in fqn.split("."):
+        if not seg or seg in _SRC_LAYOUT_SEGMENTS:
+            continue
+        if cleaned and cleaned[-1] == seg:
+            continue
+        cleaned.append(seg)
+    return ".".join(cleaned)
+
+
+def _normalize_package(name: str) -> str:
+    import re
+    return re.sub(r"[^a-z0-9]", "", (name or "").lower())
+
+
+def _public_sink_targets(
+    cve_id: str,
+    package: str,
+    classification: str,
+) -> list[SymbolTarget]:
+    """Synthetic targets for a package's public vulnerable API entry points.
+
+    Bridges the gap between the internal function a patch fixes and the public
+    call site application code uses (e.g. ``yaml.load`` -> the constructor that
+    CVE-2020-14343 patched). Matched by exact resolved FQN only.
+    """
+    from src.config import PACKAGE_REACHABILITY_SINKS
+
+    sinks = PACKAGE_REACHABILITY_SINKS.get(_normalize_package(package), ())
+    targets: list[SymbolTarget] = []
+    for fqn in sinks:
+        targets.append(
+            SymbolTarget(
+                cve_id=cve_id,
+                package=package,
+                fully_qualified_name=fqn,
+                short_name=fqn.split(".")[-1],
+                kind="function",
+                change_classification=classification,
+            )
+        )
+    return targets
+
+
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -150,6 +210,7 @@ def build_symbol_index(vulnerable_symbols_by_cve: dict[str, Any]) -> SymbolIndex
         targets: list[SymbolTarget] = []
         for sym in symbols:
             fqn = sym.get("fully_qualified_name") or sym.get("vulnerable_symbol", "")
+            fqn = _normalize_symbol_fqn(fqn)
             short = sym.get("short_name") or (fqn.split(".")[-1] if fqn else "")
             if not fqn or not short:
                 continue
@@ -166,6 +227,17 @@ def build_symbol_index(vulnerable_symbols_by_cve: dict[str, Any]) -> SymbolIndex
             targets.append(target)
             index.by_short.setdefault(short, []).append(target)
             index.by_fqn.setdefault(fqn, []).append(target)
+
+        # Bridge the package's public vulnerable API (e.g. yaml.load) to this
+        # CVE so application call sites resolve even when the patch only names
+        # the internal function it fixed. Exact-FQN only (not by_short) to keep
+        # unrelated calls like json.load / os.environ.get from matching.
+        primary_classification = (
+            targets[0].change_classification if targets else "PUBLIC_SINK"
+        )
+        for sink in _public_sink_targets(cve_id, package, primary_classification):
+            targets.append(sink)
+            index.by_fqn.setdefault(sink.fully_qualified_name, []).append(sink)
 
         if not targets:
             continue
@@ -791,7 +863,7 @@ def scan_symbols(
         paths = list(_iter_py_files(target_dir, patterns))
         files_scanned = len(paths)
         report = scan_cache.scan_incremental(
-            paths, "symbol_scanner", "2.0.0", _scan_one_cached,
+            paths, "symbol_scanner", "2.1.0", _scan_one_cached,
         )
         cache_hits = report.get("stats", {}).get("cache_hits", 0)
         for findings in report.get("results", {}).values():

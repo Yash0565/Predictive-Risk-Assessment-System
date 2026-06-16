@@ -113,3 +113,34 @@ PACKAGE_APP_SINKS: dict[str, tuple[str, ...]] = {
     "jinja2": ("render_template_string(...)",),
     "flask": ("request.get_json(...)", "render_template_string(...)"),
 }
+
+# ── Package → public *vulnerable* API entry points (reachability) ──
+# A patch diff identifies the internal function that was fixed (e.g.
+# ``construct_python_object_new``), but application code reaches that code
+# through a public API (``yaml.load``). The symbol scanner cannot bridge the
+# two from the diff alone, so this curated map declares the public call sites
+# that expose a package's vulnerable surface. These are matched by *exact*
+# resolved FQN only (never by bare short name) to avoid false positives on
+# unrelated calls such as ``json.load`` or ``os.environ.get``.
+#
+# Keys are normalised package names (see ``normalize_package``). Only include
+# APIs whose invocation *is* the vulnerable surface — do NOT add generic input
+# sources (e.g. ``request.get_json``) or symbols a package exposes safely, so
+# that imported-but-unreached vulnerabilities stay correctly suppressed.
+PACKAGE_REACHABILITY_SINKS: dict[str, tuple[str, ...]] = {
+    # yaml.load() without SafeLoader -> arbitrary object construction (RCE).
+    "pyyaml": ("yaml.load",),
+    # requests verbs follow redirects by default and leak auth headers/creds.
+    "requests": (
+        "requests.get",
+        "requests.post",
+        "requests.put",
+        "requests.patch",
+        "requests.delete",
+        "requests.head",
+        "requests.options",
+        "requests.request",
+    ),
+    # Pillow decodes untrusted images through Image.open.
+    "pillow": ("PIL.Image.open",),
+}
