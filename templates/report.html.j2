@@ -67,13 +67,45 @@ main{max-width:1280px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
 .timeline{padding-left:1.25rem}
 .step-card{border-left:4px solid var(--accent);padding:.75rem 1rem;margin:.5rem 0;background:#f7fafc}
 .step-num{font-weight:700;color:var(--primary);font-size:.75rem}
-.graph-layout{display:grid;grid-template-columns:1fr 280px;gap:1rem}
-.graph-canvas{height:480px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}
-.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem}
-.leg-entry::before{content:'';display:inline-block;width:10px;height:10px;background:#2E75B6;border-radius:50%;margin-right:4px}
-.leg-fn::before{content:'';display:inline-block;width:10px;height:10px;background:#A0AEC0;border-radius:50%;margin-right:4px}
-.leg-block::before{content:'';display:inline-block;width:10px;height:10px;background:#C53030;border-radius:50%;margin-right:4px}
-.leg-review::before{content:'';display:inline-block;width:10px;height:10px;background:#D69E2E;border-radius:50%;margin-right:4px}
+/* ── Neo4j Browser-faithful graph UI ─────────────────────────── */
+.neo4j-ui{display:grid;grid-template-columns:210px 1fr 195px;height:620px;background:#1b2a38;border-radius:10px;overflow:hidden;border:1px solid #2d3f50;font-family:Inter,system-ui,sans-serif}
+.neo-schema,.neo-results{background:#1b2a38;overflow-y:auto;padding:.75rem;scrollbar-width:thin;scrollbar-color:#2d3f50 transparent}
+.neo-schema{border-right:1px solid #2d3f50}
+.neo-results{border-left:1px solid #2d3f50}
+.neo-graph-col{display:flex;flex-direction:column;min-width:0;background:#1e2b3a}
+.neo-query-bar{display:flex;align-items:center;gap:.5rem;background:#0f1d29;padding:.4rem .75rem;border-bottom:1px solid #2d3f50;flex-shrink:0;min-width:0}
+.neo-prompt{color:#57a64a;font-size:.72rem;font-family:Consolas,monospace;white-space:nowrap;flex-shrink:0}
+.neo-query-txt{flex:1;color:#c5d5e4;font-size:.74rem;font-family:Consolas,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.neo-q-btns{display:flex;gap:.2rem;flex-shrink:0}
+.neo-q-btn{background:transparent;border:none;color:#71869d;cursor:pointer;padding:.15rem .3rem;border-radius:3px;font-size:.85rem;line-height:1}
+.neo-q-btn:hover{color:#c5d5e4;background:#2d3f50}
+.neo-view-tabs{display:flex;background:#0f1d29;border-bottom:1px solid #2d3f50;flex-shrink:0;padding:0 .5rem}
+.neo-vtab{background:transparent;border:none;border-bottom:2px solid transparent;color:#71869d;padding:.3rem .7rem;cursor:pointer;font-size:.74rem;transition:color .15s}
+.neo-vtab.active{color:#00b0d4;border-bottom-color:#00b0d4}
+.neo-canvas-wrap{flex:1;position:relative;min-height:0;background:#1e2b3a}
+.neo-canvas-wrap canvas{background:transparent!important}
+.neo-bottom{display:flex;align-items:center;justify-content:space-between;background:#0f1d29;padding:.28rem .75rem;border-top:1px solid #2d3f50;flex-shrink:0}
+.neo-stat{color:#71869d;font-size:.68rem;font-family:Consolas,monospace}
+.neo-zoom{display:flex;gap:.2rem}
+.neo-z-btn{background:#243040;border:none;color:#a0b4c5;width:22px;height:22px;border-radius:3px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.neo-z-btn:hover{background:#3d5266;color:#e2eaf0}
+.neo-phdr{font-size:.72rem;font-weight:700;color:#c5d5e4;padding-bottom:.45rem;border-bottom:1px solid #2d3f50;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.neo-ptitle{font-size:.62rem;color:#71869d;text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin:.55rem 0 .3rem}
+.neo-pills{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.5rem}
+.neo-npill{display:inline-flex;align-items:center;gap:3px;padding:2px 7px 2px 5px;border-radius:10px;font-size:.66rem;font-weight:600;color:#fff;cursor:pointer;transition:opacity .15s}
+.neo-npill:hover{opacity:.8}
+.neo-ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.neo-rpill{display:inline-block;padding:1px 6px;background:#243040;border-radius:3px;font-size:.63rem;color:#a0b4c5;cursor:pointer;transition:background .15s}
+.neo-rpill:hover{background:#2d3f50;color:#e2eaf0}
+.neo-props{display:flex;flex-wrap:wrap;gap:.2rem}
+.neo-pk{font-size:.6rem;color:#71869d;background:#243040;padding:1px 5px;border-radius:3px}
+.neo-detail{background:#0f1d29;border-radius:5px;padding:.6rem;margin-top:.4rem;min-height:55px}
+.neo-dl{font-size:.6rem;text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin-bottom:3px}
+.neo-dn{font-weight:600;font-size:.82rem;word-break:break-all;margin-bottom:5px}
+.neo-dr{display:flex;gap:.3rem;padding:2px 0;border-bottom:1px solid #1e2b3a}
+.neo-dk{color:#71869d;min-width:75px;flex-shrink:0;font-size:.7rem}
+.neo-dv{color:#c5d5e4;font-size:.7rem}
+.neo-sev-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.62rem;font-weight:700;color:#fff;margin-right:3px}
 .site-footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem}
 .btn{padding:.45rem .9rem;border-radius:6px;border:none;cursor:pointer;font-size:.85rem}
 .btn-secondary{background:#edf2f7;color:var(--text)}
@@ -191,34 +223,278 @@ const CHART_SCORES = {{ chart_json|safe }};
       options:{plugins:{legend:{position:'bottom'}},maintainAspectRatio:true}});
   }
 
-  let network=null;
-  window.initGraph=function(){
-    if(network||typeof vis==='undefined') return;
-    const nodes=new vis.DataSet((GRAPH_DATA.nodes||[]).map(n=>({
-      id:n.id, label:n.label,
-      color: n.type==='entry_point'?'#2E75B6': n.type==='vulnerable'?(n.recommendation==='BLOCK'?'#C53030':'#D69E2E'):'#A0AEC0',
-      font:{size:12}
+  // ── Neo4j Browser-style Reachability Graph ─────────────────────────
+  const NEO_COLORS = {
+    cve:      '#F25F5C',
+    package:  '#4FC1E9',
+    cwe:      '#FFCE54',
+    function: '#AC92EC',
+    service:  '#48CFAD',
+  };
+  const NEO_LABELS = {
+    cve: 'CVE', package: 'Package', cwe: 'CWE', function: 'Function', service: 'Service'
+  };
+
+  let network = null;
+  let gNodes  = null;
+  let gEdges  = null;
+
+  function _buildSchemaPills(rawNodes, rawEdges, prefix) {
+    // Count by type
+    const typeCounts = {};
+    rawNodes.forEach(n => { typeCounts[n.type] = (typeCounts[n.type] || 0) + 1; });
+    const relCounts = {};
+    rawEdges.forEach(e => { relCounts[e.label || e.kind] = (relCounts[e.label || e.kind] || 0) + 1; });
+
+    // Node pills
+    const nList = document.getElementById(prefix + '-node-pills');
+    if (nList) {
+      nList.innerHTML = '';
+      Object.entries(typeCounts).forEach(([type, cnt]) => {
+        const col = NEO_COLORS[type] || '#718096';
+        const pill = document.createElement('span');
+        pill.className = 'neo-npill';
+        pill.style.background = col + '33';
+        pill.style.border = '1px solid ' + col + '66';
+        pill.innerHTML = '<span class="neo-ndot" style="background:' + col + '"></span>' +
+          (NEO_LABELS[type] || type) + ' <span style="opacity:.7">(' + cnt + ')</span>';
+        pill.onclick = () => filterByType(type);
+        nList.appendChild(pill);
+      });
+    }
+
+    // Rel pills
+    const rList = document.getElementById(prefix + '-rel-pills');
+    if (rList) {
+      rList.innerHTML = '';
+      Object.entries(relCounts).forEach(([rel, cnt]) => {
+        const pill = document.createElement('span');
+        pill.className = 'neo-rpill';
+        pill.textContent = rel + ' (' + cnt + ')';
+        rList.appendChild(pill);
+      });
+    }
+
+    // Counts
+    const nc = document.getElementById(prefix + '-ncount');
+    const rc = document.getElementById(prefix + '-rcount');
+    if (nc) nc.textContent = rawNodes.length;
+    if (rc) rc.textContent = rawEdges.length;
+  }
+
+  function filterByType(type) {
+    if (!gNodes || !gEdges) return;
+    const hidden = new Set();
+    gNodes.update((GRAPH_DATA.nodes || []).map(n => {
+      const show = n.type === type;
+      if (!show) hidden.add(n.id);
+      return { id: n.id, hidden: !show };
+    }));
+    gEdges.update((GRAPH_DATA.edges || []).map((e, i) => ({
+      id: i, hidden: hidden.has(e.source) || hidden.has(e.target),
     })));
-    const edges=new vis.DataSet((GRAPH_DATA.edges||[]).map((e,i)=>({id:i,from:e.source,to:e.target,arrows:'to'})));
-    const container=document.getElementById('graph-network');
-    if(!container) return;
-    network=new vis.Network(container,{nodes,edges},{physics:{stabilization:true},interaction:{hover:true}});
-    network.on('click',p=>{
-      const panel=document.getElementById('graph-detail');
-      if(!panel||!p.nodes.length) return;
-      const n=GRAPH_DATA.nodes.find(x=>x.id===p.nodes[0]);
-      if(n) panel.innerHTML='<p><strong>'+n.label+'</strong></p><p>Type: '+n.type+'</p>'+(n.cve?'<p>CVE: '+n.cve+'</p>':'');
+  }
+
+  window.initGraph = function () {
+    if (network || typeof vis === 'undefined') return;
+    const container = document.getElementById('graph-network');
+    if (!container) return;
+
+    const rawNodes = GRAPH_DATA.nodes || [];
+    const rawEdges = GRAPH_DATA.edges || [];
+
+    // Populate stat bar
+    const stat = document.getElementById('neo-stat');
+    if (stat) stat.textContent =
+      'Started streaming ' + rawNodes.length + ' nodes, ' + rawEdges.length + ' edges';
+
+    // Build schema panels
+    _buildSchemaPills(rawNodes, rawEdges, 'schema');
+    _buildSchemaPills(rawNodes, rawEdges, 'results');
+
+    // Update query display with actual edge types present
+    const relTypes = [...new Set(rawEdges.map(e => e.label || e.kind))];
+    const qEl = document.getElementById('neo-query');
+    if (qEl && relTypes.length) {
+      const sample = relTypes.slice(0,2).join('|');
+      qEl.textContent = 'MATCH p=()-[:' + sample + ']->() RETURN p LIMIT ' + rawNodes.length + ';';
+    }
+
+    // ── vis-network DataSets ──────────────────────────────────────────
+    gNodes = new vis.DataSet(rawNodes.map(n => {
+      const col = NEO_COLORS[n.type] || '#718096';
+      
+      let displayLabel = n.label || '';
+      let nodeSize = 25;
+      
+      if (n.type === 'cve') {
+        displayLabel = (n.severity || '').toUpperCase() || n.cve_id || n.label || 'CVE';
+        nodeSize = 28;
+      } else if (n.type === 'package') {
+        displayLabel = n.package || (n.label || '').split('\n')[0];
+        nodeSize = 32;
+      } else if (n.type === 'service') {
+        displayLabel = n.service || (n.label || '').split('\n')[0];
+        nodeSize = 30;
+      } else if (n.type === 'function') {
+        displayLabel = n.label || 'fn';
+        nodeSize = 20;
+      } else if (n.type === 'cwe') {
+        displayLabel = (n.label || '').split('\n')[0];
+        nodeSize = 24;
+      }
+      
+      return {
+        id:       n.id,
+        label:    displayLabel,
+        shape:    'circle',
+        size:     nodeSize,
+        borderWidth: 2,
+        color: {
+          background: col,
+          border:     col,
+          highlight:  { background: col, border: '#ffffff' },
+          hover:      { background: col, border: '#ffffff' },
+        },
+        font: { color: '#ffffff', size: 9, face: 'Inter,system-ui', bold: true },
+        title:    (n.title || n.label || '').replace(/\n/g, '<br>'),
+        nodeType: n.type,
+        severity: n.severity || '',
+        cvss:     n.cvss    || 0,
+        fullLabel: n.label  || '',
+      };
+    }));
+
+    gEdges = new vis.DataSet(rawEdges.map((e, i) => ({
+      id:       i,
+      from:     e.source,
+      to:       e.target,
+      label:    e.label || '',
+      color:    { color: 'rgba(255,255,255,0.18)', highlight: 'rgba(255,255,255,0.7)', hover: 'rgba(255,255,255,0.45)' },
+      dashes:   e.dashes || false,
+      arrows:   { to: { enabled: true, scaleFactor: 0.45 } },
+      font:     { size: 7, align: 'middle', color: 'rgba(255,255,255,0.45)', strokeWidth: 0, vadjust: -2 },
+      edgeType: e.kind,
+      smooth:   { type: 'continuous' },
+    })));
+
+    // ── Network ───────────────────────────────────────────────────────
+    network = new vis.Network(
+      container,
+      { nodes: gNodes, edges: gEdges },
+      {
+        physics: {
+          enabled: true,
+          solver: 'forceAtlas2Based',
+          forceAtlas2Based: {
+            gravitationalConstant: -65,
+            centralGravity: 0.012,
+            springLength: 145,
+            springConstant: 0.07,
+            damping: 0.42,
+          },
+          stabilization: { iterations: 250, updateInterval: 25 },
+        },
+        interaction: {
+          hover: true,
+          tooltipDelay: 150,
+          navigationButtons: false,
+          keyboard: { enabled: true, speed: { x: 8, y: 8, zoom: 0.02 } },
+          multiselect: false,
+        },
+        nodes: {
+          borderWidth: 0,
+          shadow: { enabled: true, color: 'rgba(0,0,0,0.4)', size: 10, x: 0, y: 4 },
+        },
+        edges: {
+          smooth: { type: 'continuous' },
+          width: 1.2,
+          selectionWidth: 2,
+        },
+      }
+    );
+
+    // Auto-freeze physics
+    network.on('stabilizationIterationsDone', () => {
+      network.setOptions({ physics: { enabled: false } });
+      const pbtn = document.getElementById('neo-phys-btn');
+      if (pbtn) pbtn.title = 'Enable physics';
+    });
+
+    // ── Click: rich Neo4j-style detail panel ─────────────────────────
+    network.on('click', params => {
+      const panel = document.getElementById('graph-detail');
+      if (!panel) return;
+      const SEV_COL = { CRITICAL:'#C53030', HIGH:'#DD6B20', MEDIUM:'#D69E2E', LOW:'#38A169' };
+
+      if (params.nodes.length > 0) {
+        const n = rawNodes.find(x => x.id === params.nodes[0]);
+        if (!n) return;
+        const col = NEO_COLORS[n.type] || '#718096';
+        const sc  = SEV_COL[n.severity] || '';
+        const props = (n.title || '').split('\n').slice(1).filter(Boolean);
+        panel.innerHTML =
+          '<div class="neo-dl" style="color:' + col + '">' + (NEO_LABELS[n.type] || n.type || 'Node') + '</div>' +
+          '<div class="neo-dn">' + (n.fullLabel || n.label || '').replace(/\n/g, '<br>') + '</div>' +
+          (sc ? '<span class="neo-sev-badge" style="background:' + sc + '">' + n.severity + '</span>' +
+                '<span class="neo-sev-badge" style="background:#4C8EDA">CVSS ' + n.cvss + '</span><br>' : '') +
+          props.map(p => {
+            const [k, ...rest] = p.split(':');
+            return '<div class="neo-dr"><span class="neo-dk">' + k.trim() + '</span><span class="neo-dv">' + (rest.join(':').trim()) + '</span></div>';
+          }).join('');
+
+      } else if (params.edges.length > 0) {
+        const e   = gEdges.get(params.edges[0]);
+        const src = rawNodes.find(x => x.id === e.from);
+        const tgt = rawNodes.find(x => x.id === e.to);
+        panel.innerHTML =
+          '<div class="neo-dl" style="color:#71869d">Relationship</div>' +
+          '<div class="neo-dn" style="font-family:monospace">' + (e.label || e.edgeType || 'edge') + '</div>' +
+          '<div class="neo-dr"><span class="neo-dk">From</span><span class="neo-dv">' + (src ? src.fullLabel || src.label : e.from).replace(/\n/g, ' ') + '</span></div>' +
+          '<div class="neo-dr"><span class="neo-dk">To</span><span class="neo-dv">' + (tgt ? tgt.fullLabel || tgt.label : e.to).replace(/\n/g, ' ') + '</span></div>';
+
+      } else {
+        panel.innerHTML = '<p style="color:#71869d;font-size:.75rem;margin:0">Click a node or relationship to see its properties.</p>';
+      }
     });
   };
-  document.getElementById('graph-reset')?.addEventListener('click',()=>network&&network.fit());
-  document.getElementById('graph-block-only')?.addEventListener('change',e=>{
-    if(!network) return;
-    const only=e.target.checked;
-    network.setOptions({filter:{enabled:only,filterFn:node=>{
-      const n=GRAPH_DATA.nodes.find(x=>x.id===node);
-      return !only||n.type!=='vulnerable'||n.recommendation==='BLOCK';
-    }}});
+
+  // Controls wired to neo-bottom toolbar buttons
+  document.getElementById('neo-fit')?.addEventListener('click', () => {
+    if (network) network.fit({ animation: { duration: 350, easingFunction: 'easeInOutQuad' } });
   });
+  document.getElementById('neo-zin')?.addEventListener('click', () => {
+    if (network) { const s = network.getScale(); network.moveTo({ scale: s * 1.25, animation: true }); }
+  });
+  document.getElementById('neo-zout')?.addEventListener('click', () => {
+    if (network) { const s = network.getScale(); network.moveTo({ scale: s * 0.8, animation: true }); }
+  });
+  document.getElementById('neo-phys-btn')?.addEventListener('click', function() {
+    if (!network) return;
+    const cur = network.physics?.options?.enabled ?? false;
+    network.setOptions({ physics: { enabled: !cur } });
+    this.title = cur ? 'Enable physics' : 'Disable physics';
+  });
+
+  // View tabs (Graph / Table / RAW are cosmetic — graph is always shown)
+  document.querySelectorAll('.neo-vtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.neo-vtab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Node-type filter pills wired via filterByType()
+  // (clicking pills in schema panel already calls filterByType)
+  document.getElementById('neo-show-all')?.addEventListener('click', () => {
+    if (!gNodes || !gEdges) return;
+    gNodes.update((GRAPH_DATA.nodes||[]).map(n => ({ id: n.id, hidden: false })));
+    gEdges.update((GRAPH_DATA.edges||[]).map((e,i) => ({ id: i, hidden: false })));
+  });
+
+
+
+
 
   if(window.hljs) hljs.highlightAll();
 })();

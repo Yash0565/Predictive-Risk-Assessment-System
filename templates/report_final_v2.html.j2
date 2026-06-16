@@ -893,13 +893,13 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
   font-family: var(--font-mono);
 }
 .live-graph-legend .swatch {
-  width: 12px; height: 12px; border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.1);
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
 }
-.live-graph-legend .swatch.pkg { background: #1f7bcc; }
-.live-graph-legend .swatch.cve { background: #c5304a; transform: rotate(45deg); border-radius: 2px; }
-.live-graph-legend .swatch.svc { background: #6f59d9; clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
-.live-graph-legend .swatch.fn  { background: #6a7e9c; border-radius: 50%; }
+.live-graph-legend .swatch.pkg { background: #4FC1E9; }
+.live-graph-legend .swatch.cve { background: #F25F5C; }
+.live-graph-legend .swatch.svc { background: #48CFAD; }
+.live-graph-legend .swatch.fn  { background: #AC92EC; }
 .live-graph-meta {
   display: flex; flex-wrap: wrap; gap: 18px;
   margin-top: 10px;
@@ -2021,18 +2021,59 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       return;
     }
     if (graphEmpty) graphEmpty.style.display = "none";
+    var NEO_COLORS = {
+      cve:      '#F25F5C',
+      package:  '#4FC1E9',
+      cwe:      '#FFCE54',
+      function: '#AC92EC',
+      service:  '#48CFAD',
+    };
     allNodes = new vis.DataSet(nodesIn.map(function (n) {
+      var displayLabel = n.label || '';
+      var nodeSize = 25;
+      var group = n.group || n.type || 'function';
+      
+      if (group === "cve") {
+        var meta = n._meta || n;
+        displayLabel = (meta.severity || "").toUpperCase() || n.cve_id || n.label || "CVE";
+        nodeSize = 28;
+      } else if (group === "package") {
+        displayLabel = n.package || (n.label || '').split('\n')[0];
+        nodeSize = 32;
+      } else if (group === "service") {
+        displayLabel = n.service || (n.label || '').split('\n')[0];
+        nodeSize = 30;
+      } else if (group === "function") {
+        displayLabel = n.label || 'fn';
+        nodeSize = 20;
+      } else if (group === "cwe") {
+        displayLabel = (n.label || '').split('\n')[0];
+        nodeSize = 24;
+      }
+      
+      var col = NEO_COLORS[group] || (n.color && n.color.background) || '#718096';
+      
       return Object.assign({}, n, {
-        font: { color: fontColor(), size: 14, multi: true, face: "Inter, system-ui" },
+        shape: "circle",
+        label: displayLabel,
+        size: nodeSize,
         borderWidth: 2,
+        color: {
+          background: col,
+          border:     col,
+          highlight:  { background: col, border: "#ffffff" },
+          hover:      { background: col, border: "#ffffff" }
+        },
+        font: { color: "#ffffff", size: 9, face: "Inter, system-ui", bold: true },
         _meta: n,
       });
     }));
     allEdges = new vis.DataSet(edgesIn.map(function (e) {
       return Object.assign({}, e, {
+        color: { color: 'rgba(255,255,255,0.18)', highlight: 'rgba(255,255,255,0.7)', hover: 'rgba(255,255,255,0.45)' },
         font: {
-          size: 9, align: "middle",
-          color: root.getAttribute("data-theme") === "dark" ? "#9fb1cc" : "#6a7e9c",
+          size: 8, align: "middle",
+          color: "rgba(255,255,255,0.45)",
           strokeWidth: 0,
         },
       });
