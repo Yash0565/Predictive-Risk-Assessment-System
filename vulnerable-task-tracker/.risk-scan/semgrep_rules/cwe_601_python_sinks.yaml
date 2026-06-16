@@ -1,0 +1,10 @@
+rules:
+  - id: symbol-cwe_601-python
+    languages: [python]
+    message: Patch-aware sink for cwe_601
+    severity: ERROR
+    pattern-either:
+      - pattern: __init__(...)
+      - pattern: poolmanager(...)
+      - pattern: retry(...)
+      - pattern: urlopen(...)

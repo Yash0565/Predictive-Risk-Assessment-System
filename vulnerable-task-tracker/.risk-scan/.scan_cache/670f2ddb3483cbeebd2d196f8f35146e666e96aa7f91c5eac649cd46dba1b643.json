@@ -1,0 +1,30 @@
+{
+  "key": "670f2ddb3483cbeebd2d196f8f35146e666e96aa7f91c5eac649cd46dba1b643",
+  "result": [
+    {
+      "target": {
+        "cve_id": "CVE-2020-1747",
+        "package": "pyyaml",
+        "fully_qualified_name": "yaml.load",
+        "short_name": "load",
+        "kind": "function",
+        "change_classification": "HARDENED_ONLY"
+      },
+      "matched_fqn": "yaml.load",
+      "kind": "call",
+      "file": "config_loader.py",
+      "line": 29,
+      "col": 13,
+      "source": "config = yaml.load(raw)",
+      "enclosing_function": "load_config",
+      "in_entry_point": true,
+      "import_chain": "yaml (import yaml).load",
+      "confidence": "HIGH",
+      "entry_point_info": {
+        "framework": "flask",
+        "route": "/admin/config",
+        "method": "GET"
+      }
+    }
+  ]
+}

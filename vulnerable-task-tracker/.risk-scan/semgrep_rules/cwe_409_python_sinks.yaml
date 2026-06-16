@@ -1,0 +1,24 @@
+rules:
+  - id: symbol-cwe_409-python
+    languages: [python]
+    message: Patch-aware sink for cwe_409
+    severity: ERROR
+    pattern-either:
+      - pattern: BrotliDecoder(...)
+      - pattern: BytesQueueBuffer(...)
+      - pattern: DeflateDecoder(...)
+      - pattern: GzipDecoder(...)
+      - pattern: ZstdDecoder(...)
+      - pattern: __init__(...)
+      - pattern: _decode(...)
+      - pattern: _init_decoder(...)
+      - pattern: drain_conn(...)
+      - pattern: get(...)
+      - pattern: noxfile(...)
+      - pattern: read(...)
+      - pattern: read1(...)
+      - pattern: read_chunked(...)
+      - pattern: response(...)
+      - pattern: stream(...)
+      - pattern: test_brotlipy(...)
+      - pattern: tests_impl(...)

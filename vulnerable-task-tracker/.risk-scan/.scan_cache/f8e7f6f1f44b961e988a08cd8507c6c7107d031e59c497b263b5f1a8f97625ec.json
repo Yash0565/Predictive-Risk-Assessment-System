@@ -1,0 +1,50 @@
+{
+  "key": "f8e7f6f1f44b961e988a08cd8507c6c7107d031e59c497b263b5f1a8f97625ec",
+  "result": [
+    {
+      "target": {
+        "cve_id": "CVE-2025-66471",
+        "package": "urllib3",
+        "fully_qualified_name": "urllib3.src.urllib3.response.get",
+        "short_name": "get",
+        "kind": "function",
+        "change_classification": "INTERNAL_CHANGE"
+      },
+      "matched_fqn": "urllib3.src.urllib3.response.get",
+      "kind": "call",
+      "file": "uploads.py",
+      "line": 10,
+      "col": 8,
+      "source": "f = request.files.get(\"file\")",
+      "enclosing_function": "_get_upload_stream",
+      "in_entry_point": false,
+      "import_chain": "request (from flask import request).files.get",
+      "confidence": "HIGH"
+    },
+    {
+      "target": {
+        "cve_id": "CVE-2020-5313",
+        "package": "pillow",
+        "fully_qualified_name": "PIL.Image.open",
+        "short_name": "open",
+        "kind": "function",
+        "change_classification": "INTERNAL_CHANGE"
+      },
+      "matched_fqn": "PIL.Image.open",
+      "kind": "call",
+      "file": "uploads.py",
+      "line": 54,
+      "col": 10,
+      "source": "img = Image.open(stream)",
+      "enclosing_function": "upload_task_image",
+      "in_entry_point": true,
+      "import_chain": "Image (from PIL import Image).open",
+      "confidence": "HIGH",
+      "entry_point_info": {
+        "framework": "flask",
+        "route": "/tasks/<id>/upload",
+        "method": "POST"
+      }
+    }
+  ]
+}
