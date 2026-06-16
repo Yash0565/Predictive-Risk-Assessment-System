@@ -1,18 +1,108 @@
 <section class="tab-panel hidden" id="tab-graph" role="tabpanel" aria-labelledby="tab-btn-graph" hidden>
-  <div class="toolbar">
-    <label class="chk"><input type="checkbox" id="graph-block-only" /> BLOCK only</label>
-    <button type="button" class="btn btn-secondary" id="graph-reset">Reset view</button>
+<div class="neo4j-ui">
+
+  <!-- ── Left: Schema / Database info panel ─────────────────────────── -->
+  <div class="neo-schema">
+
+    <div class="neo-phdr">
+      Database information
+    </div>
+
+    <div class="neo-ptitle">Nodes (<span id="schema-ncount">—</span>)</div>
+    <div class="neo-pills" id="schema-node-pills">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="neo-ptitle">Relationships (<span id="schema-rcount">—</span>)</div>
+    <div class="neo-pills" id="schema-rel-pills">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="neo-ptitle">Property keys</div>
+    <div class="neo-props">
+      <span class="neo-pk">cve_id</span>
+      <span class="neo-pk">cvss_score</span>
+      <span class="neo-pk">cwe_ids</span>
+      <span class="neo-pk">file</span>
+      <span class="neo-pk">handler</span>
+      <span class="neo-pk">id</span>
+      <span class="neo-pk">installed_version</span>
+      <span class="neo-pk">line_start</span>
+      <span class="neo-pk">method</span>
+      <span class="neo-pk">name</span>
+      <span class="neo-pk">qualified_name</span>
+      <span class="neo-pk">route</span>
+      <span class="neo-pk">severity</span>
+      <span class="neo-pk">vulnerability_category</span>
+      <span class="neo-pk">weakness_name</span>
+    </div>
+
+    <div style="margin-top:auto;padding-top:.75rem;border-top:1px solid #2d3f50;margin-top:.75rem">
+      <button id="neo-show-all" class="neo-rpill" style="width:100%;text-align:center;padding:.25rem;cursor:pointer">Show all nodes</button>
+    </div>
+
   </div>
-  <div class="graph-layout">
-    <div id="graph-network" class="graph-canvas" role="img" aria-label="Reachability graph"></div>
-    <aside id="graph-detail" class="graph-detail card">
-      <p class="muted">Click a node for details.</p>
-    </aside>
+
+  <!-- ── Centre: Query bar + Graph canvas ───────────────────────────── -->
+  <div class="neo-graph-col">
+
+    <!-- Query bar -->
+    <div class="neo-query-bar">
+      <span class="neo-prompt">neo4j$</span>
+      <span class="neo-query-txt" id="neo-query">MATCH p=()-[:AFFECTED_BY|VULNERABLE_IN]->() RETURN p;</span>
+      <div class="neo-q-btns">
+        <button class="neo-q-btn" id="neo-phys-btn" title="Toggle physics layout">⚡</button>
+        <button class="neo-q-btn" id="neo-fit"      title="Fit all nodes in view">⟳</button>
+      </div>
+    </div>
+
+    <!-- View tabs -->
+    <div class="neo-view-tabs">
+      <button class="neo-vtab active" data-view="graph">Graph</button>
+      <button class="neo-vtab"        data-view="table">Table</button>
+      <button class="neo-vtab"        data-view="raw">RAW</button>
+    </div>
+
+    <!-- Graph canvas -->
+    <div class="neo-canvas-wrap">
+      <div id="graph-network" style="width:100%;height:100%"></div>
+    </div>
+
+    <!-- Bottom toolbar -->
+    <div class="neo-bottom">
+      <span id="neo-stat" class="neo-stat">Loading graph…</span>
+      <div class="neo-zoom">
+        <button class="neo-z-btn" id="neo-zin"  title="Zoom in">+</button>
+        <button class="neo-z-btn" id="neo-zout" title="Zoom out">−</button>
+      </div>
+    </div>
+
   </div>
-  <div class="legend card">
-    <span class="leg-item leg-entry">Entry point</span>
-    <span class="leg-item leg-fn">Function</span>
-    <span class="leg-item leg-block">BLOCK</span>
-    <span class="leg-item leg-review">REVIEW</span>
+
+  <!-- ── Right: Results overview + detail ──────────────────────────── -->
+  <div class="neo-results">
+
+    <div class="neo-phdr">
+      Results overview
+      <span style="color:#71869d;font-size:.7rem;cursor:pointer">↑↓</span>
+    </div>
+
+    <div class="neo-ptitle">Nodes (<span id="results-ncount">—</span>)</div>
+    <div class="neo-pills" id="results-node-pills">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="neo-ptitle">Relationships (<span id="results-rcount">—</span>)</div>
+    <div class="neo-pills" id="results-rel-pills">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="neo-ptitle" style="margin-top:.6rem">Properties</div>
+    <div id="graph-detail" class="neo-detail">
+      <p style="color:#71869d;font-size:.73rem;margin:0">Click a node or relationship to inspect its properties.</p>
+    </div>
+
   </div>
+
+</div>
 </section>

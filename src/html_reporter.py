@@ -164,6 +164,166 @@ def build_graph_from_cves(cves: list[dict[str, Any]]) -> dict[str, Any]:
     return {"nodes": nodes, "edges": edges}
 
 
+def _build_neo4j_style_graph(snapshot: dict) -> dict:
+    """Convert graph_snapshot.json into a vis-network payload styled like Neo4j Browser.
+
+    Filters to only nodes/edges that are part of reachability-relevant paths:
+    EXPOSES, CALLS, VULNERABLE_IN, AFFECTED_BY, HAS_CWE.
+    Derived chain edges (PROVIDES, HAS_CVE, CLASSIFIED_AS, AFFECTS) are excluded
+    to avoid duplicate visual clutter.
+    """
+    if not snapshot:
+        return {"nodes": [], "edges": []}
+
+    nodes_raw = snapshot.get("nodes", {})
+    edges_raw = snapshot.get("edges", {})
+
+    NODE_STYLES: dict[str, dict] = {
+        "package": {
+            "color": {"background": "#4C8EDA", "border": "#2E5A9E",
+                      "highlight": {"background": "#2E86AB", "border": "#1A4F7A"},
+                      "hover":     {"background": "#357ABD", "border": "#1A4F7A"}},
+            "shape": "box",
+        },
+        "cve": {
+            "color": {"background": "#E74C3C", "border": "#A93226",
+                      "highlight": {"background": "#C0392B", "border": "#7B241C"},
+                      "hover":     {"background": "#CB4335", "border": "#7B241C"}},
+            "shape": "diamond",
+        },
+        "cwe": {
+            "color": {"background": "#F39C12", "border": "#B7770D",
+                      "highlight": {"background": "#E67E22", "border": "#935116"},
+                      "hover":     {"background": "#DC7633", "border": "#935116"}},
+            "shape": "triangle",
+        },
+        "function": {
+            "color": {"background": "#27AE60", "border": "#1E8449",
+                      "highlight": {"background": "#1E8449", "border": "#155E32"},
+                      "hover":     {"background": "#229954", "border": "#155E32"}},
+            "shape": "ellipse",
+        },
+        "service": {
+            "color": {"background": "#8E44AD", "border": "#6C3483",
+                      "highlight": {"background": "#7D3C98", "border": "#4A235A"},
+                      "hover":     {"background": "#7D3C98", "border": "#4A235A"}},
+            "shape": "star",
+        },
+    }
+    EDGE_STYLES: dict[str, dict] = {
+        "affected_by":   {"label": "AFFECTED_BY",   "color": "#E74C3C", "dashes": False},
+        "has_cwe":       {"label": "HAS_CWE",       "color": "#F39C12", "dashes": False},
+        "vulnerable_in": {"label": "VULNERABLE_IN", "color": "#C0392B", "dashes": False},
+        "exposes":       {"label": "EXPOSES",       "color": "#8E44AD", "dashes": False},
+        "calls":         {"label": "CALLS",         "color": "#27AE60", "dashes": True},
+    }
+    RELEVANT = list(EDGE_STYLES.keys())
+
+    # Collect IDs of nodes that appear in at least one relevant edge
+    connected_ids: set[str] = set()
+    raw_edges: list[dict] = []
+    for etype in RELEVANT:
+        for e in edges_raw.get(etype, []):
+            connected_ids.add(e["from"])
+            connected_ids.add(e["to"])
+            raw_edges.append({"source": e["from"], "target": e["to"], "kind": etype})
+
+    vis_nodes: list[dict] = []
+
+    for pkg in nodes_raw.get("packages", []):
+        if pkg["id"] not in connected_ids:
+            continue
+        st = NODE_STYLES["package"]
+        vis_nodes.append({
+            "id":    pkg["id"],
+            "label": f"{pkg['name']}\n{pkg.get('installed_version', '')}",
+            "type":  "package",
+            "color": st["color"],
+            "shape": st["shape"],
+            "title": f"Package: {pkg['name']}\nVersion: {pkg.get('installed_version', 'unknown')}",
+            "font":  {"color": "#ffffff", "size": 11},
+        })
+
+    for cve in nodes_raw.get("cves", []):
+        if cve["id"] not in connected_ids:
+            continue
+        st  = NODE_STYLES["cve"]
+        sev = cve.get("severity", "")
+        vis_nodes.append({
+            "id":       cve["id"],
+            "label":    cve["cve_id"],
+            "type":     "cve",
+            "color":    st["color"],
+            "shape":    st["shape"],
+            "title":    (f"CVE: {cve['cve_id']}\nCVSS: {cve.get('cvss_score', 0)}"
+                         f"\nSeverity: {sev}\nCWEs: {', '.join(cve.get('cwe_ids', []))}"),
+            "font":     {"color": "#ffffff", "size": 10},
+            "severity": sev,
+            "cvss":     cve.get("cvss_score", 0),
+        })
+
+    for cwe in nodes_raw.get("cwes", []):
+        if cwe["id"] not in connected_ids:
+            continue
+        st = NODE_STYLES["cwe"]
+        name = cwe.get("weakness_name", cwe["cwe_id"])
+        short_name = name[:22] + "…" if len(name) > 22 else name
+        vis_nodes.append({
+            "id":    cwe["id"],
+            "label": f"{cwe['cwe_id']}\n{short_name}",
+            "type":  "cwe",
+            "color": st["color"],
+            "shape": st["shape"],
+            "title": f"CWE: {cwe['cwe_id']}\n{name}\nCategory: {cwe.get('vulnerability_category', '')}",
+            "font":  {"color": "#ffffff", "size": 9},
+        })
+
+    for fn in nodes_raw.get("functions", []):
+        if fn["id"] not in connected_ids:
+            continue
+        st = NODE_STYLES["function"]
+        qn = fn.get("qualified_name", "")
+        short = qn.split(".")[-1] or qn
+        vis_nodes.append({
+            "id":    fn["id"],
+            "label": short,
+            "type":  "function",
+            "color": st["color"],
+            "shape": st["shape"],
+            "title": f"Function: {qn}\nFile: {fn.get('file', '')}\nLine: {fn.get('line_start', 0)}",
+            "font":  {"color": "#ffffff", "size": 10},
+        })
+
+    for svc in nodes_raw.get("services", []):
+        if svc["id"] not in connected_ids:
+            continue
+        st = NODE_STYLES["service"]
+        vis_nodes.append({
+            "id":    svc["id"],
+            "label": svc.get("route", svc.get("name", "")),
+            "type":  "service",
+            "color": st["color"],
+            "shape": st["shape"],
+            "title": (f"Service: {svc.get('name', '')}\nRoute: {svc.get('route', '')}"
+                      f"\nMethod: {svc.get('method', '')}\nHandler: {svc.get('handler', '')}"),
+            "font":  {"color": "#ffffff", "size": 11},
+        })
+
+    vis_edges: list[dict] = []
+    for e in raw_edges:
+        st = EDGE_STYLES[e["kind"]]
+        vis_edges.append({
+            "source": e["source"],
+            "target": e["target"],
+            "label":  st["label"],
+            "kind":   e["kind"],
+            "color":  st["color"],
+            "dashes": st["dashes"],
+        })
+
+    return {"nodes": vis_nodes, "edges": vis_edges}
+
+
 def build_report_data(
     assessment: dict[str, Any],
     explanations: Optional[dict[str, Any]] = None,
@@ -450,12 +610,17 @@ def render_html(
     if snap_path and Path(snap_path).is_file():
         snapshot = _load_json(Path(snap_path))
 
+    # Convert the full graph snapshot into a Neo4j-style vis-network payload.
+    # Previously this was always None, causing the report to fall back to a
+    # tiny 3-node CVE chain.  Now we pass the real snapshot data.
+    graph_data = _build_neo4j_style_graph(snapshot) if snapshot else None
+
     data = build_report_data(
         assessment,
         explanations,
         symbol_scan=scan,
         upgrade_simulation=upgrade,
-        graph=None,
+        graph=graph_data,
         target_repo=target_repo,
         project_dir=project_dir,
     )
