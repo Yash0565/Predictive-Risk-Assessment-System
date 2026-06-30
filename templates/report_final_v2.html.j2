@@ -830,8 +830,8 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
 }
 
 .live-graph-canvas {
-  width: 100%; height: 480px;
-  background: var(--surface-2);
+  width: 100%; height: 600px;
+  background: #0F172A;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   position: relative;
@@ -1545,6 +1545,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       <button type="button" data-graph-filter="reachable">Reachable only</button>
       <button type="button" id="graph-fit" style="margin-left:auto;">⤢ Fit view</button>
       <button type="button" id="graph-reset">Reset</button>
+      <a href="neo4j_explorer.html" target="_blank" style="padding:6px 13px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:6px;color:var(--text-2);text-decoration:none;display:inline-flex;align-items:center;gap:5px;" title="Open full Neo4j Explorer (requires Neo4j running)">⬡ Neo4j Explorer ↗</a>
     </div>
 
     <div id="neo4j-graph" class="live-graph-canvas" role="img" aria-label="Interactive security graph" tabindex="0">
@@ -1554,10 +1555,12 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     </div>
 
     <div class="live-graph-legend" aria-label="Graph legend">
-      <span class="legend-item"><span class="swatch pkg"></span> Package</span>
-      <span class="legend-item"><span class="swatch cve"></span> CVE</span>
-      <span class="legend-item"><span class="swatch svc"></span> Service</span>
-      <span class="legend-item"><span class="swatch fn"></span> Function</span>
+      <span class="legend-item"><span class="swatch" style="background:#3B82F6"></span> Service (hexagon)</span>
+      <span class="legend-item"><span class="swatch" style="background:#7C3AED"></span> Package (box)</span>
+      <span class="legend-item"><span class="swatch" style="background:#334155"></span> Function (dot)</span>
+      <span class="legend-item"><span class="swatch" style="background:#EF4444"></span> CVE — BLOCK</span>
+      <span class="legend-item"><span class="swatch" style="background:#F59E0B"></span> CVE — REVIEW</span>
+      <span class="legend-item"><span class="swatch" style="background:#10B981"></span> CVE — PROCEED</span>
     </div>
     <div class="live-graph-meta">
       <span><strong>Source:</strong> {{ gs.label or 'Derived' }}</span>
@@ -1879,6 +1882,28 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     return root.getAttribute("data-theme") === "dark" ? "#e6edf8" : "#142036";
   }
 
+  function circularStart(nodesIn) {
+    var groups = { service: [], package: [], function: [], cve: [] };
+    nodesIn.forEach(function (n) {
+      var g = n.group || "function";
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(n.id);
+    });
+    var pos = {};
+    function place(ids, radius) {
+      var count = ids.length || 1;
+      ids.forEach(function (id, i) {
+        var angle = (2 * Math.PI * i / count) - Math.PI / 2;
+        pos[id] = { x: Math.round(Math.cos(angle) * radius), y: Math.round(Math.sin(angle) * radius) };
+      });
+    }
+    place(groups.service,  340);
+    place(groups.package,  210);
+    place(groups.function, 120);
+    place(groups.cve, groups.cve.length === 1 ? 0 : 55);
+    return pos;
+  }
+
   function buildNetwork() {
     if (graphInitialized) return;
     graphInitialized = true;
@@ -1895,37 +1920,40 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       return;
     }
     if (graphEmpty) graphEmpty.style.display = "none";
+    var startPos = circularStart(nodesIn);
     allNodes = new vis.DataSet(nodesIn.map(function (n) {
+      var p = startPos[n.id] || {};
       return Object.assign({}, n, {
-        font: { color: fontColor(), size: 14, multi: true, face: "Inter, system-ui" },
+        x: p.x, y: p.y,
+        font: { color: "#CBD5E0", size: 12, multi: true, face: "Inter, system-ui" },
         borderWidth: 2,
+        shadow: { enabled: true, color: "rgba(0,0,0,0.5)", size: 8, x: 0, y: 2 },
         _meta: n,
       });
     }));
     allEdges = new vis.DataSet(edgesIn.map(function (e) {
       return Object.assign({}, e, {
-        font: {
-          size: 9, align: "middle",
-          color: root.getAttribute("data-theme") === "dark" ? "#9fb1cc" : "#6a7e9c",
-          strokeWidth: 0,
-        },
+        font: { size: 9, align: "middle", color: "#475569", strokeWidth: 0 },
+        smooth: { type: "curvedCW", roundness: 0.15 },
       });
     }));
     network = new vis.Network(graphContainer, { nodes: allNodes, edges: allEdges }, {
       physics: {
         enabled: true,
-        barnesHut: {
-          gravitationalConstant: -10000,
-          springLength: 140,
+        solver: "repulsion",
+        repulsion: {
+          nodeDistance: 130,
+          centralGravity: 0.2,
+          springLength: 110,
           springConstant: 0.04,
-          damping: 0.15,
+          damping: 0.5,
         },
-        stabilization: { iterations: 220, fit: true },
+        stabilization: { iterations: 280, fit: true },
       },
-      interaction: { hover: true, tooltipDelay: 120, navigationButtons: false, keyboard: true },
-      layout: { improvedLayout: true },
-      nodes: { borderWidth: 2, shadow: { enabled: true, size: 4, x: 0, y: 1 } },
-      edges: { smooth: { type: "continuous" }, selectionWidth: 1.5 },
+      interaction: { hover: true, tooltipDelay: 100, navigationButtons: false, keyboard: true },
+      layout: { randomSeed: 42 },
+      nodes: { borderWidth: 2 },
+      edges: { selectionWidth: 2, arrows: { to: { scaleFactor: 0.75 } } },
     });
     network.once("stabilizationIterationsDone", function () {
       network.setOptions({ physics: { enabled: false } });

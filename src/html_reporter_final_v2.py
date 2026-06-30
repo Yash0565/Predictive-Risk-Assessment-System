@@ -877,17 +877,17 @@ _GRAPH_NODE_LIMITS = {
 _GRAPH_EDGE_LIMIT = 800
 
 _GRAPH_NODE_STYLES = {
-    "package":  {"color": "#1f7bcc", "shape": "box",     "size": 22},
-    "cve":      {"color": "#c5304a", "shape": "diamond", "size": 26},
-    "service":  {"color": "#6f59d9", "shape": "hexagon", "size": 24},
-    "function": {"color": "#6a7e9c", "shape": "dot",     "size": 14},
+    "package":  {"color": "#7C3AED", "border": "#5B21B6", "shape": "box",     "size": 22},
+    "cve":      {"color": "#EF4444", "border": "#991B1B", "shape": "diamond", "size": 28},
+    "service":  {"color": "#3B82F6", "border": "#1D4ED8", "shape": "hexagon", "size": 26},
+    "function": {"color": "#334155", "border": "#1E293B", "shape": "dot",     "size": 11},
 }
 _GRAPH_EDGE_STYLES = {
-    "DEPENDS_ON":    {"color": "#b8c4d4", "label": "DEPENDS_ON",    "width": 1.5, "dashes": False},
-    "AFFECTED_BY":   {"color": "#c5304a", "label": "AFFECTED_BY",   "width": 2.0, "dashes": False},
-    "VULNERABLE_IN": {"color": "#b06e00", "label": "VULNERABLE_IN", "width": 1.8, "dashes": True},
-    "EXPOSES":       {"color": "#157a52", "label": "EXPOSES",       "width": 2.0, "dashes": False},
-    "CALLS":         {"color": "#aab8cc", "label": "CALLS",         "width": 1.2, "dashes": False},
+    "DEPENDS_ON":    {"color": "#8B5CF6", "label": "DEPENDS_ON",    "width": 1.5, "dashes": False},
+    "AFFECTED_BY":   {"color": "#F59E0B", "label": "AFFECTED_BY",   "width": 2.0, "dashes": False},
+    "VULNERABLE_IN": {"color": "#EF4444", "label": "VULNERABLE_IN", "width": 2.0, "dashes": True},
+    "EXPOSES":       {"color": "#3B82F6", "label": "EXPOSES",       "width": 2.0, "dashes": False},
+    "CALLS":         {"color": "#475569", "label": "CALLS",         "width": 1.0, "dashes": False},
 }
 
 
@@ -926,7 +926,11 @@ def _build_vis_graph(
             "group": group,
             "shape": style["shape"],
             "size": style["size"],
-            "color": {"background": style["color"], "border": style["color"]},
+            "color": {
+                "background": style["color"],
+                "border": style.get("border", style["color"]),
+                "highlight": {"background": style["color"], "border": style.get("border", style["color"])},
+            },
             **extra,
         }
         nodes.append(node)
@@ -939,15 +943,16 @@ def _build_vis_graph(
         sev = (cve.get("severity") or "").upper()
         risk = cve_meta.get(cve_id.upper(), {})
         rec = (risk.get("recommendation") or "").upper()
-        colour = {
-            "BLOCK":   "#c5304a",
-            "REVIEW":  "#b06e00",
-            "PROCEED": "#157a52",
-        }.get(rec, "#c5304a")
+        _CVE_REC_COLORS = {
+            "BLOCK":   {"bg": "#EF4444", "border": "#991B1B"},
+            "REVIEW":  {"bg": "#F59E0B", "border": "#92400E"},
+            "PROCEED": {"bg": "#10B981", "border": "#065F46"},
+        }
+        col = _CVE_REC_COLORS.get(rec, {"bg": "#EF4444", "border": "#991B1B"})
         label = f"{cve_id}\nCVSS {cvss}"
         _add(
             cid, label, "cve",
-            color={"background": colour, "border": colour},
+            color={"background": col["bg"], "border": col["border"], "highlight": col},
             title=f"{cve_id} · {sev or '—'} · CVSS {cvss}"
                   + (f" · KEV" if risk.get("in_kev") else ""),
             recommendation=rec or None,
@@ -1052,7 +1057,10 @@ def _fallback_vis_graph(base: dict[str, Any], meta: dict[str, Any]) -> dict[str,
         nodes.append({
             "id": node_id, "label": label, "group": group,
             "shape": style["shape"], "size": style["size"],
-            "color": {"background": style["color"], "border": style["color"]},
+            "color": {
+                "background": style["color"],
+                "border": style.get("border", style["color"]),
+            },
             **extra,
         })
 

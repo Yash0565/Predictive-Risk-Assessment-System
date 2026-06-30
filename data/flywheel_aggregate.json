@@ -2,36 +2,36 @@
   "cve_reachability": {
     "CVE-2018-1000656": 1,
     "CVE-2019-10906": 1,
-    "CVE-2020-14343": 3,
+    "CVE-2020-14343": 4,
     "CVE-2020-1747": 1,
     "CVE-2020-5313": 1,
-    "CVE-2023-32681": 4,
+    "CVE-2023-32681": 5,
     "CVE-2025-66471": 1
   },
   "packages_seen": {
-    "cryptography": 54,
-    "flask": 14,
+    "cryptography": 63,
+    "flask": 16,
     "jinja2": 6,
-    "pillow": 228,
-    "pyyaml": 8,
-    "requests": 24,
+    "pillow": 265,
+    "pyyaml": 9,
+    "requests": 28,
     "urllib3": 12
   },
   "reachability": {
-    "rate": 0.0522,
-    "reachable": 12,
-    "unreachable": 218
+    "rate": 0.0519,
+    "reachable": 14,
+    "unreachable": 256
   },
   "recommendations": {
-    "BLOCK": 4,
-    "PROCEED": 339,
-    "REVIEW": 3
+    "BLOCK": 5,
+    "PROCEED": 390,
+    "REVIEW": 4
   },
-  "total_scans": 6,
-  "updated_at": "2026-06-16T12:29:19+00:00",
+  "total_scans": 7,
+  "updated_at": "2026-06-16T12:50:03+00:00",
   "upgrade_outcomes": {
     "blocked": 0,
-    "feasible": 3,
+    "feasible": 4,
     "safe": 1
   },
   "version": "1.0"

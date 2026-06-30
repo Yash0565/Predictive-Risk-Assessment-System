@@ -147,13 +147,17 @@ main{max-width:1280px;margin:0 auto;padding:var(--space-6) var(--space-6) var(--
 .usage-loc{font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-2)}
 .usage-code{background:#1A202C;color:#E2E8F0;padding:var(--space-3);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--text-xs);overflow:auto}
 /* Graph */
-.graph-wrap{position:relative;border:1px solid var(--color-border);border-radius:var(--radius-md);background:#fff;min-height:520px}
-#graph-canvas{width:100%;height:520px}
+.graph-wrap{position:relative;border:1px solid var(--color-border);border-radius:var(--radius-md);background:#0F172A;min-height:620px;overflow:hidden}
+#graph-canvas{width:100%;height:620px;background:#0F172A}
 .graph-controls{position:absolute;top:var(--space-3);right:var(--space-3);display:flex;gap:var(--space-2);z-index:10}
-.graph-controls button,.graph-controls select{padding:var(--space-1) var(--space-3);font-size:var(--text-xs);border:1px solid var(--color-border);border-radius:var(--radius-sm);background:#fff;cursor:pointer}
-.graph-legend{position:absolute;bottom:var(--space-3);left:var(--space-3);background:rgba(255,255,255,.95);padding:var(--space-3) var(--space-4);border-radius:var(--radius-sm);border:1px solid var(--color-border);font-size:var(--text-xs);max-width:360px}
-.legend-row{display:flex;align-items:center;gap:var(--space-2);margin:var(--space-1) 0}
-.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.graph-controls button,.graph-controls select{padding:var(--space-1) var(--space-3);font-size:var(--text-xs);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);background:rgba(15,23,42,.85);color:#E2E8F0;cursor:pointer;backdrop-filter:blur(4px)}
+.graph-controls button:hover{background:rgba(59,130,246,.25);border-color:#3B82F6}
+.graph-legend{position:absolute;bottom:var(--space-3);left:var(--space-3);background:rgba(15,23,42,.9);padding:var(--space-3) var(--space-4);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.12);font-size:var(--text-xs);max-width:220px;color:#CBD5E0;backdrop-filter:blur(4px)}
+.graph-legend strong{display:block;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;font-size:10px;margin-bottom:var(--space-2)}
+.legend-row{display:flex;align-items:center;gap:var(--space-2);margin:5px 0}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block}
+.legend-hex{width:12px;height:12px;flex-shrink:0;display:inline-block;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+.legend-diamond{width:10px;height:10px;flex-shrink:0;display:inline-block;transform:rotate(45deg)}
 /* Audit */
 .formula-block{background:#1A202C;color:#E2E8F0;padding:var(--space-6);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:var(--text-sm);white-space:pre-wrap;line-height:1.7;margin:var(--space-4) 0}
 .audit-table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
@@ -390,11 +394,12 @@ main{max-width:1280px;margin:0 auto;padding:var(--space-6) var(--space-6) var(--
       </div>
       <div id="graph-canvas"></div>
       <div class="graph-legend" aria-hidden="true">
-        <div class="legend-row"><span class="legend-dot" style="background:#2E75B6"></span> Entry point (route)</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#A0AEC0"></span> Internal function</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#C53030"></span> Vulnerable (BLOCK)</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#D69E2E"></span> Vulnerable (REVIEW)</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#38A169"></span> Vulnerable (PROCEED)</div>
+        <strong>Node types</strong>
+        <div class="legend-row"><span class="legend-hex" style="background:#3B82F6"></span> Entry point (route)</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#64748B"></span> Internal function</div>
+        <div class="legend-row"><span class="legend-diamond" style="background:#EF4444"></span> Vulnerable — BLOCK</div>
+        <div class="legend-row"><span class="legend-diamond" style="background:#F59E0B"></span> Vulnerable — REVIEW</div>
+        <div class="legend-row"><span class="legend-diamond" style="background:#10B981"></span> Vulnerable — PROCEED</div>
       </div>
     </div>
   </div>
@@ -659,21 +664,57 @@ main{max-width:1280px;margin:0 auto;padding:var(--space-6) var(--space-6) var(--
   }
   window.selectPatchCve = selectPatchCve;
 
-  /* ── Graph (vis-network, force-directed) ── */
+  /* ── Graph (circular layout, styled) ── */
   let graphInitialized = false;
   let network = null;
   let allNodes = null;
   let allEdges = null;
 
-  function nodeColor(n) {
-    if (n.type === 'entry_point') return { background:'#2E75B6', border:'#1F4E79' };
+  const NODE_PALETTE = {
+    entry:   { bg:'#3B82F6', border:'#1D4ED8', font:'#ffffff' },
+    block:   { bg:'#EF4444', border:'#991B1B', font:'#ffffff' },
+    review:  { bg:'#F59E0B', border:'#92400E', font:'#1A202C' },
+    proceed: { bg:'#10B981', border:'#065F46', font:'#ffffff' },
+    fn:      { bg:'#334155', border:'#1E293B', font:'#CBD5E0' },
+  };
+
+  function nodeStyle(n) {
+    if (n.type === 'entry_point') {
+      const p = NODE_PALETTE.entry;
+      return { shape:'hexagon', size:22, color:{ background:p.bg, border:p.border, highlight:{background:'#60A5FA',border:p.border} },
+               font:{ color:p.font, size:13, bold:true }, shadow:{ enabled:true, color:'rgba(59,130,246,0.45)', size:12, x:0, y:0 }, borderWidth:2 };
+    }
     if (n.type === 'vulnerable') {
       const r = (n.recommendation||'REVIEW').toUpperCase();
-      if (r==='BLOCK') return { background:'#C53030', border:'#9B2C2C' };
-      if (r==='PROCEED') return { background:'#38A169', border:'#276749' };
-      return { background:'#D69E2E', border:'#B7791F' };
+      const p = r==='BLOCK' ? NODE_PALETTE.block : r==='PROCEED' ? NODE_PALETTE.proceed : NODE_PALETTE.review;
+      const glow = r==='BLOCK' ? 'rgba(239,68,68,0.55)' : r==='PROCEED' ? 'rgba(16,185,129,0.45)' : 'rgba(245,158,11,0.45)';
+      return { shape:'diamond', size:24, color:{ background:p.bg, border:p.border, highlight:{background:p.bg,border:p.border} },
+               font:{ color:p.font, size:12, bold:true }, shadow:{ enabled:true, color:glow, size:16, x:0, y:0 }, borderWidth:3 };
     }
-    return { background:'#A0AEC0', border:'#718096' };
+    const p = NODE_PALETTE.fn;
+    return { shape:'dot', size:9, color:{ background:p.bg, border:p.border, highlight:{background:'#475569',border:'#1E293B'} },
+             font:{ color:p.font, size:11 }, shadow:{ enabled:false }, borderWidth:1 };
+  }
+
+  function circularPositions(nodes) {
+    const groups = { entry:[], fn:[], vuln:[] };
+    nodes.forEach(n => {
+      if (n.type === 'entry_point') groups.entry.push(n.id);
+      else if (n.type === 'vulnerable') groups.vuln.push(n.id);
+      else groups.fn.push(n.id);
+    });
+    const pos = {};
+    const place = (ids, radius) => {
+      const count = ids.length || 1;
+      ids.forEach((id, i) => {
+        const angle = (2 * Math.PI * i / count) - Math.PI / 2;
+        pos[id] = { x: Math.round(Math.cos(angle) * radius), y: Math.round(Math.sin(angle) * radius) };
+      });
+    };
+    place(groups.entry, 310);
+    place(groups.fn, 175);
+    place(groups.vuln, groups.vuln.length === 1 ? 0 : 70);
+    return pos;
   }
 
   function initGraph() {
@@ -686,44 +727,56 @@ main{max-width:1280px;margin:0 auto;padding:var(--space-6) var(--space-6) var(--
       return;
     }
     if (typeof vis === 'undefined') {
-      document.getElementById('graph-empty').classList.remove('hidden');
-      document.getElementById('graph-empty').innerHTML = '<h3>Graph library not loaded</h3><p>Run with offline=True to inline vis-network.</p>';
+      const el = document.getElementById('graph-empty');
+      el.classList.remove('hidden');
+      el.innerHTML = '<h3>Graph library not loaded</h3><p>Run with <code>--offline</code> to inline vis-network.</p>';
       return;
     }
-    allNodes = new vis.DataSet(nodesIn.map(n => ({
-      id: n.id, label: n.label, title: tooltip(n),
-      color: nodeColor(n), font: { color: '#1A202C', size: 14 },
-      _meta: n
-    })));
-    allEdges = new vis.DataSet(edgesIn.map((e,i) => ({
-      id: 'e'+i, from: e.source, to: e.target,
-      dashes: e.kind === 'vulnerable_in' || e.kind === 'VULNERABLE_IN',
-      color: { color: e.kind==='exposes'||e.kind==='EXPOSES' ? '#2E75B6' : '#CBD5E0' },
-      arrows: 'to', width: e.kind==='calls'||e.kind==='CALLS' ? 1.5 : 2
-    })));
+    const pos = circularPositions(nodesIn);
+    allNodes = new vis.DataSet(nodesIn.map(n => {
+      const style = nodeStyle(n);
+      return { id:n.id, label:n.label||n.id, title:tooltip(n),
+               x:pos[n.id]?.x, y:pos[n.id]?.y,
+               ...style, _meta:n };
+    }));
+    allEdges = new vis.DataSet(edgesIn.map((e,i) => {
+      const isVuln   = e.kind==='vulnerable_in'||e.kind==='VULNERABLE_IN';
+      const isExpose = e.kind==='exposes'||e.kind==='EXPOSES';
+      return { id:'e'+i, from:e.source, to:e.target,
+               dashes: isVuln ? [6,4] : false,
+               color:{ color: isExpose?'#3B82F6' : isVuln?'#EF4444' : '#475569', opacity:0.75 },
+               arrows:{ to:{ enabled:true, scaleFactor:0.65 } },
+               width: isVuln||isExpose ? 2 : 1.2,
+               smooth:{ type:'curvedCW', roundness:0.2 } };
+    }));
     const container = document.getElementById('graph-canvas');
-    network = new vis.Network(container, { nodes: allNodes, edges: allEdges }, {
-      physics: { enabled: true, barnesHut: { gravitationalConstant: -8000, springLength: 120 } },
-      interaction: { hover: true, tooltipDelay: 100 },
-      layout: { improvedLayout: true }
+    network = new vis.Network(container, { nodes:allNodes, edges:allEdges }, {
+      physics:{ enabled:true, solver:'repulsion',
+                repulsion:{ nodeDistance:130, centralGravity:0.25, springLength:110, springConstant:0.04, damping:0.5 },
+                stabilization:{ iterations:250, updateInterval:25 } },
+      interaction:{ hover:true, tooltipDelay:80, zoomView:true, navigationButtons:false },
+      layout:{ randomSeed:7 },
+      nodes:{ borderWidthSelected:3, chosen:true },
+      edges:{ selectionWidth:3 }
     });
+    network.once('stabilized', () => network.setOptions({ physics:{ enabled:false } }));
     network.on('click', params => {
       if (!params.nodes.length) { resetHighlight(); return; }
       const nodeId = params.nodes[0];
       const meta = allNodes.get(nodeId)._meta;
-      if (meta && meta.type === 'vulnerable' && meta.cve) highlightPathsToCve(nodeId);
+      if (meta && meta.type==='vulnerable' && meta.cve) highlightPathsToCve(nodeId);
       else resetHighlight();
     });
-    document.getElementById('graph-reset').onclick = () => network.fit();
-    document.getElementById('graph-show-all').onclick = () => resetHighlight();
+    document.getElementById('graph-reset').onclick = () => { resetHighlight(); network.fit(); };
+    document.getElementById('graph-show-all').onclick = () => { resetHighlight(); network.fit(); };
     document.getElementById('graph-filter').onchange = function() {
       const v = this.value;
       allNodes.forEach(n => {
         const m = n._meta;
-        if (!v) { allNodes.update({ id: n.id, hidden: false }); return; }
-        const show = m.type !== 'vulnerable' || (m.recommendation||'').toUpperCase() === v;
-        allNodes.update({ id: n.id, hidden: !show });
+        const show = !v || m.type !== 'vulnerable' || (m.recommendation||'').toUpperCase() === v;
+        allNodes.update({ id:n.id, hidden:!show });
       });
+      network.fit();
     };
   }
 

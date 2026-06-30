@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neo4j Security Graph Explorer</title>
+  <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+  <style>
+    :root {
+      --bg: #0F172A; --surface: #1E293B; --surface2: #162032;
+      --border: #334155; --text: #E2E8F0; --muted: #64748B;
+      --accent: #3B82F6; --danger: #EF4444; --warning: #F59E0B;
+      --success: #10B981; --purple: #8B5CF6;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 20px; height: 48px;
+      display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+    }
+    .app-header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+    .app-header h1 span { color: var(--accent); }
+    .header-status { font-size: 12px; color: var(--muted); margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: all .3s; }
+    .status-dot.ok  { background: var(--success); box-shadow: 0 0 8px rgba(16,185,129,.6); }
+    .status-dot.err { background: var(--danger);  box-shadow: 0 0 8px rgba(239,68,68,.6); }
+
+    /* ── Body ── */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 270px; background: var(--surface2);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+    .sidebar-inner { overflow-y: auto; flex: 1; }
+    .sidebar-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .section-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted); margin-bottom: 12px;
+    }
+
+    /* ── Form ── */
+    .form-row { margin-bottom: 9px; }
+    .form-row label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+    .form-row input {
+      width: 100%; padding: 7px 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-size: 12px;
+      transition: border-color .15s;
+    }
+    .form-row input:focus { outline: none; border-color: var(--accent); }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 7px 13px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: none; transition: all .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+    .btn-primary:hover:not(:disabled) { background: #2563EB; }
+    .btn-primary:disabled { background: #1E3A5F; color: var(--muted); cursor: default; }
+    .btn-sm {
+      padding: 5px 10px; font-size: 11px;
+      border: 1px solid var(--border); background: transparent; color: var(--text);
+    }
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sm.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    /* ── Query list ── */
+    .query-item {
+      padding: 9px 11px; border: 1px solid var(--border); border-radius: 7px;
+      margin-bottom: 7px; cursor: pointer; transition: all .15s;
+    }
+    .query-item:hover { border-color: var(--accent); background: rgba(59,130,246,.06); }
+    .query-item.active { border-color: var(--accent); background: rgba(59,130,246,.12); }
+    .query-item.disabled { opacity: .4; pointer-events: none; }
+    .q-name { font-size: 12px; font-weight: 600; }
+    .q-desc { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .q-badge {
+      display: inline-block; margin-top: 5px;
+      padding: 1px 6px; border-radius: 999px; font-size: 10px;
+      background: rgba(59,130,246,.15); color: var(--accent);
+    }
+
+    /* ── Legend ── */
+    .leg-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+    .leg-icon { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── Canvas area ── */
+    .canvas-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+    .toolbar {
+      background: rgba(30,41,59,.95); border-bottom: 1px solid var(--border);
+      padding: 7px 14px; display: flex; align-items: center; gap: 6px;
+      flex-shrink: 0; backdrop-filter: blur(4px);
+    }
+    .toolbar-sep { width: 1px; height: 22px; background: var(--border); margin: 0 3px; }
+    .toolbar label { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .toolbar input[type=checkbox] { accent-color: var(--accent); }
+
+    #cy { flex: 1; background: var(--bg); }
+
+    .statusbar {
+      background: var(--surface2); border-top: 1px solid var(--border);
+      padding: 5px 16px; font-size: 11px; color: var(--muted);
+      display: flex; gap: 18px; align-items: center; flex-shrink: 0;
+    }
+    .statusbar b { color: var(--text); }
+
+    /* ── Overlays ── */
+    .overlay-wrap { position: absolute; inset: 0; pointer-events: none; }
+    .loading-overlay {
+      position: absolute; inset: 0;
+      background: rgba(15,23,42,.8); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 50;
+      backdrop-filter: blur(3px); pointer-events: all;
+    }
+    .loading-overlay.hidden { display: none; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 13px; color: var(--muted); }
+
+    .empty-state {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--muted); pointer-events: none;
+    }
+    .empty-state.hidden { display: none; }
+    .empty-icon { font-size: 56px; margin-bottom: 16px; opacity: .25; line-height: 1; }
+    .empty-state h3 { font-size: 17px; color: var(--text); margin-bottom: 8px; }
+    .empty-state p { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.6; }
+
+    /* ── Detail panel ── */
+    .detail-panel {
+      width: 290px; background: var(--surface2);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+      overflow: hidden; transition: width .2s ease;
+    }
+    .detail-panel.hidden { width: 0; border: none; }
+    .detail-header {
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .detail-header h3 { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 0; }
+    .detail-close:hover { color: var(--text); }
+    .detail-body { padding: 14px; overflow-y: auto; flex: 1; }
+    .type-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; margin-bottom: 14px;
+    }
+    .prop-row { margin-bottom: 11px; }
+    .prop-key { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; }
+    .prop-val { font-size: 12px; color: var(--text); word-break: break-all; font-family: 'Consolas', 'JetBrains Mono', monospace; }
+    .prop-val.plain { font-family: inherit; }
+    .sev-pill {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 700;
+    }
+    .sev-CRITICAL { background: #450A0A; color: #FCA5A5; border: 1px solid #7F1D1D; }
+    .sev-HIGH     { background: #7F1D1D; color: #FCA5A5; border: 1px solid #991B1B; }
+    .sev-MEDIUM   { background: #78350F; color: #FDE68A; border: 1px solid #92400E; }
+    .sev-LOW      { background: #064E3B; color: #A7F3D0; border: 1px solid #065F46; }
+    .sev-UNKNOWN  { background: var(--border); color: var(--muted); border: 1px solid var(--border); }
+    .nbr-list { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .nbr-chip {
+      display: inline-block; padding: 2px 8px; margin: 2px;
+      border-radius: 5px; font-size: 11px; background: var(--bg); border: 1px solid var(--border);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+      background: #7F1D1D; color: #FCA5A5; border: 1px solid #991B1B;
+      padding: 9px 18px; border-radius: 7px; font-size: 12px;
+      z-index: 200; opacity: 0; transition: opacity .25s; max-width: 440px; text-align: center;
+    }
+    .toast.show { opacity: 1; }
+    .toast.info { background: #1E3A5F; color: #BFDBFE; border-color: #1D4ED8; }
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Neo4j <span>Security Graph</span> Explorer</h1>
+  <div class="header-status">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">Not connected</span>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <div class="sidebar-section">
+        <div class="section-title">Connection</div>
+        <div class="form-row">
+          <label>Host</label>
+          <input type="text" id="neo4j-host" value="localhost">
+        </div>
+        <div class="form-row">
+          <label>HTTP Port</label>
+          <input type="text" id="neo4j-port" value="7474">
+        </div>
+        <div class="form-row">
+          <label>Username</label>
+          <input type="text" id="neo4j-user" value="neo4j">
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="password" id="neo4j-pass" placeholder="NEO4J_PASSWORD">
+        </div>
+        <button class="btn btn-primary" id="btn-connect">Connect</button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">Queries</div>
+        <div id="query-list"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">Layout</div>
+        <div class="btn-group">
+          <button class="btn btn-sm active" data-layout="dagre" title="Hierarchical top-to-bottom — best for call chains">Dagre</button>
+          <button class="btn btn-sm" data-layout="concentric" title="Concentric rings by node type">Rings</button>
+          <button class="btn btn-sm" data-layout="cose" title="Force-directed">Force</button>
+          <button class="btn btn-sm" data-layout="breadthfirst" title="Tree layout from root nodes">Tree</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-title">Legend</div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,3.5 14,10.5 7,14 0,10.5 0,3.5" fill="#3B82F6"/></svg>
+          Service / Entry point
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="8" rx="2" fill="#8B5CF6"/></svg>
+          Package
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><ellipse cx="7" cy="7" rx="6" ry="4.5" fill="#1E3A5F"/></svg>
+          Function
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,7 7,14 0,7" fill="#7F1D1D"/></svg>
+          CVE — CRITICAL
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,7 7,14 0,7" fill="#EF4444"/></svg>
+          CVE — HIGH
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,7 7,14 0,7" fill="#F59E0B"/></svg>
+          CVE — MEDIUM
+        </div>
+        <div class="leg-item">
+          <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,7 7,14 0,7" fill="#10B981"/></svg>
+          CVE — LOW
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <div class="leg-item"><span style="width:22px;height:2px;background:#3B82F6;flex-shrink:0"></span> EXPOSES</div>
+          <div class="leg-item"><span style="width:22px;height:2px;background:#EF4444;border-top:2px dashed #EF4444;flex-shrink:0"></span> VULNERABLE_IN</div>
+          <div class="leg-item"><span style="width:22px;height:2px;background:#F59E0B;flex-shrink:0"></span> AFFECTED_BY</div>
+          <div class="leg-item"><span style="width:22px;height:2px;background:#475569;flex-shrink:0"></span> CALLS</div>
+          <div class="leg-item"><span style="width:22px;height:2px;background:#8B5CF6;flex-shrink:0"></span> DEPENDS_ON</div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Canvas -->
+  <div class="canvas-area">
+    <div class="toolbar">
+      <button class="btn btn-sm" id="btn-fit">Fit</button>
+      <button class="btn btn-sm" id="btn-zoom-in">＋</button>
+      <button class="btn btn-sm" id="btn-zoom-out">－</button>
+      <div class="toolbar-sep"></div>
+      <button class="btn btn-sm" id="btn-block-paths">BLOCK paths</button>
+      <button class="btn btn-sm" id="btn-show-all">Show all</button>
+      <div class="toolbar-sep"></div>
+      <label><input type="checkbox" id="chk-labels" checked> Node labels</label>
+      <label><input type="checkbox" id="chk-edge-labels"> Edge labels</label>
+      <label><input type="checkbox" id="chk-minimap"> Mini-map</label>
+    </div>
+
+    <div style="position:relative;flex:1;display:flex;overflow:hidden">
+      <div id="cy"></div>
+
+      <div class="loading-overlay hidden" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Loading…</div>
+      </div>
+
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">⬡</div>
+        <h3>No graph loaded</h3>
+        <p>Connect to Neo4j above, then click a query to explore the security graph.</p>
+      </div>
+
+      <!-- Mini-map canvas -->
+      <canvas id="minimap" style="position:absolute;bottom:10px;right:10px;width:160px;height:100px;border:1px solid var(--border);border-radius:6px;background:rgba(15,23,42,.85);display:none;pointer-events:none"></canvas>
+    </div>
+
+    <div class="statusbar">
+      <span><b id="stat-nodes">0</b> nodes</span>
+      <span><b id="stat-edges">0</b> edges</span>
+      <span><b id="stat-sel">—</b> selected</span>
+      <span style="margin-left:auto;color:var(--muted)" id="stat-msg"></span>
+    </div>
+  </div>
+
+  <!-- Detail panel -->
+  <div class="detail-panel hidden" id="detail-panel">
+    <div class="detail-header">
+      <h3 id="detail-title">Node</h3>
+      <button class="detail-close" id="detail-close" aria-label="Close">×</button>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Predefined queries ────────────────────────────────────────────
+  const QUERIES = [
+    {
+      name: 'Security overview',
+      desc: 'Services → Functions → CVEs',
+      badge: '≤ 400',
+      cypher: `MATCH (s:Service)-[r1:EXPOSES]->(f:Function)
+OPTIONAL MATCH (c:CVE)-[r2:VULNERABLE_IN]->(f)
+RETURN s, r1, f, c, r2 LIMIT 400`,
+    },
+    {
+      name: 'BLOCK paths',
+      desc: 'Routes reaching HIGH/CRITICAL CVEs',
+      badge: '≤ 200',
+      cypher: `MATCH p = (s:Service)-[:EXPOSES]->(f:Function)<-[:VULNERABLE_IN]-(c:CVE)
+WHERE c.cvss_score >= 7 OR c.severity IN ['CRITICAL','HIGH']
+RETURN p LIMIT 200`,
+    },
+    {
+      name: 'Package → CVE',
+      desc: 'Dependency vulnerability map',
+      badge: '≤ 350',
+      cypher: `MATCH (p:Package)-[r:AFFECTED_BY]->(c:CVE)
+RETURN p, r, c LIMIT 350`,
+    },
+    {
+      name: 'Call graph',
+      desc: 'Function-to-function call chains',
+      badge: '≤ 300',
+      cypher: `MATCH (a:Function)-[r:CALLS]->(b:Function)
+RETURN a, r, b LIMIT 300`,
+    },
+    {
+      name: 'Reachability paths',
+      desc: 'Shortest paths from entry to sink',
+      badge: '≤ 150',
+      cypher: `MATCH p = shortestPath(
+  (s:Service)-[*1..10]->(c:CVE)
+)
+RETURN p LIMIT 150`,
+    },
+    {
+      name: 'Full graph',
+      desc: 'All nodes and relationships',
+      badge: '≤ 500',
+      cypher: `MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 500`,
+    },
+  ];
+
+  // ── State ────────────────────────────────────────────────────────
+  let cy = null;
+  let connected = false;
+  let currentLayout = 'dagre';
+
+  const $ = id => document.getElementById(id);
+
+  // ── Toast ────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, type = 'error', ms = 4500) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type === 'info' ? ' info' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  // ── Connection ───────────────────────────────────────────────────
+  function connConfig() {
+    return {
+      host: $('neo4j-host').value.trim() || 'localhost',
+      port: $('neo4j-port').value.trim() || '7474',
+      user: $('neo4j-user').value.trim() || 'neo4j',
+      pass: $('neo4j-pass').value,
+    };
+  }
+
+  function setStatus(state, msg) {
+    const dot = $('status-dot');
+    dot.className = 'status-dot' + (state ? ' ' + state : '');
+    $('status-text').textContent = msg;
+  }
+
+  async function runCypher(cypher, params = {}) {
+    const { host, port, user, pass } = connConfig();
+    const resp = await fetch(`http://${host}:${port}/db/neo4j/tx/commit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(`${user}:${pass}`),
+      },
+      body: JSON.stringify({
+        statements: [{ statement: cypher, parameters: params, resultDataContents: ['graph'] }],
+      }),
+    });
+    if (!resp.ok) {
+      const txt = await resp.text().catch(() => '');
+      throw new Error(`HTTP ${resp.status}${txt ? ': ' + txt.slice(0, 120) : ''}`);
+    }
+    const data = await resp.json();
+    if (data.errors && data.errors.length) throw new Error(data.errors[0].message);
+    return data;
+  }
+
+  async function connect() {
+    const btn = $('btn-connect');
+    btn.disabled = true; btn.textContent = 'Connecting…';
+    setStatus('', 'Connecting…');
+    try {
+      await runCypher('RETURN 1');
+      connected = true;
+      setStatus('ok', 'Connected');
+      btn.textContent = 'Reconnect';
+      document.querySelectorAll('.query-item').forEach(el => el.classList.remove('disabled'));
+      showToast('Connected to Neo4j', 'info', 2000);
+    } catch (e) {
+      connected = false;
+      setStatus('err', 'Failed');
+      showToast('Connection failed: ' + e.message);
+      btn.textContent = 'Connect';
+    }
+    btn.disabled = false;
+  }
+
+  // ── Query list ───────────────────────────────────────────────────
+  function buildQueryList() {
+    const list = $('query-list');
+    QUERIES.forEach((q, i) => {
+      const el = document.createElement('div');
+      el.className = 'query-item disabled';
+      el.innerHTML = `<div class="q-name">${q.name}</div><div class="q-desc">${q.desc}</div><span class="q-badge">${q.badge}</span>`;
+      el.addEventListener('click', () => { if (connected) runQuery(i); });
+      list.appendChild(el);
+    });
+  }
+
+  async function runQuery(idx) {
+    document.querySelectorAll('.query-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+    const q = QUERIES[idx];
+    showLoading(`Running: ${q.name}…`);
+    try {
+      const data = await runCypher(q.cypher);
+      const elements = parseResponse(data);
+      if (!elements.nodes.length) {
+        showToast('Query returned no nodes — try a different query or check your data', 'info');
+      } else {
+        renderGraph(elements);
+        showToast(`Loaded ${elements.nodes.length} nodes, ${elements.edges.length} edges`, 'info', 2500);
+      }
+    } catch (e) {
+      showToast('Query error: ' + e.message);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  // ── Parse Neo4j HTTP response ────────────────────────────────────
+  function nodeLabel(n) {
+    const p = n.properties, L = n.labels || [];
+    if (L.includes('CVE'))      return p.cve_id || n.id;
+    if (L.includes('Package'))  return `${p.name || ''}  ${p.installed_version || '?'}`;
+    if (L.includes('Service'))  return p.name || p.route || n.id;
+    if (L.includes('Function')) {
+      const qn = p.qualified_name || '';
+      return qn.includes('.') ? qn.split('.').slice(-2).join('.') : (qn || n.id);
+    }
+    return L[0] || n.id;
+  }
+
+  function nodeType(n) {
+    const L = n.labels || [];
+    if (L.includes('Service'))  return 'Service';
+    if (L.includes('CVE'))      return 'CVE';
+    if (L.includes('Function')) return 'Function';
+    if (L.includes('Package'))  return 'Package';
+    return L[0] || 'Unknown';
+  }
+
+  function cveSeverity(props) {
+    const s = (props.severity || '').toUpperCase();
+    const score = parseFloat(props.cvss_score || 0);
+    if (s === 'CRITICAL' || score >= 9)  return 'CRITICAL';
+    if (s === 'HIGH'     || score >= 7)  return 'HIGH';
+    if (s === 'MEDIUM'   || score >= 4)  return 'MEDIUM';
+    if (s === 'LOW'      || score > 0)   return 'LOW';
+    return s || 'UNKNOWN';
+  }
+
+  function parseResponse(data) {
+    const nodesMap = new Map();
+    const edgesArr = [];
+    for (const result of (data.results || [])) {
+      for (const row of (result.data || [])) {
+        const g = row.graph || {};
+        for (const n of (g.nodes || [])) {
+          if (nodesMap.has(n.id)) continue;
+          const nt = nodeType(n);
+          const sev = nt === 'CVE' ? cveSeverity(n.properties) : '';
+          nodesMap.set(n.id, {
+            data: {
+              id: n.id,
+              label: nodeLabel(n),
+              nodeType: nt,
+              labels: n.labels,
+              props: n.properties,
+              severity: sev,
+              cvssScore: parseFloat(n.properties.cvss_score || 0),
+            },
+          });
+        }
+        for (const r of (g.relationships || [])) {
+          edgesArr.push({
+            data: {
+              id: 'r' + r.id,
+              source: r.startNode,
+              target: r.endNode,
+              type: r.type,
+            },
+          });
+        }
+      }
+    }
+    return { nodes: [...nodesMap.values()], edges: edgesArr };
+  }
+
+  // ── Cytoscape styles ─────────────────────────────────────────────
+  const CY_STYLE = [
+    { selector: 'node', style: {
+      'label': 'data(label)',
+      'font-size': 10, 'font-family': 'Inter, system-ui, sans-serif',
+      'text-valign': 'bottom', 'text-halign': 'center', 'text-margin-y': 4,
+      'color': '#94A3B8',
+      'text-outline-color': '#0F172A', 'text-outline-width': 2,
+      'min-zoomed-font-size': 8,
+    }},
+    // Service
+    { selector: 'node[nodeType = "Service"]', style: {
+      'background-color': '#2563EB', 'border-color': '#1D4ED8', 'border-width': 2,
+      'shape': 'hexagon', 'width': 44, 'height': 44,
+      'color': '#BFDBFE', 'font-size': 11, 'font-weight': 'bold',
+      'shadow-blur': 14, 'shadow-color': 'rgba(59,130,246,0.55)', 'shadow-opacity': 0.9,
+    }},
+    // Package
+    { selector: 'node[nodeType = "Package"]', style: {
+      'background-color': '#6D28D9', 'border-color': '#5B21B6', 'border-width': 2,
+      'shape': 'round-rectangle', 'width': 52, 'height': 26,
+      'color': '#DDD6FE', 'font-size': 10,
+    }},
+    // Function
+    { selector: 'node[nodeType = "Function"]', style: {
+      'background-color': '#1E3A5F', 'border-color': '#2563EB', 'border-width': 1,
+      'shape': 'ellipse', 'width': 26, 'height': 26,
+      'color': '#64748B', 'font-size': 9,
+    }},
+    // CVE base
+    { selector: 'node[nodeType = "CVE"]', style: {
+      'background-color': '#EF4444', 'border-color': '#991B1B', 'border-width': 2,
+      'shape': 'diamond', 'width': 42, 'height': 42,
+      'color': '#FCA5A5', 'font-size': 10, 'font-weight': 'bold',
+      'shadow-blur': 14, 'shadow-color': 'rgba(239,68,68,0.6)', 'shadow-opacity': 0.9,
+    }},
+    // CVE severity overrides
+    { selector: 'node[nodeType = "CVE"][severity = "CRITICAL"]', style: {
+      'background-color': '#7F1D1D', 'border-color': '#450A0A', 'border-width': 3,
+      'width': 52, 'height': 52,
+      'shadow-color': 'rgba(239,68,68,0.8)',
+    }},
+    { selector: 'node[nodeType = "CVE"][severity = "MEDIUM"]', style: {
+      'background-color': '#D97706', 'border-color': '#92400E',
+      'color': '#FDE68A', 'shadow-color': 'rgba(245,158,11,0.55)',
+    }},
+    { selector: 'node[nodeType = "CVE"][severity = "LOW"]', style: {
+      'background-color': '#059669', 'border-color': '#065F46',
+      'color': '#A7F3D0', 'shadow-color': 'rgba(16,185,129,0.45)',
+    }},
+    { selector: 'node[nodeType = "CVE"][severity = "UNKNOWN"]', style: {
+      'background-color': '#475569', 'border-color': '#334155',
+      'color': '#CBD5E0', 'shadow-blur': 0,
+    }},
+    // Edges
+    { selector: 'edge', style: {
+      'width': 1.2, 'curve-style': 'bezier',
+      'line-color': '#334155', 'target-arrow-color': '#334155',
+      'target-arrow-shape': 'triangle', 'arrow-scale': 0.8,
+      'opacity': 0.7,
+    }},
+    { selector: 'edge[type = "EXPOSES"]', style: {
+      'line-color': '#3B82F6', 'target-arrow-color': '#3B82F6',
+      'width': 2, 'opacity': 0.85,
+    }},
+    { selector: 'edge[type = "VULNERABLE_IN"]', style: {
+      'line-color': '#EF4444', 'target-arrow-color': '#EF4444',
+      'line-style': 'dashed', 'line-dash-pattern': [8, 4],
+      'width': 2, 'opacity': 0.85,
+    }},
+    { selector: 'edge[type = "AFFECTED_BY"]', style: {
+      'line-color': '#F59E0B', 'target-arrow-color': '#F59E0B',
+      'width': 1.5, 'opacity': 0.75,
+    }},
+    { selector: 'edge[type = "CALLS"]', style: {
+      'line-color': '#475569', 'target-arrow-color': '#475569',
+      'width': 1, 'opacity': 0.5,
+    }},
+    { selector: 'edge[type = "DEPENDS_ON"]', style: {
+      'line-color': '#8B5CF6', 'target-arrow-color': '#8B5CF6',
+      'width': 1.2, 'opacity': 0.6,
+    }},
+    // Interaction states
+    { selector: 'node:selected', style: {
+      'border-width': 3, 'border-color': '#F59E0B',
+      'shadow-blur': 18, 'shadow-color': 'rgba(245,158,11,0.7)', 'shadow-opacity': 1,
+    }},
+    { selector: 'node.faded', style: { 'opacity': 0.15 }},
+    { selector: 'edge.faded', style: { 'opacity': 0.07 }},
+    { selector: 'node.highlighted', style: {
+      'border-width': 3, 'border-color': '#F59E0B',
+    }},
+    { selector: 'edge.show-label', style: {
+      'label': 'data(type)', 'font-size': 8, 'color': '#475569',
+      'text-rotation': 'autorotate',
+      'text-outline-color': '#0F172A', 'text-outline-width': 1,
+    }},
+  ];
+
+  // ── Render ───────────────────────────────────────────────────────
+  function renderGraph({ nodes, edges }) {
+    $('empty-state').classList.add('hidden');
+    if (cy) { cy.destroy(); cy = null; }
+
+    cy = cytoscape({
+      container: $('cy'),
+      elements: { nodes, edges },
+      style: CY_STYLE,
+      minZoom: 0.03, maxZoom: 5,
+    });
+
+    applyLayout(currentLayout, false);
+    updateStats();
+
+    cy.on('tap', 'node', e => {
+      const n = e.target;
+      highlightNeighbors(n);
+      showDetail(n);
+      $('stat-sel').textContent = n.data('label') || n.id();
+    });
+    cy.on('tap', e => {
+      if (e.target === cy) { resetHighlight(); closeDetail(); $('stat-sel').textContent = '—'; }
+    });
+    cy.on('select', 'node', () => updateStats());
+    cy.on('unselect', 'node', () => updateStats());
+  }
+
+  // ── Layouts ──────────────────────────────────────────────────────
+  function applyLayout(name, doFit = true) {
+    if (!cy) return;
+    currentLayout = name;
+    document.querySelectorAll('[data-layout]').forEach(b =>
+      b.classList.toggle('active', b.dataset.layout === name)
+    );
+    showLoading('Applying layout…');
+
+    const cfgs = {
+      dagre: {
+        name: 'dagre', rankDir: 'TB',
+        rankSep: 100, nodeSep: 55, edgeSep: 15,
+        padding: 50, animate: true, animationDuration: 500,
+      },
+      concentric: {
+        name: 'concentric',
+        concentric: n => {
+          const t = n.data('nodeType');
+          if (t === 'Service')  return 5;
+          if (t === 'Package')  return 4;
+          if (t === 'Function') return 3;
+          return 1; // CVE at center
+        },
+        levelWidth: () => 2, minNodeSpacing: 40,
+        padding: 40, animate: true, animationDuration: 500,
+      },
+      cose: {
+        name: 'cose', animate: true, animationDuration: 600,
+        idealEdgeLength: 90, nodeRepulsion: 450000,
+        componentSpacing: 80, padding: 40, randomize: false,
+      },
+      breadthfirst: {
+        name: 'breadthfirst', directed: true,
+        spacingFactor: 1.5, padding: 40, animate: true, animationDuration: 500,
+      },
+    };
+
+    const layout = cy.layout(cfgs[name] || cfgs.dagre);
+    layout.on('layoutstop', () => {
+      hideLoading();
+      if (doFit) cy.fit(40);
+      drawMinimap();
+    });
+    layout.run();
+  }
+
+  // ── Highlight ────────────────────────────────────────────────────
+  function highlightNeighbors(node) {
+    cy.elements().addClass('faded');
+    node.closedNeighborhood().removeClass('faded').addClass('highlighted');
+  }
+
+  function resetHighlight() {
+    if (!cy) return;
+    cy.elements().removeClass('faded highlighted');
+  }
+
+  function highlightBlockPaths() {
+    if (!cy) return;
+    const high = cy.nodes('[nodeType = "CVE"]').filter(n => {
+      const s = n.data('severity');
+      return s === 'CRITICAL' || s === 'HIGH';
+    });
+    if (!high.length) { showToast('No HIGH/CRITICAL CVEs in current graph', 'info'); return; }
+    cy.elements().addClass('faded');
+    high.each(cve => {
+      cve.removeClass('faded').addClass('highlighted');
+      cve.predecessors().removeClass('faded');
+    });
+  }
+
+  // ── Detail panel ─────────────────────────────────────────────────
+  function showDetail(node) {
+    const d = node.data();
+    const p = d.props || {};
+    const panel = $('detail-panel');
+    panel.classList.remove('hidden');
+
+    const typeStyle = {
+      Service:  'background:#1E3A8A;color:#BFDBFE',
+      CVE:      'background:#7F1D1D;color:#FCA5A5',
+      Function: 'background:#1E293B;color:#94A3B8',
+      Package:  'background:#4C1D95;color:#DDD6FE',
+    }[d.nodeType] || 'background:var(--border);color:var(--text)';
+
+    $('detail-title').textContent = d.label || d.id;
+
+    let html = `<span class="type-badge" style="${typeStyle}">${d.nodeType}</span>`;
+
+    if (d.nodeType === 'CVE') {
+      const sev = d.severity || 'UNKNOWN';
+      html += prop('CVE ID', p.cve_id || d.id)
+            + `<div class="prop-row"><div class="prop-key">Severity</div><div class="prop-val"><span class="sev-pill sev-${sev}">${sev}</span></div></div>`
+            + prop('CVSS Score', p.cvss_score ?? '—')
+            + prop('CWE IDs', (p.cwe_ids || []).join(', ') || '—');
+    } else if (d.nodeType === 'Service') {
+      html += prop('Route', p.route || '—')
+            + prop('Method', p.method || 'GET')
+            + prop('Handler', p.handler || '—');
+    } else if (d.nodeType === 'Function') {
+      html += prop('Qualified name', p.qualified_name || '—')
+            + prop('File', p.file || '—')
+            + prop('Lines', `${p.line_start || '?'}–${p.line_end || '?'}`);
+    } else if (d.nodeType === 'Package') {
+      html += prop('Name', p.name || '—')
+            + prop('Version', p.installed_version || '—');
+    }
+
+    // Neighbor summary
+    const nbrs = node.neighborhood('node');
+    if (nbrs.length) {
+      const byType = {};
+      nbrs.forEach(n => { const t = n.data('nodeType'); byType[t] = (byType[t] || 0) + 1; });
+      html += `<div class="nbr-list"><div class="prop-key">Connected to</div><div style="margin-top:6px">`;
+      for (const [t, c] of Object.entries(byType)) {
+        html += `<span class="nbr-chip">${c} ${t}${c > 1 ? 's' : ''}</span>`;
+      }
+      html += `</div></div>`;
+    }
+
+    $('detail-body').innerHTML = html;
+  }
+
+  function prop(key, val) {
+    return `<div class="prop-row"><div class="prop-key">${key}</div><div class="prop-val">${val}</div></div>`;
+  }
+
+  function closeDetail() { $('detail-panel').classList.add('hidden'); }
+
+  // ── Stats / loading ───────────────────────────────────────────────
+  function updateStats() {
+    if (!cy) return;
+    $('stat-nodes').textContent = cy.nodes().length;
+    $('stat-edges').textContent = cy.edges().length;
+  }
+  function showLoading(msg) { $('loading-text').textContent = msg || 'Loading…'; $('loading').classList.remove('hidden'); }
+  function hideLoading()     { $('loading').classList.add('hidden'); }
+
+  // ── Mini-map ──────────────────────────────────────────────────────
+  function drawMinimap() {
+    if (!cy || !$('chk-minimap').checked) return;
+    const canvas = $('minimap');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(15,23,42,0.7)';
+    ctx.fillRect(0, 0, W, H);
+
+    const ext = cy.extent();
+    const scaleX = W / (ext.w || 1);
+    const scaleY = H / (ext.h || 1);
+    const scale = Math.min(scaleX, scaleY) * 0.85;
+    const offX = (W - ext.w * scale) / 2 - ext.x1 * scale;
+    const offY = (H - ext.h * scale) / 2 - ext.y1 * scale;
+
+    const typeColor = { Service:'#3B82F6', CVE:'#EF4444', Package:'#8B5CF6', Function:'#334155' };
+    cy.nodes().forEach(n => {
+      const pos = n.position();
+      const x = pos.x * scale + offX;
+      const y = pos.y * scale + offY;
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = typeColor[n.data('nodeType')] || '#475569';
+      ctx.fill();
+    });
+  }
+
+  // ── Event bindings ────────────────────────────────────────────────
+  $('btn-connect').addEventListener('click', connect);
+  $('neo4j-pass').addEventListener('keydown', e => { if (e.key === 'Enter') connect(); });
+
+  $('btn-fit').addEventListener('click', () => cy && cy.fit(40));
+  $('btn-zoom-in').addEventListener('click', () => {
+    if (cy) cy.zoom({ level: cy.zoom() * 1.3, renderedPosition: { x: cy.width()/2, y: cy.height()/2 } });
+  });
+  $('btn-zoom-out').addEventListener('click', () => {
+    if (cy) cy.zoom({ level: cy.zoom() / 1.3, renderedPosition: { x: cy.width()/2, y: cy.height()/2 } });
+  });
+  $('btn-block-paths').addEventListener('click', highlightBlockPaths);
+  $('btn-show-all').addEventListener('click', resetHighlight);
+  $('detail-close').addEventListener('click', () => { closeDetail(); resetHighlight(); });
+
+  $('chk-labels').addEventListener('change', function() {
+    if (!cy) return;
+    cy.nodes().style('label', this.checked ? 'data(label)' : '');
+  });
+  $('chk-edge-labels').addEventListener('change', function() {
+    if (!cy) return;
+    cy.edges().toggleClass('show-label', this.checked);
+  });
+  $('chk-minimap').addEventListener('change', function() {
+    const c = $('minimap');
+    c.style.display = this.checked ? 'block' : 'none';
+    if (this.checked) drawMinimap();
+  });
+
+  document.querySelectorAll('[data-layout]').forEach(btn =>
+    btn.addEventListener('click', () => applyLayout(btn.dataset.layout))
+  );
+
+  // ── Init ──────────────────────────────────────────────────────────
+  buildQueryList();
+})();
+</script>
+</body>
+</html>
