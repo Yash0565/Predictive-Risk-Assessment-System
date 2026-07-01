@@ -1,9 +1,0 @@
-rules:
-  - id: detect-session_management-python
-    languages: [python]
-    message: Detect vulnerable pattern
-    severity: ERROR
-    pattern: >
-      def \w+\_endpoint\(\)
-        session[\'key\'] = value$
-Note: The provided pattern is a placeholder. In practice, you would need to identify and define specific vulnerable patterns for the 'session_management' family of vulnerabilities in Flask applications.

@@ -1,7 +1,0 @@
-rules:
-  - id: symbol-deserialization-python
-    languages: [python]
-    message: Patch-aware sink for deserialization
-    severity: ERROR
-    pattern-either:
-      - pattern: yaml.load(...)

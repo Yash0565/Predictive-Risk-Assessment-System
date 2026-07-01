@@ -1,7 +1,0 @@
-rules:
-  - id: detect-buffer_overflow-python
-    languages: [python]
-    message: Detects potential buffer overflow vulnerabilities.
-    severity: ERROR
-    patterns:
-      - pattern: $FUNC(..., 'img', ...)

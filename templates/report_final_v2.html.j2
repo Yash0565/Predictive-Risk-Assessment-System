@@ -25,6 +25,7 @@
   --primary:     #1f4e79;
   --primary-2:   #2e75b6;
   --accent:      #6f59d9;
+  --accent-bg:   rgba(111,89,217,0.1);
 
   --danger:      #c5304a;
   --danger-bg:   rgba(197,48,74,0.08);
@@ -63,6 +64,7 @@ html[data-theme="dark"] {
   --primary:     #4fc3f7;
   --primary-2:   #66d4ff;
   --accent:      #a78bfa;
+  --accent-bg:   rgba(167,139,250,0.14);
 
   --danger:      #ff6b85;
   --danger-bg:   rgba(255,107,133,0.12);
@@ -92,8 +94,8 @@ a { color: var(--primary-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
 code, pre { font-family: var(--font-mono); }
 
+.sticky-nav { position: sticky; top: 0; z-index: 200; }
 .site-header {
-  position: sticky; top: 0; z-index: 200;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -143,7 +145,6 @@ code, pre { font-family: var(--font-mono); }
 .icon-btn .ic { margin-right: 6px; }
 
 .tab-bar {
-  position: sticky; top: 64px; z-index: 190;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -692,18 +693,48 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
 
 .mitigation-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
 .mitigation-list li {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
-  display: flex; gap: 12px;
+  padding: 14px 16px 14px 18px;
+  display: flex; gap: 14px; align-items: flex-start;
   font-size: 14px;
   color: var(--text-2);
   line-height: 1.55;
   box-shadow: var(--shadow-sm);
+  transition: border-color .15s ease, transform .15s ease;
 }
-.mitigation-list strong { color: var(--text); }
-.mit-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.mitigation-list li:hover { transform: translateX(2px); }
+.mit-info    { border-left-color: var(--info); }
+.mit-success { border-left-color: var(--success); }
+.mit-warning { border-left-color: var(--warning); }
+.mit-danger  { border-left-color: var(--danger); }
+.mit-accent  { border-left-color: var(--accent); }
+
+.mit-tag {
+  flex-shrink: 0;
+  min-width: 62px;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin-top: 1px;
+}
+.mit-tag-info    { background: var(--info-bg);    color: var(--info); }
+.mit-tag-success { background: var(--success-bg); color: var(--success); }
+.mit-tag-warning { background: var(--warning-bg); color: var(--warning); }
+.mit-tag-danger  { background: var(--danger-bg);  color: var(--danger); }
+.mit-tag-accent  { background: var(--accent-bg);  color: var(--accent); }
+
+.mit-body { display: flex; flex-direction: column; gap: 3px; }
+.mit-body strong { color: var(--text); font-size: 14px; font-weight: 600; }
+.mit-body span { color: var(--text-2); }
 
 .patch-select {
   width: 100%; max-width: 480px;
@@ -830,8 +861,11 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
 }
 
 .live-graph-canvas {
-  width: 100%; height: 480px;
-  background: var(--surface-2);
+  width: 100%; height: 600px;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(56,189,248,0.10), transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(167,139,250,0.10), transparent 45%),
+    #0B1120;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   position: relative;
@@ -858,13 +892,10 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
   font-family: var(--font-mono);
 }
 .live-graph-legend .swatch {
-  width: 12px; height: 12px; border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.1);
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 0 5px rgba(0,0,0,0.25);
 }
-.live-graph-legend .swatch.pkg { background: #1f7bcc; }
-.live-graph-legend .swatch.cve { background: #c5304a; transform: rotate(45deg); border-radius: 2px; }
-.live-graph-legend .swatch.svc { background: #6f59d9; clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
-.live-graph-legend .swatch.fn  { background: #6a7e9c; border-radius: 50%; }
 .live-graph-meta {
   display: flex; flex-wrap: wrap; gap: 18px;
   margin-top: 10px;
@@ -1040,7 +1071,6 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
 @media (max-width: 720px) {
   .tab-inner { display: none; }
   .tab-select { display: block; }
-  .tab-bar { top: 56px; }
   .header-inner { padding: 12px 16px; gap: 12px; }
   main { padding: 20px 16px 48px; }
 }
@@ -1059,6 +1089,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
 {% set top = ri.top_cve %}
 {% set blast = ri.blast or {} %}
 
+<div class="sticky-nav">
 <header class="site-header">
   <div class="header-inner">
     <div class="brand">
@@ -1101,6 +1132,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     <option value="audit">Audit &amp; Evidence</option>
   </select>
 </nav>
+</div>
 
 <main>
 
@@ -1412,11 +1444,17 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
 
   {% if mitigations %}
   <div class="card">
-    <h3 class="card-title">Mitigation Suggestions</h3>
+    <h3 class="card-title">Remediation Playbook</h3>
     <p class="card-sub">Defense-in-depth steps to apply alongside the upgrade.</p>
     <ul class="mitigation-list">
       {% for m in mitigations %}
-      <li><span class="mit-icon">{{ m.icon }}</span><div><strong>{{ m.title }}.</strong> {{ m.body }}</div></li>
+      <li class="mit-{{ m.tone|default('info') }}">
+        <span class="mit-tag mit-tag-{{ m.tone|default('info') }}">{{ m.tag|default('STEP') }}</span>
+        <div class="mit-body">
+          <strong>{{ m.title }}</strong>
+          <span>{{ m.body }}</span>
+        </div>
+      </li>
       {% endfor %}
     </ul>
   </div>
@@ -1554,10 +1592,12 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     </div>
 
     <div class="live-graph-legend" aria-label="Graph legend">
-      <span class="legend-item"><span class="swatch pkg"></span> Package</span>
-      <span class="legend-item"><span class="swatch cve"></span> CVE</span>
-      <span class="legend-item"><span class="swatch svc"></span> Service</span>
-      <span class="legend-item"><span class="swatch fn"></span> Function</span>
+      <span class="legend-item"><span class="swatch" style="background:#38BDF8"></span> Service</span>
+      <span class="legend-item"><span class="swatch" style="background:#A78BFA"></span> Function</span>
+      <span class="legend-item"><span class="swatch" style="background:#2DD4BF"></span> Package</span>
+      <span class="legend-item"><span class="swatch" style="background:#F43F5E"></span> CVE — BLOCK</span>
+      <span class="legend-item"><span class="swatch" style="background:#FBBF24"></span> CVE — REVIEW</span>
+      <span class="legend-item"><span class="swatch" style="background:#34D399"></span> CVE — PROCEED</span>
     </div>
     <div class="live-graph-meta">
       <span><strong>Source:</strong> {{ gs.label or 'Derived' }}</span>
@@ -1879,6 +1919,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     return root.getAttribute("data-theme") === "dark" ? "#e6edf8" : "#142036";
   }
 
+
   function buildNetwork() {
     if (graphInitialized) return;
     graphInitialized = true;
@@ -1895,41 +1936,83 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       return;
     }
     if (graphEmpty) graphEmpty.style.display = "none";
+    // Deterministic left-to-right layered layout (Service -> Function -> CVE ->
+    // Package). No physics simulation, so it renders instantly and never drifts
+    // into a blob. Nodes are clean circles, coloured by type / CVE verdict.
+    var LEVEL = { service: 0, entry: 0, function: 1, cve: 2, package: 3 };
+    // Polished palette: soft, high-contrast fills with a darker ring + subtle glow.
+    var PALETTE = {
+      service:  { bg: "#38BDF8", ring: "#0EA5E9", glow: "rgba(56,189,248,0.45)" },  // sky
+      entry:    { bg: "#38BDF8", ring: "#0EA5E9", glow: "rgba(56,189,248,0.45)" },
+      function: { bg: "#A78BFA", ring: "#8B5CF6", glow: "rgba(167,139,250,0.45)" },  // violet
+      package:  { bg: "#2DD4BF", ring: "#14B8A6", glow: "rgba(45,212,191,0.45)" },   // teal
+      cve:      { bg: "#FB7185", ring: "#F43F5E", glow: "rgba(251,113,133,0.45)" },  // rose (default)
+    };
+    // CVE verdict overrides the CVE colour so BLOCK/REVIEW/PROCEED read at a glance.
+    var VERDICT = {
+      BLOCK:   { bg: "#F43F5E", ring: "#BE123C", glow: "rgba(244,63,94,0.55)" },
+      REVIEW:  { bg: "#FBBF24", ring: "#D97706", glow: "rgba(251,191,36,0.55)" },
+      PROCEED: { bg: "#34D399", ring: "#059669", glow: "rgba(52,211,153,0.5)" },
+    };
     allNodes = new vis.DataSet(nodesIn.map(function (n) {
+      var pal = PALETTE[n.group] || PALETTE.cve;
+      if (n.group === "cve") {
+        var rec = (n.recommendation || "").toUpperCase();
+        if (VERDICT[rec]) pal = VERDICT[rec];
+      }
+      var isCve = n.group === "cve";
       return Object.assign({}, n, {
-        font: { color: fontColor(), size: 14, multi: true, face: "Inter, system-ui" },
+        level: LEVEL[n.group] != null ? LEVEL[n.group] : 1,
+        shape: "circle",
+        color: {
+          background: pal.bg,
+          border: pal.ring,
+          highlight: { background: pal.bg, border: "#F8FAFC" },
+          hover: { background: pal.bg, border: "#F8FAFC" },
+        },
+        font: {
+          color: "#0B1220",
+          size: isCve ? 13 : 12,
+          bold: isCve ? { color: "#0B1220" } : undefined,
+          multi: true,
+          face: "Inter, system-ui",
+        },
         borderWidth: 2,
+        borderWidthSelected: 4,
+        size: isCve ? 30 : 24,
+        margin: 10,
+        widthConstraint: { minimum: 46, maximum: 130 },
+        shadow: { enabled: true, color: pal.glow, size: 14, x: 0, y: 0 },
         _meta: n,
       });
     }));
     allEdges = new vis.DataSet(edgesIn.map(function (e) {
       return Object.assign({}, e, {
-        font: {
-          size: 9, align: "middle",
-          color: root.getAttribute("data-theme") === "dark" ? "#9fb1cc" : "#6a7e9c",
-          strokeWidth: 0,
-        },
+        width: 1.5,
+        font: { size: 10, align: "top", color: "#94A3B8", strokeWidth: 0 },
+        smooth: { type: "cubicBezier", forceDirection: "horizontal", roundness: 0.55 },
+        color: Object.assign({ color: "#64748B", highlight: "#E2E8F0", opacity: 0.75 }, e.color || {}),
       });
     }));
     network = new vis.Network(graphContainer, { nodes: allNodes, edges: allEdges }, {
-      physics: {
-        enabled: true,
-        barnesHut: {
-          gravitationalConstant: -10000,
-          springLength: 140,
-          springConstant: 0.04,
-          damping: 0.15,
+      physics: { enabled: false },
+      layout: {
+        hierarchical: {
+          enabled: true,
+          direction: "LR",          // left-to-right columns
+          sortMethod: "directed",
+          levelSeparation: 220,     // horizontal gap between columns
+          nodeSpacing: 120,         // vertical gap between nodes in a column
+          treeSpacing: 150,
+          blockShifting: true,
+          edgeMinimization: true,
         },
-        stabilization: { iterations: 220, fit: true },
       },
-      interaction: { hover: true, tooltipDelay: 120, navigationButtons: false, keyboard: true },
-      layout: { improvedLayout: true },
-      nodes: { borderWidth: 2, shadow: { enabled: true, size: 4, x: 0, y: 1 } },
-      edges: { smooth: { type: "continuous" }, selectionWidth: 1.5 },
+      interaction: { hover: true, tooltipDelay: 100, navigationButtons: false, keyboard: true, dragNodes: true },
+      nodes: { borderWidth: 2 },
+      edges: { selectionWidth: 2, arrows: { to: { scaleFactor: 0.65, type: "arrow" } } },
     });
-    network.once("stabilizationIterationsDone", function () {
-      network.setOptions({ physics: { enabled: false } });
-    });
+    network.once("afterDrawing", function () { network.fit({ animation: false }); });
     network.on("click", function (params) {
       if (params.nodes && params.nodes.length) {
         highlightNeighborhood(params.nodes[0]);
@@ -2010,10 +2093,14 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
   });
 
   function refreshGraphFonts() {
+    // Labels sit inside light-filled circles, so they stay dark in both themes.
     if (!allNodes) return;
-    var color = fontColor();
     allNodes.forEach(function (n) {
-      allNodes.update({ id: n.id, font: { color: color, size: 14, multi: true, face: "Inter, system-ui" } });
+      var isCve = (n._meta && n._meta.group) === "cve";
+      allNodes.update({
+        id: n.id,
+        font: { color: "#0B1220", size: isCve ? 13 : 12, multi: true, face: "Inter, system-ui" },
+      });
     });
   }
 

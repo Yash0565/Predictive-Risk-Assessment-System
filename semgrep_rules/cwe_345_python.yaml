@@ -1,6 +1,0 @@
-rules:
-  - id: detect-cwe_345-python
-    languages: [python]
-    message: Detect vulnerable pattern
-    severity: ERROR
-    pattern: def $FUNC\(\)
