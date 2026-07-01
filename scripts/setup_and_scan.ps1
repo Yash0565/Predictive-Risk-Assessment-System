@@ -76,7 +76,7 @@ Write-Host "║   PRAS — Predictive Risk Assessment System           ║" -For
 Write-Host "║   Full Setup + Scan                                  ║" -ForegroundColor Magenta
 Write-Host "╚══════════════════════════════════════════════════════╝" -ForegroundColor Magenta
 Write-Host "  Target : $RepoUrl"
-Write-Host "  Neo4j  : $(if ($WithNeo4j) { 'enabled' } else { 'disabled (pass -WithNeo4j to enable)' })"
+Write-Host "  Graph  : $(if ($WithNeo4j) { 'Neo4j (live)' } else { 'JSON snapshot (no Docker needed)' })"
 Write-Host "  LLM    : $(if ($WithLLM)   { 'enabled' } else { 'disabled (pass -WithLLM to enable)' })"
 
 # ── Phase 1: Prerequisite checks ───────────────────────────────────────────────
@@ -297,11 +297,13 @@ $pipelineArgs = @(
     "--output-dir", $OutputDir
 )
 
-# --present sets --no-graph internally, so skip it when Neo4j graph is requested
-if (-not $WithNeo4j) { $pipelineArgs += "--present" }
-if (-not $WithLLM)   { $pipelineArgs += "--skip-llm" }
-if (-not $WithNeo4j) { $pipelineArgs += "--offline" }
-if ($WithNeo4j)      { $pipelineArgs += "--neo4j" }
+# Graph phases always run: they use the JSON snapshot by default and only talk
+# to Neo4j when -WithNeo4j is passed. (Note: --present implies --no-graph, so we
+# never add it here — we use --quiet for compact output instead.)
+$pipelineArgs += "--quiet"
+$pipelineArgs += "--offline"
+if (-not $WithLLM) { $pipelineArgs += "--skip-llm" }
+if ($WithNeo4j)    { $pipelineArgs += "--neo4j" }
 
 Write-Host "  Command: python $($pipelineArgs -join ' ')"
 Write-Host ""
