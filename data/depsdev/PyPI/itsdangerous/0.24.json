@@ -1,0 +1,17 @@
+{
+  "_python_requires": null,
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "itsdangerous",
+        "system": "PYPI",
+        "version": "0.24.0"
+      }
+    }
+  ]
+}

@@ -1,7 +1,0 @@
-rules:
-  - id: symbol-cwe_665-python
-    languages: [python]
-    message: Patch-aware sink for cwe_665
-    severity: ERROR
-    pattern-either:
-      - pattern: Image.open(...)

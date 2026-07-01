@@ -36,16 +36,21 @@ def test_sample_cve_status_ok_or_partial(cve_id: str, package: str) -> None:
     assert isinstance(result["files_changed"], list)
 
 
-def test_cve_2023_32681_rebuild_auth() -> None:
+def test_cve_2023_32681_rebuild_proxies() -> None:
+    # The upstream fix (psf/requests 74ea7cf) hardens rebuild_proxies, which is
+    # the symbol that leaks Proxy-Authorization across redirects.
     result = fetch_patch("CVE-2023-32681", package="requests", force_refresh=False)
     names = {s["short_name"] for s in result["vulnerable_symbols"]}
-    assert "rebuild_auth" in names
+    assert "rebuild_proxies" in names
 
 
-def test_cve_2020_1747_yaml_load() -> None:
+def test_cve_2020_1747_constructor() -> None:
+    # PyYAML fix (0cedb2a) replaces the unsafe Constructor with a FullConstructor
+    # to stop yaml.load() from building arbitrary Python objects.
     result = fetch_patch("CVE-2020-1747", package="pyyaml", force_refresh=False)
     names = {s["short_name"] for s in result["vulnerable_symbols"]}
-    assert "load" in names
+    assert "Constructor" in names
+    assert "FullConstructor" in names
 
 
 def test_second_run_uses_cache_and_is_faster() -> None:
@@ -65,7 +70,8 @@ def test_second_run_uses_cache_and_is_faster() -> None:
 def test_get_vulnerable_symbols_from_cache() -> None:
     symbols = get_vulnerable_symbols("CVE-2020-26137")
     assert isinstance(symbols, list)
-    assert any(s.get("short_name") == "putrequest" for s in symbols)
+    # urllib3 CRLF-injection fix touches the connection path (connect / DummyConnection).
+    assert any(s.get("short_name") == "connect" for s in symbols)
 
 
 def test_fetch_patches_batch() -> None:

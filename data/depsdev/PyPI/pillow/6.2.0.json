@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "pillow",
+        "system": "PYPI",
+        "version": "6.2.0"
+      }
+    }
+  ]
+}

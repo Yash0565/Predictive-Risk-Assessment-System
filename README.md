@@ -1,10 +1,38 @@
 # Predictive Risk Assessment System
 
-Pre-upgrade risk analysis for Python projects: discover pinned dependencies, find CVEs (Trivy), map patches to changed symbols, check whether your code reaches those symbols, run Semgrep rules (registry + patch-aware sinks), simulate upgrades, score risk deterministically, and emit a tabbed HTML report.
+Pre-upgrade risk analysis for Python projects. It discovers pinned dependencies,
+finds CVEs with Trivy, maps each patch to the symbols it changed, checks whether
+your code actually reaches those symbols, runs Semgrep rules (official registry
+plus patch-aware sinks), simulates dependency upgrades, scores risk
+deterministically, and emits a tabbed HTML report.
 
-**Team docs:** [TEAM_GUIDE.md](TEAM_GUIDE.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [TODO.md](TODO.md)
+The verdict (BLOCK / REVIEW / PROCEED) always comes from the deterministic scorer
+in `src/scorer.py`. The optional LLM only helps generate scan rules; it never
+decides the outcome.
 
----
+## Why it is useful
+
+A raw Trivy scan of pinned dependencies typically reports dozens of CVEs, most of
+which your code never touches. This tool narrows that list to the CVEs whose
+vulnerable APIs your code actually calls, then explains the impact and simulates
+the upgrade so you can decide with evidence instead of guesswork.
+
+Typical run on the bundled sample app: ~80 CVEs in pins, a handful reach the code,
+one BLOCK verdict, and an HTML report you open in a browser.
+
+## Requirements
+
+| Component | Purpose | Required |
+| --- | --- | --- |
+| Python 3.11+ | Runtime | Yes |
+| `pip install -r requirements-core.txt` | Pipeline, scanners, HTML report | Yes |
+| [Trivy](https://github.com/aquasecurity/trivy) | Live CVE discovery (`trivy fs`) | For live scans |
+| [Semgrep](https://semgrep.dev/) | Static rule scanning (Phase 4) | For live scans |
+| `pip install -r requirements-graph.txt` | Neo4j graph phases | Optional |
+| [Ollama](https://ollama.com) | LLM rule generation (`ollama pull qwen2.5:3b`) | Optional |
+| Gemini API key | Alternative LLM (`GOOGLE_API_KEY` in `.env`) | Optional |
+
+`pip install -r requirements.txt` is equivalent to `requirements-core.txt`.
 
 ## Quick start
 
@@ -13,174 +41,124 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements-core.txt
 
-# Optional: graph phases + Neo4j extras
-pip install -r requirements-graph.txt
-
-# Install Trivy for live CVE scans
-# https://github.com/aquasecurity/trivy
-
-# Run the full pipeline on the bundled sample app
-python pipeline_a.py ^
-  --project-dir ./vulnerable-task-tracker ^
-  --output-dir ./output ^
+# Full pipeline on the bundled sample app
+python pipeline_a.py `
+  --project-dir ./vulnerable-task-tracker `
+  --output-dir ./output `
   --skip-llm --present --offline
 ```
 
-Open `output/risk_report.html` in a browser when the run finishes.
+Open `output/risk_report.html` when the run finishes.
 
-**Presentation mode** (`--present`) = colored Rich tables + compact output + skip graph phases (`--quiet --no-graph`).
+`--present` is presentation mode: colored compact tables, and it skips the graph
+phases (equivalent to `--quiet --no-graph`).
 
-### Team demo (5-minute script)
+## Scan any Python repository
 
-| Slot | Command | What to show |
-|------|---------|--------------|
-| **Instant** (~30 s) | `.\scripts\demo.ps1 -Quick` | Tabbed HTML report from fixtures (no Trivy/Semgrep run) |
-| **Live pipeline** (~10 min) | `.\scripts\demo.ps1` | Full 12-phase run on `vulnerable-task-tracker/`; Rich terminal + `output/risk_report.html` |
-| **With graph** | `.\scripts\demo.ps1 -WithGraph` | Same + Neo4j phases (requires `docker compose up -d`) |
-
-**Suggested talking points:** (1) Trivy finds 80+ CVEs in pins → noise. (2) Symbol reachability cuts to the few CVEs your code actually calls. (3) Deterministic BLOCK/REVIEW/PROCEED score — not LLM guesswork. (4) HTML report tabs: Executive → Technical → Patches → Upgrade → Graph.
-
-**Prerequisites for live demo:** Python venv, `pip install -r requirements-core.txt`, [Semgrep](https://semgrep.dev/) on PATH, [Trivy](https://github.com/aquasecurity/trivy) for live CVE scans.
-
----
-
-## Scan any Python repo
-
-Point `--project-dir` at **any** Python project. Paths are scoped to that repo — the tool no longer reuses this repo's root `enriched_trivy_output.json` or `services.yaml` when scanning elsewhere.
+Point `--project-dir` at any Python project. Paths are scoped to that repo, so the
+tool does not reuse this repo's files when scanning elsewhere.
 
 ```powershell
-# One-liner (artifacts → <your-repo>/.risk-scan/)
+# Convenience wrapper (artifacts go to <your-repo>/.risk-scan/)
 .\scripts\scan_repo.ps1 -RepoPath "D:\path\to\your-python-app"
 
-# Or manually
+# Or directly
 python pipeline_a.py `
   --project-dir "D:\path\to\your-python-app" `
   --skip-llm --present --offline
 ```
 
+The target repo should contain Python source and pinned dependencies in
+`requirements.txt`, `pyproject.toml`, or `Pipfile` (with `==` pins so the upgrade
+simulator can run). Optionally add a `services.yaml` to declare HTTP entry points
+for the graph; see `vulnerable-task-tracker/services.yaml` for the format.
+
 | Default | Location |
-|---------|----------|
+| --- | --- |
 | Artifacts | `<project-dir>/.risk-scan/` |
 | Trivy input | `<output-dir>/enriched_trivy_output.json` (live `trivy fs` when missing) |
 | Graph entry points | `<project-dir>/services.yaml` if present, else auto-discovered routes |
 
-**Your repo should have:** Python source, pinned deps (`requirements.txt`, `pyproject.toml`, or `Pipfile` with `==` pins for upgrade simulation), and Trivy + Semgrep installed on your machine.
-
-**Optional:** add `services.yaml` in the target repo for manual HTTP entry points (see `vulnerable-task-tracker/services.yaml`).
-
----
-
-## What to install
-
-| Component | Purpose |
-|-----------|---------|
-| **Python 3.10+** | Runtime |
-| **`pip install -r requirements-core.txt`** | Pipeline, agent, scanners, HTML report |
-| **`pip install -r requirements-graph.txt`** | Neo4j graph phases (optional) |
-| **[Trivy](https://github.com/aquasecurity/trivy)** | Live CVE discovery (`trivy fs`) |
-| **[Semgrep](https://semgrep.dev/)** | Static rule scanning in Phase 4 |
-| **[Ollama](https://ollama.com)** | Optional LLM rule generation (`ollama pull qwen2.5:3b`) |
-| **Gemini API key** | Optional; set `GOOGLE_API_KEY` in `.env` for `--llm gemini` |
-
-`pip install -r requirements.txt` is equivalent to `requirements-core.txt`.
-
----
-
-## Repository layout
-
-```
-pipeline_a.py              Main 12-phase pipeline entry point
-src/                       Core modules (agent, patch fetcher, symbol scanner, scorer, …)
-vulnerable-task-tracker/   Sample Flask app with real CVE reachability (use as --project-dir)
-                           Includes services.yaml for graph entry points
-services.yaml              Legacy copy for root-level demos; prefer per-repo services.yaml
-data/patches/              Offline patch cache (auto-refreshed when online)
-data/depsdev/              Offline deps.dev graphs for upgrade simulation
-data/osv/                  OSV snapshots for conflict class D
-tests/                     Unit tests + fixtures
-templates/                 HTML report Jinja templates
-static/vendor/             Vendored JS/CSS for offline reports
-```
-
-Generated at runtime (gitignored): `<project-dir>/.risk-scan/`, `output/` (demo runs), `semgrep_rules/` under `--output-dir`, etc.
-
----
-
-## Pipeline A
-
-### Recommended command
-
-```powershell
-python pipeline_a.py `
-  --project-dir ./vulnerable-task-tracker `
-  --output-dir ./output `
-  --skip-llm `
-  --present `
-  --offline
-```
-
-### Flags
+## Command-line flags
 
 | Flag | Effect |
-|------|--------|
+| --- | --- |
 | `--project-dir` | Target Python project to analyze |
 | `--output-dir` | Where JSON/HTML artifacts are written (default: `<project-dir>/.risk-scan`) |
 | `--input` | Trivy enriched JSON (default: `<output-dir>/enriched_trivy_output.json`) |
-| `--services` | Entry-points YAML (`auto` = `<project-dir>/services.yaml` or route auto-discovery) |
-| `--skip-llm` | Use registry + patch-aware symbol rules only (no Ollama/Gemini) |
+| `--services` | Entry-points YAML (`auto` = `<project-dir>/services.yaml` or route discovery) |
+| `--skip-llm` | Use registry and patch-aware symbol rules only (no Ollama/Gemini) |
 | `--present` | Colored compact terminal output; skips graph phases |
 | `--quiet` | Compact tables; suppress per-family logs |
 | `--plain` | Disable terminal colors |
-| `--no-graph` | Skip graph build/query phases |
-| `--offline` | Inline vendor assets in HTML report |
+| `--no-graph` | Skip graph build and query phases |
+| `--offline` | Inline vendor JS/CSS in the HTML report |
+| `--neo4j` | Use the Bolt driver for graph queries |
 | `--llm gemini` | Use Gemini instead of Ollama for rule generation |
 
-### Phases
+## Pipeline phases
 
-1. Ingestion & normalization (Trivy JSON → CWE families)
-2. Patch intelligence (preload patches for sink rules)
-3. Rule resolution (cache → registry → LLM) + patch-aware Semgrep sinks
-4. Parallel Semgrep execution
-5. Semgrep report JSON
-6. Symbol reachability (AST scan)
-7. Upgrade simulation (deps.dev)
-8–9. Knowledge graph (optional Neo4j)
-10. Deterministic risk scoring
-11. Template explanations
-12. Tabbed HTML report
+The pipeline (`pipeline_a.py`) runs a fixed 12-phase sequence. Core modules live
+under `src/`.
 
-### Rule generation (no demo overlay)
+| Phase | Module | Input | Output |
+| --- | --- | --- | --- |
+| Preflight | `tool_registry.run_trivy_on_repo` | `--project-dir` | `enriched_trivy_output.json` (when `--input` missing) |
+| 1 Normalize | `normalizer.py` | Trivy JSON | CWE families (in memory) |
+| 2 Patches | `patch_fetcher.py` | CVE list | `patches.json` (+ cache in `data/patches/`) |
+| 3 Rules | `rule_resolver.py`, `registry_matcher.py`, `symbol_rule_builder.py` | Families + patches | `{output_dir}/semgrep_rules/*.yaml` |
+| 4 Semgrep | `executor.py` | Resolved rules | Semgrep matches (in memory) |
+| 5 Report | `reporter.py` | Matches | `pipeline_a_report.json` |
+| 6 Reachability | `symbol_scanner.py` | Patches + project AST | `symbol_scan.json` |
+| 7 Upgrade sim | `upgrade_simulator.py`, `project_deps.py` | Reachable CVEs + pins | `upgrade_simulation.json` |
+| 8 Graph build | `graph_builder.py`, `static_analyzer.py` | Trivy, Semgrep, `services.yaml` | `graph_snapshot.json` (+ optional Neo4j) |
+| 9 Graph queries | `graph_queries.py` | Graph snapshot / Neo4j | Reachability evidence (in memory) |
+| 10 Score | `scorer.py` | Trivy + graph evidence | `risk_assessment.json` |
+| 11 Explain | `explainer.py` | Assessment | `explanations.json` |
+| 12 HTML report | `html_reporter_final_v2.py` | All JSON artifacts | `risk_report.html` |
 
-Rules come from three live sources:
+Rules in Phase 3 are resolved from three live sources, with no frozen demo
+overlay: the local cache (`data/rules_db.json` plus validated on-disk YAML), the
+official Semgrep registry matched by CWE (`data/cwe_rule_map.json`), and,
+optionally, an LLM (`--skip-llm` disables it). Patch-aware sink rules are then
+layered on top (for example `yaml.load`, `Image.open`).
 
-1. **Registry** — official Semgrep rules matched by CWE
-2. **Symbol sinks** — patch-aware rules from `src/symbol_rule_builder.py` (e.g. `yaml.load`, `Image.open`)
-3. **LLM** — Ollama/Gemini when `--skip-llm` is not set; validated with `semgrep --validate`
+## ReAct agent (optional)
 
----
-
-## ReAct agent
+An alternative, LLM-driven entry point for interactive investigation. It calls the
+same core tools through a fixed whitelist; the verdict still comes from the
+deterministic scorer.
 
 ```powershell
 python -m src.agent --target ./vulnerable-task-tracker --verbose
 python -m src.agent --target ./vulnerable-task-tracker --no-llm
 ```
 
-The agent calls the same tools through a fixed whitelist. **PROCEED / REVIEW / BLOCK** always comes from the deterministic scorer, not the LLM.
+Requires Trivy for live CVE scans. The step trace is written to
+`data/agent_trace.json` (gitignored). The agent does not run the Semgrep or graph
+phases; use `pipeline_a.py` for full analysis.
 
-Requires Trivy for live CVE scans. Trace output: `data/agent_trace.json` (gitignored).
+## Optional: Neo4j graph
 
----
+```powershell
+# Set NEO4J_PASSWORD in .env first
+docker compose up -d
+pip install -r requirements-graph.txt
+python pipeline_a.py --project-dir ./vulnerable-task-tracker --neo4j --skip-llm --offline
+```
 
-## Sample HTML report (no pipeline run)
+The pipeline completes without Neo4j using the JSON snapshot; the driver is only
+needed for Cypher-based reachability queries. `neo4j_explorer.html` is a
+standalone browser UI for exploring the graph against a running Neo4j instance.
+The default local password in `docker-compose.yml` is `demo-password` (dev only).
+
+## Sample report without a full run
 
 ```powershell
 python -c "from src.html_reporter import assemble_sample_report; assemble_sample_report('sample_report.html', offline=True)"
 ```
 
-Uses `tests/fixtures/symbol_scan_output.json` + synthetic assessment data.
-
----
+Uses `tests/fixtures/symbol_scan_output.json` plus synthetic assessment data.
 
 ## Tests
 
@@ -189,33 +167,68 @@ pip install -r requirements-core.txt
 pytest tests/ -q
 ```
 
----
+CI (GitHub Actions) runs the suite on Python 3.11 and 3.12, plus an integrity
+guard that fails if demo overlays are reintroduced, and the benchmark harness.
 
-## Optional: Neo4j
+## Repository layout
 
-```powershell
-docker compose up -d
-python pipeline_a.py --project-dir ./vulnerable-task-tracker --neo4j --output-dir ./output
+```
+pipeline_a.py              12-phase pipeline entry point
+src/                       Core modules (patch fetcher, symbol scanner, scorer, ...)
+  api/                     Multi-tenant service: RBAC, tenant isolation, audit log
+  ml/                      Deterministic exploit model + cross-scan flywheel
+tests/                     Unit tests and fixtures
+templates/                 Jinja templates for the HTML report
+static/vendor/             Vendored JS/CSS for offline reports
+scripts/                   Demo and maintenance scripts
+data/                      Committed offline caches (see below)
+semgrep-rules/             Official Semgrep rules (fetched, gitignored — see below)
+vulnerable-task-tracker/   Sample Flask app with real CVE reachability
+neo4j_explorer.html        Standalone graph explorer UI
+docker-compose.yml         Neo4j 5 Community for local graph phases
 ```
 
-Default password in `docker-compose.yml`: `demo-password` (local dev only).
+### Committed offline caches (`data/`)
 
----
+These are intentionally committed so the tool runs offline and in CI without
+network access.
 
-## Caching
+| Store | Path | Used by |
+| --- | --- | --- |
+| Patch cache | `data/patches/{CVE}.json` | patch_fetcher, symbol_scanner (30-day TTL) |
+| deps.dev graphs | `data/depsdev/PyPI/` | upgrade_simulator |
+| OSV snapshots | `data/osv/` | upgrade conflict analysis |
+| EPSS / KEV | `data/epss_snapshot.json`, `data/kev_snapshot.json` | scorer |
+| Rule cache | `data/rules_db.json` | rule_resolver |
+| Semgrep registry index | `data/cwe_rule_map.json` | registry_matcher |
 
-| Cache | Path | TTL |
-|-------|------|-----|
-| Patches | `data/patches/{CVE}.json` | 30 days |
-| deps.dev | `data/depsdev/PyPI/` | Manual refresh via `scripts/populate_depsdev_cache.py` |
-| Semgrep rules | `{output_dir}/semgrep_rules/` | Per run |
+Refresh the deps.dev cache with `python scripts/populate_depsdev_cache.py`, and
+rebuild the Semgrep registry index with `python scripts/index_registry.py`. Set
+`GITHUB_TOKEN` for higher GitHub API rate limits when fetching patches.
 
-Set `GITHUB_TOKEN` for higher GitHub API rate limits when fetching patches.
+The `semgrep-rules/` directory holds the official Semgrep rule set that
+`data/cwe_rule_map.json` points to. It is large and gitignored, so fetch it once
+after cloning (it clones from `github.com/semgrep/semgrep-rules` and reindexes):
 
----
+```powershell
+python scripts/index_registry.py
+```
 
-## Team notes
+## Generated output (not committed)
 
-- Analyze **any** Python repo by pointing `--project-dir` at it; pins are read from `requirements.txt`, `pyproject.toml`, or `Pipfile`.
-- Use `.\scripts\scan_repo.ps1 -RepoPath <path>` for a repo-scoped run with sensible defaults.
-- Do not commit `output/`, root-level `semgrep_rules/`, or generated JSON/HTML from local runs.
+Runtime artifacts are gitignored: `<project-dir>/.risk-scan/`, `output/`,
+`demo_out/`, `scans/`, the per-run `semgrep_rules/` under `--output-dir`, and the
+report/JSON files produced by local runs. Do not commit these.
+
+## Configuration
+
+Local settings live in `.env` (gitignored):
+
+```env
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=demo-password
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:3b
+# GOOGLE_API_KEY=...   # only for --llm gemini
+```

@@ -1,0 +1,17 @@
+{
+  "_python_requires": ">=3.8",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "bcrypt",
+        "system": "PYPI",
+        "version": "5.0.0"
+      }
+    }
+  ]
+}

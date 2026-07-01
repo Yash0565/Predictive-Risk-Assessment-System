@@ -1,8 +1,0 @@
-rules:
-  - id: detect-cwe_377-python
-    languages: [python]
-    message: Detect vulnerable pattern
-    severity: ERROR
-    pattern: >-
-      requests\.request\(.+?\, \{.*url.*: .*, .*verify\=.false\., .*allow_redirects\=.true\., .*headers\=.*\}
-Note: The provided pattern is a simplification and may not cover all cases of CWE-377 in the `requests` library. A comprehensive static analysis would require more complex patterns or regex to accurately detect such vulnerabilities.

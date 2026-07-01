@@ -1,0 +1,17 @@
+{
+  "_python_requires": "",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "gunicorn",
+        "system": "PYPI",
+        "version": "19.7.1"
+      }
+    }
+  ]
+}

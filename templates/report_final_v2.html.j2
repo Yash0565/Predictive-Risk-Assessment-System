@@ -92,8 +92,8 @@ a { color: var(--primary-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
 code, pre { font-family: var(--font-mono); }
 
+.sticky-nav { position: sticky; top: 0; z-index: 200; }
 .site-header {
-  position: sticky; top: 0; z-index: 200;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -143,7 +143,6 @@ code, pre { font-family: var(--font-mono); }
 .icon-btn .ic { margin-right: 6px; }
 
 .tab-bar {
-  position: sticky; top: 64px; z-index: 190;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
@@ -1040,7 +1039,6 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
 @media (max-width: 720px) {
   .tab-inner { display: none; }
   .tab-select { display: block; }
-  .tab-bar { top: 56px; }
   .header-inner { padding: 12px 16px; gap: 12px; }
   main { padding: 20px 16px 48px; }
 }
@@ -1059,6 +1057,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
 {% set top = ri.top_cve %}
 {% set blast = ri.blast or {} %}
 
+<div class="sticky-nav">
 <header class="site-header">
   <div class="header-inner">
     <div class="brand">
@@ -1101,6 +1100,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     <option value="audit">Audit &amp; Evidence</option>
   </select>
 </nav>
+</div>
 
 <main>
 
@@ -1897,10 +1897,19 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
         pos[id] = { x: Math.round(Math.cos(angle) * radius), y: Math.round(Math.sin(angle) * radius) };
       });
     }
-    place(groups.service,  340);
-    place(groups.package,  210);
-    place(groups.function, 120);
-    place(groups.cve, groups.cve.length === 1 ? 0 : 55);
+    // Compute ring radius so every node has at least `gap` px of arc space.
+    // Each subsequent ring is placed outside the previous one with a `sep` buffer.
+    function ringR(count, gap, minR) {
+      return count <= 1 ? (minR || 0) : Math.max(count * gap / (2 * Math.PI), minR || gap);
+    }
+    var rCve  = ringR(groups.cve.length,      60,  80);
+    var rFunc = ringR(groups.function.length,  70, rCve  + 150);
+    var rPkg  = ringR(groups.package.length,   80, rFunc + 150);
+    var rSvc  = ringR(groups.service.length,  100, rPkg  + 150);
+    place(groups.cve,      rCve);
+    place(groups.function, rFunc);
+    place(groups.package,  rPkg);
+    place(groups.service,  rSvc);
     return pos;
   }
 
@@ -1940,15 +1949,16 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     network = new vis.Network(graphContainer, { nodes: allNodes, edges: allEdges }, {
       physics: {
         enabled: true,
-        solver: "repulsion",
-        repulsion: {
-          nodeDistance: 130,
-          centralGravity: 0.2,
-          springLength: 110,
-          springConstant: 0.04,
-          damping: 0.5,
+        solver: "barnesHut",
+        barnesHut: {
+          gravitationalConstant: -4000,
+          centralGravity: 0.05,
+          springLength: 200,
+          springConstant: 0.02,
+          damping: 0.4,
+          avoidOverlap: 0.5,
         },
-        stabilization: { iterations: 280, fit: true },
+        stabilization: { iterations: 1000, fit: true },
       },
       interaction: { hover: true, tooltipDelay: 100, navigationButtons: false, keyboard: true },
       layout: { randomSeed: 42 },

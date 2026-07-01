@@ -1,0 +1,17 @@
+{
+  "_python_requires": "",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "click",
+        "system": "PYPI",
+        "version": "6.7.0"
+      }
+    }
+  ]
+}

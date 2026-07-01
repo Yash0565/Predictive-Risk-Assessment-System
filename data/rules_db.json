@@ -191,5 +191,103 @@
     "cwe_ids": [
       "CWE-345"
     ]
+  },
+  "cwe_327": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\cryptography\\security\\mode-without-authentication.yaml",
+    "rule_id": "crypto-mode-without-authentication",
+    "cwe_ids": [
+      "CWE-327"
+    ]
+  },
+  "auth_bypass": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\jwt\\security\\unverified-jwt-decode.yaml",
+    "rule_id": "unverified-jwt-decode",
+    "cwe_ids": [
+      "CWE-287"
+    ]
+  },
+  "cwe_441": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\generic\\nginx\\security\\dynamic-proxy-host.yaml",
+    "rule_id": "dynamic-proxy-host",
+    "cwe_ids": [
+      "CWE-441"
+    ]
+  },
+  "path_traversal": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\ai\\ai-best-practices\\hooks-path-traversal\\hooks-path-traversal-python.yaml",
+    "rule_id": "hooks-path-traversal-python",
+    "cwe_ids": [
+      "CWE-22"
+    ]
+  },
+  "cwe_352": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\apex\\lang\\security\\ncino\\dml\\ApexCSRFStaticConstructor.yaml",
+    "rule_id": "apex-csrf-static-constructor",
+    "cwe_ids": [
+      "CWE-352"
+    ]
+  },
+  "cwe_444": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\generic\\nginx\\security\\possible-h2c-smuggling.yaml",
+    "rule_id": "possible-nginx-h2c-smuggling",
+    "cwe_ids": [
+      "CWE-444"
+    ]
+  },
+  "xxe": {
+    "source": "registry",
+    "rule_path": "semgrep-rules\\python\\lang\\security\\use-defused-xml-parse.yaml",
+    "rule_id": "use-defused-xml-parse",
+    "cwe_ids": [
+      "CWE-611"
+    ]
+  },
+  "cwe_693": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_693_python.yaml",
+    "cwe_ids": [
+      "CWE-693"
+    ]
+  },
+  "cwe_1336": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_1336_python.yaml",
+    "cwe_ids": [
+      "CWE-1336"
+    ]
+  },
+  "cwe_331": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_331_python.yaml",
+    "cwe_ids": [
+      "CWE-331"
+    ]
+  },
+  "cwe_67": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_67_python.yaml",
+    "cwe_ids": [
+      "CWE-67"
+    ]
+  },
+  "type_confusion": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\type_confusion_python.yaml",
+    "cwe_ids": [
+      "CWE-843"
+    ]
+  },
+  "cwe_697": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_697_python.yaml",
+    "cwe_ids": [
+      "CWE-697"
+    ]
   }
 }

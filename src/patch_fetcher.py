@@ -983,7 +983,17 @@ def fetch_patch(
             network_failed = True
             cached = load_cache(cve_id)
             if cached:
-                cached["status"] = "network_error" if not _cache_is_fresh(cached) else cached.get("status", "partial")
+                # Offline-first: a stale-but-populated cache is still useful, so
+                # serve it (degraded to "partial") rather than failing hard.
+                # Only report network_error when the cache carries no symbols.
+                if cached.get("vulnerable_symbols"):
+                    cached["status"] = (
+                        cached.get("status", "partial")
+                        if _cache_is_fresh(cached)
+                        else "partial"
+                    )
+                else:
+                    cached["status"] = "network_error"
                 return cached
             result["sources_tried"] = sources_tried
             result["status"] = "network_error"

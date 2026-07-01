@@ -1,13 +1,13 @@
-"""Authentication helpers — CVE-2023-32681 rebuild_auth usage."""
+"""Authentication helpers — CVE-2023-32681 rebuild_proxies usage."""
 
 from flask import Blueprint, request, jsonify
 
 # ---------------------------------------------------------------------------
-# Session / redirect auth (CVE-2023-32681)
+# Session / redirect proxy handling (CVE-2023-32681)
 # ---------------------------------------------------------------------------
 #
 from requests import Session
-from requests.utils import rebuild_auth
+from requests.sessions import rebuild_proxies
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -35,9 +35,10 @@ def _build_redirect_response():
 
 @auth_bp.route("/auth/login", methods=["POST"])
 def login_user():
-    """Login endpoint; rebuilds auth headers on redirect responses."""
+    """Login endpoint; rebuilds proxies on redirect responses."""
     session = Session()
     prepared = session.prepare_request(request)
-    # Vulnerable pattern: uses patched rebuild_auth on redirect chain
-    prepared.headers = rebuild_auth(prepared, _build_redirect_response())
+    # Vulnerable pattern: uses patched rebuild_proxies on redirect chain
+    # (CVE-2023-32681 leaks Proxy-Authorization across redirects).
+    prepared.headers = rebuild_proxies(prepared, {})
     return jsonify({"status": "ok", "user": request.form.get("username", "")})

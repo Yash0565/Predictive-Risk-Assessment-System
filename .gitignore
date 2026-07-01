@@ -12,6 +12,13 @@ venv/
 output/
 demo_out/
 results_test/
+# Per-target scan artifacts (default --output-dir is <project-dir>/.risk-scan)
+.risk-scan/
+# Scratch scan workspace: cloned target repos + their generated reports
+scans/
+# Vendored Semgrep registry rules — fetched on demand (scripts/index_registry.py),
+# not committed (large third-party tree that trips secret scanners on test fixtures)
+semgrep-rules/
 enriched_trivy_output.json
 pipeline_a_report.json
 patches.json
@@ -20,13 +27,17 @@ upgrade_simulation.json
 risk_assessment.json
 explanations.json
 risk_report.html
+risk_report_final_v2.html
 fix_plan.json
 graph_snapshot.json
+api_changes.json
 data/agent_trace.json
 data/report.html
 report.sarif.json
 report.cyclonedx.json
 report.openvex.json
+sample_report.html
+trivy_output.json
 
 # Test cache
 .pytest_cache/

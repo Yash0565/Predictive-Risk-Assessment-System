@@ -248,6 +248,34 @@
       </div>
 
       <div class="sidebar-section">
+        <div class="section-title">Filters</div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Node types</div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-type-service" checked> Service</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-type-package" checked> Package</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-type-function" checked> Function</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="f-type-cve" checked> CVE</label>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">CVE severity</div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-sev-critical" checked> CRITICAL</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-sev-high" checked> HIGH</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-sev-medium" checked> MEDIUM</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:4px"><input type="checkbox" id="f-sev-low" checked> LOW</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer"><input type="checkbox" id="f-sev-unknown" checked> UNKNOWN</label>
+        </div>
+        <div class="form-row">
+          <label style="display:flex;justify-content:space-between">Min CVSS <span id="f-cvss-val" style="color:var(--text);font-weight:600">0.0</span></label>
+          <input type="range" id="f-cvss" min="0" max="10" step="0.1" value="0" style="width:100%;margin-top:4px;accent-color:var(--accent)">
+        </div>
+        <div class="form-row">
+          <label>Search labels</label>
+          <input type="text" id="f-search" placeholder="Search by name…">
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);cursor:pointer;margin-top:2px"><input type="checkbox" id="f-hide-isolated"> Hide isolated nodes</label>
+      </div>
+
+      <div class="sidebar-section">
         <div class="section-title">Legend</div>
         <div class="leg-item">
           <svg class="leg-icon" viewBox="0 0 14 14"><polygon points="7,0 14,3.5 14,10.5 7,14 0,10.5 0,3.5" fill="#3B82F6"/></svg>
@@ -402,6 +430,12 @@ RETURN p LIMIT 150`,
   let currentLayout = 'dagre';
 
   const $ = id => document.getElementById(id);
+
+  // Escape untrusted graph data (node labels, routes, file paths, CVE ids)
+  // before interpolating into innerHTML, to prevent stored XSS from scanned repos.
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
 
   // ── Toast ────────────────────────────────────────────────────────
   let toastTimer;
@@ -575,11 +609,14 @@ RETURN p LIMIT 150`,
   const CY_STYLE = [
     { selector: 'node', style: {
       'label': 'data(label)',
-      'font-size': 10, 'font-family': 'Inter, system-ui, sans-serif',
+      'font-size': 11, 'font-family': 'Inter, system-ui, sans-serif',
       'text-valign': 'bottom', 'text-halign': 'center', 'text-margin-y': 4,
-      'color': '#94A3B8',
-      'text-outline-color': '#0F172A', 'text-outline-width': 2,
-      'min-zoomed-font-size': 8,
+      'color': '#F1F5F9',
+      'text-outline-color': '#0F172A', 'text-outline-width': 2.5,
+      'text-background-color': '#0F172A', 'text-background-opacity': 0.85,
+      'text-background-padding': 3, 'text-background-shape': 'round-rectangle',
+      'min-zoomed-font-size': 5,
+      'text-wrap': 'ellipsis', 'text-max-width': 90,
     }},
     // Service
     { selector: 'node[nodeType = "Service"]', style: {
@@ -598,7 +635,7 @@ RETURN p LIMIT 150`,
     { selector: 'node[nodeType = "Function"]', style: {
       'background-color': '#1E3A5F', 'border-color': '#2563EB', 'border-width': 1,
       'shape': 'ellipse', 'width': 26, 'height': 26,
-      'color': '#64748B', 'font-size': 9,
+      'color': '#CBD5E1', 'font-size': 10,
     }},
     // CVE base
     { selector: 'node[nodeType = "CVE"]', style: {
@@ -668,6 +705,7 @@ RETURN p LIMIT 150`,
       'text-rotation': 'autorotate',
       'text-outline-color': '#0F172A', 'text-outline-width': 1,
     }},
+    { selector: '.filtered-out', style: { 'display': 'none' }},
   ];
 
   // ── Render ───────────────────────────────────────────────────────
@@ -683,7 +721,7 @@ RETURN p LIMIT 150`,
     });
 
     applyLayout(currentLayout, false);
-    updateStats();
+    applyFilters();
 
     cy.on('tap', 'node', e => {
       const n = e.target;
@@ -710,8 +748,9 @@ RETURN p LIMIT 150`,
     const cfgs = {
       dagre: {
         name: 'dagre', rankDir: 'TB',
-        rankSep: 100, nodeSep: 55, edgeSep: 15,
+        rankSep: 140, nodeSep: 80, edgeSep: 15,
         padding: 50, animate: true, animationDuration: 500,
+        nodeDimensionsIncludeLabels: true,
       },
       concentric: {
         name: 'concentric',
@@ -727,12 +766,14 @@ RETURN p LIMIT 150`,
       },
       cose: {
         name: 'cose', animate: true, animationDuration: 600,
-        idealEdgeLength: 90, nodeRepulsion: 450000,
-        componentSpacing: 80, padding: 40, randomize: false,
+        idealEdgeLength: 140, nodeRepulsion: 900000,
+        componentSpacing: 140, padding: 40, randomize: false,
+        nodeOverlap: 24, nodeDimensionsIncludeLabels: true,
       },
       breadthfirst: {
         name: 'breadthfirst', directed: true,
         spacingFactor: 1.5, padding: 40, animate: true, animationDuration: 500,
+        nodeDimensionsIncludeLabels: true,
       },
     };
 
@@ -786,12 +827,12 @@ RETURN p LIMIT 150`,
 
     $('detail-title').textContent = d.label || d.id;
 
-    let html = `<span class="type-badge" style="${typeStyle}">${d.nodeType}</span>`;
+    let html = `<span class="type-badge" style="${typeStyle}">${esc(d.nodeType)}</span>`;
 
     if (d.nodeType === 'CVE') {
       const sev = d.severity || 'UNKNOWN';
       html += prop('CVE ID', p.cve_id || d.id)
-            + `<div class="prop-row"><div class="prop-key">Severity</div><div class="prop-val"><span class="sev-pill sev-${sev}">${sev}</span></div></div>`
+            + `<div class="prop-row"><div class="prop-key">Severity</div><div class="prop-val"><span class="sev-pill sev-${esc(sev)}">${esc(sev)}</span></div></div>`
             + prop('CVSS Score', p.cvss_score ?? '—')
             + prop('CWE IDs', (p.cwe_ids || []).join(', ') || '—');
     } else if (d.nodeType === 'Service') {
@@ -814,7 +855,7 @@ RETURN p LIMIT 150`,
       nbrs.forEach(n => { const t = n.data('nodeType'); byType[t] = (byType[t] || 0) + 1; });
       html += `<div class="nbr-list"><div class="prop-key">Connected to</div><div style="margin-top:6px">`;
       for (const [t, c] of Object.entries(byType)) {
-        html += `<span class="nbr-chip">${c} ${t}${c > 1 ? 's' : ''}</span>`;
+        html += `<span class="nbr-chip">${c} ${esc(t)}${c > 1 ? 's' : ''}</span>`;
       }
       html += `</div></div>`;
     }
@@ -823,16 +864,62 @@ RETURN p LIMIT 150`,
   }
 
   function prop(key, val) {
-    return `<div class="prop-row"><div class="prop-key">${key}</div><div class="prop-val">${val}</div></div>`;
+    return `<div class="prop-row"><div class="prop-key">${esc(key)}</div><div class="prop-val">${esc(val)}</div></div>`;
   }
 
   function closeDetail() { $('detail-panel').classList.add('hidden'); }
 
+  // ── Filters ───────────────────────────────────────────────────────
+  function applyFilters() {
+    if (!cy) return;
+    const typeChecks = {
+      Service:  $('f-type-service').checked,
+      Package:  $('f-type-package').checked,
+      Function: $('f-type-function').checked,
+      CVE:      $('f-type-cve').checked,
+    };
+    const sevChecks = {
+      CRITICAL: $('f-sev-critical').checked,
+      HIGH:     $('f-sev-high').checked,
+      MEDIUM:   $('f-sev-medium').checked,
+      LOW:      $('f-sev-low').checked,
+      UNKNOWN:  $('f-sev-unknown').checked,
+    };
+    const minCvss = parseFloat($('f-cvss').value) || 0;
+    const search = ($('f-search').value || '').toLowerCase();
+    const hideIsolated = $('f-hide-isolated').checked;
+
+    cy.nodes().forEach(n => {
+      const nt = n.data('nodeType') || '';
+      let visible = typeChecks[nt] !== false;
+      if (nt === 'CVE') {
+        const sev = (n.data('severity') || 'UNKNOWN').toUpperCase();
+        if (sevChecks[sev] === false) visible = false;
+        if ((n.data('cvssScore') || 0) < minCvss) visible = false;
+      }
+      if (search && !(n.data('label') || '').toLowerCase().includes(search)) visible = false;
+      n.toggleClass('filtered-out', !visible);
+    });
+
+    cy.edges().forEach(e => {
+      const hidden = e.source().hasClass('filtered-out') || e.target().hasClass('filtered-out');
+      e.toggleClass('filtered-out', hidden);
+    });
+
+    if (hideIsolated) {
+      cy.nodes(':not(.filtered-out)').forEach(n => {
+        if (n.connectedEdges(':not(.filtered-out)').length === 0) n.addClass('filtered-out');
+      });
+    }
+
+    updateStats();
+  }
+
   // ── Stats / loading ───────────────────────────────────────────────
   function updateStats() {
     if (!cy) return;
-    $('stat-nodes').textContent = cy.nodes().length;
-    $('stat-edges').textContent = cy.edges().length;
+    $('stat-nodes').textContent = cy.nodes(':visible').length;
+    $('stat-edges').textContent = cy.edges(':visible').length;
   }
   function showLoading(msg) { $('loading-text').textContent = msg || 'Loading…'; $('loading').classList.remove('hidden'); }
   function hideLoading()     { $('loading').classList.add('hidden'); }
@@ -893,6 +980,16 @@ RETURN p LIMIT 150`,
     const c = $('minimap');
     c.style.display = this.checked ? 'block' : 'none';
     if (this.checked) drawMinimap();
+  });
+
+  // Filter event listeners
+  ['f-type-service','f-type-package','f-type-function','f-type-cve',
+   'f-sev-critical','f-sev-high','f-sev-medium','f-sev-low','f-sev-unknown',
+   'f-hide-isolated'].forEach(id => $(id).addEventListener('change', applyFilters));
+  $('f-search').addEventListener('input', applyFilters);
+  $('f-cvss').addEventListener('input', () => {
+    $('f-cvss-val').textContent = parseFloat($('f-cvss').value).toFixed(1);
+    applyFilters();
   });
 
   document.querySelectorAll('[data-layout]').forEach(btn =>

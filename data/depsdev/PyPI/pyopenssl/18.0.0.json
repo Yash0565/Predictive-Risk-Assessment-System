@@ -1,0 +1,93 @@
+{
+  "_python_requires": "",
+  "edges": [
+    {
+      "fromNode": 0,
+      "requirement": ">=2.2.1",
+      "toNode": 2
+    },
+    {
+      "fromNode": 0,
+      "requirement": ">=1.5.2",
+      "toNode": 4
+    },
+    {
+      "fromNode": 1,
+      "requirement": "",
+      "toNode": 3
+    },
+    {
+      "fromNode": 2,
+      "requirement": ">=2.0.0",
+      "toNode": 1
+    },
+    {
+      "fromNode": 2,
+      "requirement": ">=4.13.2",
+      "toNode": 5
+    }
+  ],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "pyopenssl",
+        "system": "PYPI",
+        "version": "18.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "cffi",
+        "system": "PYPI",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "cryptography",
+        "system": "PYPI",
+        "version": "49.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "pycparser",
+        "system": "PYPI",
+        "version": "3.0.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "DIRECT",
+      "versionKey": {
+        "name": "six",
+        "system": "PYPI",
+        "version": "1.17.0"
+      }
+    },
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "INDIRECT",
+      "versionKey": {
+        "name": "typing-extensions",
+        "system": "PYPI",
+        "version": "4.15.0"
+      }
+    }
+  ]
+}

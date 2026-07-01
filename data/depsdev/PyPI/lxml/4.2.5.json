@@ -1,0 +1,17 @@
+{
+  "_python_requires": "",
+  "edges": [],
+  "error": "",
+  "nodes": [
+    {
+      "bundled": false,
+      "errors": [],
+      "relation": "SELF",
+      "versionKey": {
+        "name": "lxml",
+        "system": "PYPI",
+        "version": "4.2.5"
+      }
+    }
+  ]
+}

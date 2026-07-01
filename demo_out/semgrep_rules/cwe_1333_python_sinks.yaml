@@ -1,9 +1,0 @@
-rules:
-  - id: symbol-cwe_1333-python
-    languages: [python]
-    message: Patch-aware sink for cwe_1333
-    severity: ERROR
-    pattern-either:
-      - pattern: Image.open(...)
-      - pattern: PdfParser(...)
-      - pattern: next_object_id(...)

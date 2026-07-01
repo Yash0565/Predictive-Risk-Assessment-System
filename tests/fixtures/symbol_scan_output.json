@@ -5,7 +5,7 @@
       "confidence": "HIGH",
       "is_reachable": true,
       "package": "flask",
-      "reference_count": 1,
+      "reference_count": 3,
       "references": [
         {
           "col": 14,
@@ -22,6 +22,33 @@
           "kind": "call",
           "line": 27,
           "source": "payload = request.get_json(force=True, silent=False)"
+        },
+        {
+          "col": 0,
+          "confidence": "HIGH",
+          "enclosing_function": null,
+          "file": "auth.py",
+          "import_chain": "flask.jsonify",
+          "in_entry_point": false,
+          "kind": "import",
+          "line": 3,
+          "source": "from flask import jsonify"
+        },
+        {
+          "col": 11,
+          "confidence": "HIGH",
+          "enclosing_function": "login_user",
+          "entry_point_info": {
+            "framework": "flask",
+            "method": "POST",
+            "route": "/auth/login"
+          },
+          "file": "auth.py",
+          "import_chain": "jsonify (from flask import jsonify)",
+          "in_entry_point": true,
+          "kind": "call",
+          "line": 44,
+          "source": "return jsonify({\"status\": \"ok\", \"user\": request.form.get(\"username\", \"\")})"
         }
       ],
       "vulnerable_symbol": "flask.wrappers.get_json"
@@ -70,7 +97,7 @@
       "package": "urllib3",
       "reference_count": 0,
       "references": [],
-      "vulnerable_symbol": "urllib3.src.urllib3.contrib.pyopenssl.idna_encode"
+      "vulnerable_symbol": "urllib3.__init__.add_stderr_logger"
     },
     "CVE-2020-1747": {
       "change_classification": "INTERNAL_CHANGE",
@@ -99,25 +126,25 @@
       "vulnerable_symbol": "yaml.load"
     },
     "CVE-2020-25659": {
-      "change_classification": "HARDENED_ONLY",
+      "change_classification": "INTERNAL_CHANGE",
       "confidence": "HIGH",
       "is_reachable": false,
       "package": "cryptography",
       "reference_count": 0,
       "references": [],
-      "vulnerable_symbol": "cryptography.hazmat.primitives.asymmetric.rsa.RSAPrivateKey.decrypt"
+      "vulnerable_symbol": "cryptography.hazmat.backends.openssl.rsa._enc_dec_rsa_pkey_ctx"
     },
     "CVE-2020-26137": {
-      "change_classification": "HARDENED_ONLY",
+      "change_classification": "INTERNAL_CHANGE",
       "confidence": "HIGH",
       "is_reachable": false,
       "package": "urllib3",
       "reference_count": 0,
       "references": [],
-      "vulnerable_symbol": "urllib3.connection.HTTPConnection.putrequest"
+      "vulnerable_symbol": "urllib3.connection.DummyConnection"
     },
     "CVE-2020-5313": {
-      "change_classification": "INTERNAL_CHANGE",
+      "change_classification": "PUBLIC_SINK",
       "confidence": "HIGH",
       "is_reachable": true,
       "package": "pillow",
@@ -143,7 +170,7 @@
       "vulnerable_symbol": "PIL.Image.open"
     },
     "CVE-2023-32681": {
-      "change_classification": "INTERNAL_CHANGE",
+      "change_classification": "HARDENED_ONLY",
       "confidence": "HIGH",
       "is_reachable": true,
       "package": "requests",
@@ -154,11 +181,11 @@
           "confidence": "HIGH",
           "enclosing_function": null,
           "file": "auth.py",
-          "import_chain": "requests.utils.rebuild_auth",
+          "import_chain": "requests.sessions.rebuild_proxies",
           "in_entry_point": false,
           "kind": "import",
           "line": 10,
-          "source": "from requests.utils import rebuild_auth"
+          "source": "from requests.sessions import rebuild_proxies"
         },
         {
           "col": 23,
@@ -170,23 +197,24 @@
             "route": "/auth/login"
           },
           "file": "auth.py",
-          "import_chain": "rebuild_auth (from requests.utils import rebuild_auth)",
+          "import_chain": "rebuild_proxies (from requests.sessions import rebuild_proxies)",
           "in_entry_point": true,
           "kind": "call",
-          "line": 42,
-          "source": "prepared.headers = rebuild_auth(prepared, _build_redirect_response())"
+          "line": 43,
+          "source": "prepared.headers = rebuild_proxies(prepared, {})"
         }
       ],
-      "vulnerable_symbol": "requests.sessions.Session.rebuild_auth"
+      "vulnerable_symbol": "requests.sessions.rebuild_proxies"
     }
   },
-  "scanned_at": "2026-05-19T18:10:13+00:00",
+  "scanned_at": "2026-01-01T00:00:00+00:00",
   "stats": {
-    "duration_ms": 12,
+    "cache_hits": 0,
+    "duration_ms": 6,
     "files_failed": 0,
     "files_parsed_ok": 6,
     "files_scanned": 6,
-    "total_findings": 7
+    "total_findings": 9
   },
   "summary": {
     "noise_reduction_percent": 37.5,
@@ -203,5 +231,5 @@
       "CVE-2020-26137"
     ]
   },
-  "target_dir": "D:\\Predictive-Risk-Assessment-System\\vulnerable-task-tracker"
+  "target_dir": "vulnerable-task-tracker"
 }
