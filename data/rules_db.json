@@ -122,14 +122,14 @@
   },
   "session_management": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\session_management_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\session_management_python.yaml",
     "cwe_ids": [
       "CWE-539"
     ]
   },
   "buffer_overflow": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\buffer_overflow_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\buffer_overflow_python.yaml",
     "cwe_ids": [
       "CWE-120",
       "CWE-125",
@@ -138,21 +138,21 @@
   },
   "cwe_665": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_665_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_665_python.yaml",
     "cwe_ids": [
       "CWE-665"
     ]
   },
   "timing_attack": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\timing_attack_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\timing_attack_python.yaml",
     "cwe_ids": [
       "CWE-385"
     ]
   },
   "information_exposure": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\information_exposure_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\information_exposure_python.yaml",
     "cwe_ids": [
       "CWE-203"
     ]
@@ -166,7 +166,7 @@
   },
   "cwe_377": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_377_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_377_python.yaml",
     "cwe_ids": [
       "CWE-377"
     ]
@@ -288,6 +288,34 @@
     "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_697_python.yaml",
     "cwe_ids": [
       "CWE-697"
+    ]
+  },
+  "cwe_669": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_669_python.yaml",
+    "cwe_ids": [
+      "CWE-669"
+    ]
+  },
+  "cwe_863": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_863_python.yaml",
+    "cwe_ids": [
+      "CWE-863"
+    ]
+  },
+  "integer_overflow": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\integer_overflow_python.yaml",
+    "cwe_ids": [
+      "CWE-190"
+    ]
+  },
+  "cwe_670": {
+    "source": "ollama",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\cargo_api\\semgrep_rules\\cwe_670_python.yaml",
+    "cwe_ids": [
+      "CWE-670"
     ]
   }
 }

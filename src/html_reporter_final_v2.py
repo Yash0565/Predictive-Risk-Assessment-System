@@ -1345,25 +1345,29 @@ def _build_mitigations(
 ) -> list[dict[str, str]]:
     items: list[dict[str, str]] = [
         {
-            "icon": "🛡",
+            "tag": "SHIM",
+            "tone": "info",
             "title": "Add a compatibility shim",
             "body": "Wrap deprecated calls in a thin adapter module so the migration "
                     "can happen incrementally instead of a big-bang refactor.",
         },
         {
-            "icon": "🧪",
+            "tag": "TEST",
+            "tone": "success",
             "title": "Run integration tests on reachable flows",
             "body": "Replay end-to-end tests covering routes and functions surfaced "
                     "in the Risks tab before promoting the upgrade.",
         },
         {
-            "icon": "🚀",
+            "tag": "DEPLOY",
+            "tone": "accent",
             "title": "Stage the deployment",
-            "body": "Deploy dev → staging → canary (1% prod) → full prod with "
+            "body": "Deploy dev to staging to canary (1% prod) to full prod with "
                     "automated smoke tests at each gate.",
         },
         {
-            "icon": "🔔",
+            "tag": "MONITOR",
+            "tone": "warning",
             "title": "Add SBOM diff to CI",
             "body": "Trigger a re-scan on every PR that touches dependency files and "
                     "block merges that introduce new BLOCK-level findings.",
@@ -1373,7 +1377,8 @@ def _build_mitigations(
     cascade = (upgrade or {}).get("cascade") or {}
     if cascade.get("chain"):
         items.insert(0, {
-            "icon": "📦",
+            "tag": "PIN",
+            "tone": "danger",
             "title": "Pin transitive deps before upgrading",
             "body": ("Cascade requires bumping "
                      f"{cascade.get('total_packages_affected', len(cascade['chain']))} packages. "

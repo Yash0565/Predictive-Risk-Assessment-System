@@ -148,9 +148,10 @@ python pipeline_a.py --project-dir ./vulnerable-task-tracker --neo4j --skip-llm 
 ```
 
 The pipeline completes without Neo4j using the JSON snapshot; the driver is only
-needed for Cypher-based reachability queries. `neo4j_explorer.html` is a
-standalone browser UI for exploring the graph against a running Neo4j instance.
-The default local password in `docker-compose.yml` is `demo-password` (dev only).
+needed for Cypher-based reachability queries. The Graph tab in the HTML report
+renders the reachability graph directly (a clean left-to-right layered layout),
+so no separate viewer is required. The default local password in
+`docker-compose.yml` is `demo-password` (dev only).
 
 ## Sample report without a full run
 
@@ -184,7 +185,6 @@ scripts/                   Demo and maintenance scripts
 data/                      Committed offline caches (see below)
 semgrep-rules/             Official Semgrep rules (fetched, gitignored — see below)
 vulnerable-task-tracker/   Sample Flask app with real CVE reachability
-neo4j_explorer.html        Standalone graph explorer UI
 docker-compose.yml         Neo4j 5 Community for local graph phases
 ```
 

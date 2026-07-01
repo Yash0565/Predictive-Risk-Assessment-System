@@ -330,7 +330,7 @@ if (Test-Path $report) {
     Write-Host "  Repo   : $repoPath" -ForegroundColor White
     if ($WithNeo4j) {
         Write-Host "  Neo4j  : http://localhost:7474  (user: neo4j / pass: $neo4jPass)" -ForegroundColor White
-        Write-Host "  Explorer: $Root\neo4j_explorer.html" -ForegroundColor White
+        Write-Host "  Graph  : open the report's Graph tab (rendered inline)" -ForegroundColor White
     }
     Write-Host ""
     Start-Process $report
