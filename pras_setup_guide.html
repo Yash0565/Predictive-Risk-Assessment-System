@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRAS Setup & Deployment Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --bg-sidebar: #0f1524;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #8b5cf6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --code-bg: #1e293b;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: block;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Layout */
+    .main-content {
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+      max-width: 1100px;
+    }
+
+    /* Top Navigation (Glassmorphic Horizontal Pill) */
+    .top-nav {
+      position: sticky;
+      top: 15px;
+      z-index: 100;
+      background: rgba(15, 21, 36, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 100px;
+      padding: 0.4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      margin: 1.5rem auto 2.5rem auto;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.25rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 100px;
+      transition: all 0.25s ease;
+      font-weight: 500;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .nav-item a:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active a {
+      color: #fff;
+      background-color: var(--primary);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    @media (max-width: 1150px) {
+      .top-nav {
+        border-radius: 20px;
+        width: 100%;
+      }
+
+      .nav-list {
+        gap: 0.5rem;
+      }
+    }
+
+    /* Content Styling */
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(to right, #ffffff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Section & Cards */
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .section-title .badge {
+      background-color: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* Interactive OS Toggles */
+    .os-toggles {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.35rem;
+      border-radius: 10px;
+      width: fit-content;
+      border: 1px solid var(--border-color);
+    }
+
+    .os-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .os-btn:hover {
+      color: #fff;
+    }
+
+    .os-btn.active {
+      background-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .os-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .os-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Code Blocks */
+    .code-container {
+      position: relative;
+      margin: 1rem 0 1.5rem 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .code-header {
+      background-color: #111827;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    code {
+      color: #38bdf8;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+
+    /* Dynamic Generator Grid */
+    .generator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .generator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toggle-title {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .toggle-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--primary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Info Alerts */
+    .info-alert {
+      display: flex;
+      gap: 1rem;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 1.25rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+    }
+
+    .info-alert-icon {
+      font-size: 1.5rem;
+      color: #a5b4fc;
+      line-height: 1;
+    }
+
+    .info-alert-content {
+      font-size: 0.95rem;
+      color: #c7d2fe;
+      line-height: 1.5;
+    }
+
+    .info-alert-content strong {
+      color: #fff;
+    }
+
+    /* FAQ Search */
+    .faq-search-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .accordion-header {
+      background: rgba(255, 255, 255, 0.01);
+      padding: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s;
+      user-select: none;
+    }
+
+    .accordion-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .accordion-arrow {
+      transition: transform 0.3s;
+      font-size: 0.8rem;
+    }
+
+    .accordion-body {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .accordion-body-content {
+      padding: 1.25rem;
+    }
+
+    .accordion-item.active {
+      border-color: rgba(99, 102, 241, 0.5);
+    }
+
+    .accordion-item.active .accordion-header {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .accordion-item.active .accordion-arrow {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header style="text-align: center; margin-bottom: 2rem;">
+      <h1>PRAS Local Workspace Setup</h1>
+      <p>Configure your host machine, install requirements, and dynamically compile orchestrator commands.</p>
+    </header>
+
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li class="nav-item active" data-target="prerequisites"><a href="#prerequisites">1. Prerequisites</a></li>
+        <li class="nav-item" data-target="environment"><a href="#environment">2. Env & Deps</a></li>
+        <li class="nav-item" data-target="configuration"><a href="#configuration">3. Config Generator</a></li>
+        <li class="nav-item" data-target="builder"><a href="#builder">4. Command Builder</a></li>
+        <li class="nav-item" data-target="neo4j"><a href="#neo4j">5. Graph Setup</a></li>
+        <li class="nav-item" data-target="troubleshooting"><a href="#troubleshooting">6. Troubleshooting</a></li>
+      </ul>
+    </nav>
+
+    <!-- Prerequisites -->
+    <section id="prerequisites" class="section-card">
+      <h2 class="section-title">1. System Prerequisites <span class="badge">Scanner CLI Tools</span></h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">PRAS requires that both <strong>Trivy</strong> (for
+        vulnerability scanning) and <strong>Semgrep</strong> (for static pattern verification) are installed globally on
+        your machine.</p>
+
+      <div class="os-toggles">
+        <button class="os-btn active" data-os="win" onclick="switchOS('win')">Windows</button>
+        <button class="os-btn" data-os="mac" onclick="switchOS('mac')">macOS</button>
+        <button class="os-btn" data-os="linux" onclick="switchOS('linux')">Linux</button>
+      </div>
+
+      <!-- Windows Prerequisites -->
+      <div id="prereq-win" class="os-content active">
+        <h3>1. Install Trivy</h3>
+        <p style="margin-top:0.5rem; font-size:0.95rem; color:var(--text-muted);">Run this command in PowerShell to
+          automatically install Trivy via winget:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <span>PowerShell</span>
+            <button class="copy-btn" onclick="copyCode('win-trivy-cmd')">Copy</button>
+          </div>
+          <pre><code id="win-trivy-cmd">winget install aquasecurity.trivy</code></pre>
+        </div>
+        <p style="font-size:0.85rem; color:var(--warning);">* Note: If winget is not available, download the binary from
+          the github releases tab, unzip it, and add the folder path to your PATH environment variable.</p>
+
+        <h3 style="margin-top:1.5rem;">2. Install Semgrep</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>PowerShell</span>
+            <button class="copy-btn" onclick="copyCode('win-semgrep-cmd')">Copy</button>
+          </div>
+          <pre><code id="win-semgrep-cmd">pip install semgrep</code></pre>
+        </div>
+      </div>
+
+      <!-- macOS Prerequisites -->
+      <div id="prereq-mac" class="os-content">
+        <h3>1. Install Trivy & Semgrep via Homebrew</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Terminal (Zsh)</span>
+            <button class="copy-btn" onclick="copyCode('mac-brew-cmd')">Copy</button>
+          </div>
+          <pre><code id="mac-brew-cmd">brew install aquasecurity/trivy/trivy
+brew install semgrep</code></pre>
+        </div>
+      </div>
+
+      <!-- Linux Prerequisites -->
+      <div id="prereq-linux" class="os-content">
+        <h3>1. Install Trivy (Debian/Ubuntu)</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Bash</span>
+            <button class="copy-btn" onclick="copyCode('linux-trivy-cmd')">Copy</button>
+          </div>
+          <pre><code id="linux-trivy-cmd">sudo apt-get install wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt-get update
+sudo apt-get install trivy</code></pre>
+        </div>
+
+        <h3 style="margin-top:1.5rem;">2. Install Semgrep</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Bash</span>
+            <button class="copy-btn" onclick="copyCode('linux-semgrep-cmd')">Copy</button>
+          </div>
+          <pre><code id="linux-semgrep-cmd">pip install semgrep</code></pre>
+        </div>
+      </div>
+
+      <div class="info-alert">
+        <div class="info-alert-icon">ℹ️</div>
+        <div class="info-alert-content">
+          After installing both tools, verify your installation paths are correct by executing
+          <strong><code>trivy --version</code></strong> and <strong><code>semgrep --version</code></strong> in a fresh
+          terminal window.
+        </div>
+      </div>
+    </section>
+
+    <!-- Environment & Deps -->
+    <section id="environment" class="section-card">
+      <h2 class="section-title">2. Virtual Environment & Packages <span class="badge">Virtualenv</span></h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Isolate your python dependencies. Initialize a virtual
+        environment in the root workspace folder, then fetch required package locks.</p>
+
+      <div class="os-toggles">
+        <button class="os-btn active" data-os="win" onclick="switchOS('win')">Windows</button>
+        <button class="os-btn" data-os="mac" onclick="switchOS('mac')">macOS/Linux</button>
+      </div>
+
+      <!-- Windows Env -->
+      <div id="env-win" class="os-content active">
+        <h3>1. Create and Activate Virtual Environment</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>PowerShell</span>
+            <button class="copy-btn" onclick="copyCode('win-venv-cmd')">Copy</button>
+          </div>
+          <pre><code id="win-venv-cmd">python -m venv venv
+.\venv\Scripts\Activate.ps1</code></pre>
+        </div>
+      </div>
+
+      <!-- macOS/Linux Env -->
+      <div id="env-mac" class="os-content">
+        <h3>1. Create and Activate Virtual Environment</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Bash</span>
+            <button class="copy-btn" onclick="copyCode('mac-venv-cmd')">Copy</button>
+          </div>
+          <pre><code id="mac-venv-cmd">python3 -m venv venv
+source venv/bin/activate</code></pre>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1.5rem;">2. Install Dependencies</h3>
+      <p style="margin-top:0.5rem; font-size:0.95rem; color:var(--text-muted);">Install core analysis components along
+        with baseline package versions:</p>
+      <div class="code-container">
+        <div class="code-header">
+          <span>Terminal</span>
+          <button class="copy-btn" onclick="copyCode('pip-install-cmd')">Copy</button>
+        </div>
+        <pre><code id="pip-install-cmd"># Install scanning engine core
+pip install -r requirements-core.txt
+
+# Install baseline vulnerable package versions
+pip install -r requirements.txt
+
+# (Optional) Install Neo4j driver requirements
+pip install -r requirements-graph.txt</code></pre>
+      </div>
+    </section>
+
+    <!-- Configuration Generator -->
+    <section id="configuration" class="section-card">
+      <h2 class="section-title">3. Environment Configs <span class="badge">.env Configuration</span></h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">PRAS avoids hardcoding credentials. Fill out the
+        fields below to dynamically generate a <code>.env</code> file configuration.</p>
+
+      <div class="generator-grid">
+        <div>
+          <div class="form-group">
+            <label class="form-label" for="env-gemini-key">Gemini API Key</label>
+            <input type="text" class="form-input" id="env-gemini-key" placeholder="AIzaSy..."
+              oninput="updateEnvOutput()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="env-git-token">GitHub Token (Optional)</label>
+            <input type="text" class="form-input" id="env-git-token" placeholder="ghp_..." oninput="updateEnvOutput()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="env-n4j-pass">Neo4j Password</label>
+            <input type="text" class="form-input" id="env-n4j-pass" value="demo-password" oninput="updateEnvOutput()">
+          </div>
+        </div>
+        <div>
+          <label class="form-label">Generated .env File</label>
+          <div class="code-container" style="margin-top:0;">
+            <div class="code-header">
+              <span>.env</span>
+              <button class="copy-btn" onclick="copyCode('env-file-code')">Copy Configuration</button>
+            </div>
+            <pre><code id="env-file-code" style="color: #f1f5f9;"># Outbound API configurations
+GOOGLE_API_KEY=""
+GITHUB_TOKEN=""
+
+# Knowledge Graph settings
+NEO4J_URI="bolt://localhost:7687"
+NEO4J_USER="neo4j"
+NEO4J_PASSWORD="demo-password"</code></pre>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted);">Save this code inside a file named <code>.env</code> in
+            the root folder of the project.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI Command Builder -->
+    <section id="builder" class="section-card">
+      <h2 class="section-title">4. Run Scanner & Command Builder <span class="badge">Interactive Command Builder</span>
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Configure your target parameters to dynamically
+        construct the exact execution command line.</p>
+
+      <div class="generator-grid">
+        <div class="toggle-group">
+          <div class="form-group">
+            <label class="form-label">Scan Target Type</label>
+            <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+              <label
+                style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                <input type="radio" name="target-type" value="local" checked onchange="updateCommandOutput()"
+                  style="accent-color: var(--primary);"> Local Directory
+              </label>
+              <label
+                style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); font-size: 0.9rem; cursor: pointer;">
+                <input type="radio" name="target-type" value="github" onchange="updateCommandOutput()"
+                  style="accent-color: var(--primary);"> GitHub Repository URL
+              </label>
+            </div>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">Offline Mode</span>
+              <span class="toggle-desc">Use offline cached files (no APIs)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-offline" checked onchange="updateCommandOutput()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">Skip LLM Rule Generation</span>
+              <span class="toggle-desc">Reuse cache instead of LLM queries</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-skip-llm" checked onchange="updateCommandOutput()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">Enable Neo4j Database</span>
+              <span class="toggle-desc">Push scan findings to Graph database</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-neo4j" onchange="updateCommandOutput()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <span class="toggle-title">Autonomous ReAct Agent</span>
+              <span class="toggle-desc">Execute loop via src/agent.py</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-agent" onchange="updateCommandOutput()">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Compiled Run Command</label>
+          <div class="code-container" style="margin-top:0;">
+            <div class="code-header">
+              <span>Terminal Command</span>
+              <button class="copy-btn" onclick="copyCode('compiled-cmd')">Copy Command</button>
+            </div>
+            <pre><code id="compiled-cmd" style="color: #a5b4fc; white-space: pre-wrap; word-break: break-all;">python pipeline_a.py --project-dir &lt;directory path&gt; --output-dir ./output --skip-llm --offline</code></pre>
+          </div>
+          <div class="info-alert" style="margin-top:1rem; padding: 0.75rem 1rem;">
+            <div class="info-alert-icon" style="font-size:1.1rem;">💡</div>
+            <div class="info-alert-content" style="font-size:0.85rem;" id="command-hint">
+              This executes the standard 12-phase pipeline on the target codebase using offline caches. Perfect for
+              verification!
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Neo4j Setup -->
+    <section id="neo4j" class="section-card">
+      <h2 class="section-title">5. Optional Graph Setup <span class="badge">Docker / Neo4j</span></h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">To visually view call chains (exposed routes mapping
+        to vulnerable APIs), you can run a local Neo4j database container.</p>
+
+      <h3>1. Start Neo4j Database Container</h3>
+      <div class="code-container">
+        <div class="code-header">
+          <span>Terminal</span>
+          <button class="copy-btn" onclick="copyCode('docker-up-cmd')">Copy</button>
+        </div>
+        <pre><code id="docker-up-cmd"># Start Neo4j container in the background
+docker compose up -d</code></pre>
+      </div>
+
+      <h3 style="margin-top:1.5rem;">2. Access Database Panel</h3>
+      <p style="margin-top:0.5rem; font-size:0.95rem; color:var(--text-muted);">Once the container starts, open the
+        Neo4j UI panel in your browser:</p>
+      <div class="code-container">
+        <div class="code-header">
+          <span>Browser Link</span>
+          <button class="copy-btn" onclick="copyCode('n4j-browser')">Copy Link</button>
+        </div>
+        <pre><code id="n4j-browser">http://localhost:7474</code></pre>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Log in using username <code>neo4j</code>
+        and password <code>demo-password</code>.</p>
+    </section>
+
+    <!-- Troubleshooting & FAQ -->
+    <section id="troubleshooting" class="section-card">
+      <h2 class="section-title">6. Troubleshooting & FAQ <span class="badge">Common Issues</span></h2>
+
+      <!-- <div class="faq-search-wrapper">
+        <input type="text" class="form-input" id="faq-search-input" placeholder="Search FAQ topics..." onkeyup="filterFAQ()">
+      </div> -->
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Trivy command fails with: 'trivy not found' error</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-body-content">
+            This means the Trivy executable path is not added to your system environment variables. Make sure you
+            install Trivy via <code>winget</code> or download the release zip, unpack it, and add the folder path
+            containing <code>trivy.exe</code> to your system <code>PATH</code> variable, then restart your terminal.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>GitHub API calls fail with Rate Limit errors</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-body-content">
+            GitHub restricts anonymous IP requests to 60 calls/hour. If you run multiple live scans, you will hit this
+            limit. Fix this by adding a personal access token under <code>GITHUB_TOKEN</code> inside your
+            <code>.env</code> file.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Do I need to run a Neo4j database to use the tool?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-body-content">
+            No, Neo4j is completely optional. If the Neo4j database is not running or fails to connect, the pipeline
+            degrades gracefully and runs all reachability queries locally using the JSON snapshot
+            (<code>graph_snapshot.json</code>).
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>How does Semgrep fit into the vulnerability scan pipeline?</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-body-content">
+            Semgrep is executed in Phase 4 of the pipeline. In Phase 3, PRAS automatically resolves the rules by checking the local cache, looking up the Semgrep Registry, or dynamically generating rules with LLMs before executing the Semgrep scan in parallel across CPU threads.
+          </div>
+        </div> -->
+      <!-- </div> -->
+    </section>
+  </main>
+
+  <script>
+
+    // Toggle target OS sections
+    function switchOS(os) {
+      // Find all buttons with that class
+      document.querySelectorAll(`.os-btn`).forEach(btn => {
+        if (btn.getAttribute("data-os") === os) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+
+      // Toggle prereq os displays
+      document.querySelectorAll("#prerequisites .os-content").forEach(el => {
+        el.classList.remove("active");
+      });
+      // Toggle env os displays
+      document.querySelectorAll("#environment .os-content").forEach(el => {
+        el.classList.remove("active");
+      });
+
+      if (os === "win") {
+        document.getElementById("prereq-win").classList.add("active");
+        document.getElementById("env-win").classList.add("active");
+      } else if (os === "mac") {
+        document.getElementById("prereq-mac").classList.add("active");
+        document.getElementById("env-mac").classList.add("active");
+      } else {
+        document.getElementById("prereq-linux").classList.add("active");
+        document.getElementById("env-mac").classList.add("active"); // macOS/Linux share env activation
+      }
+    }
+
+    // Copy to clipboard helper
+    function copyCode(elementId) {
+      const codeText = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const copyBtn = document.querySelector(`[onclick="copyCode('${elementId}')"]`);
+        const originalText = copyBtn.innerText;
+        copyBtn.innerText = "Copied!";
+        copyBtn.style.backgroundColor = "var(--success)";
+        copyBtn.style.color = "#fff";
+        setTimeout(() => {
+          copyBtn.innerText = originalText;
+          copyBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+          copyBtn.style.color = "var(--text-muted)";
+        }, 1500);
+      });
+    }
+
+    // Dynamic .env file generator
+    function updateEnvOutput() {
+      const geminiKey = document.getElementById("env-gemini-key").value;
+      const gitToken = document.getElementById("env-git-token").value;
+      const n4jPass = document.getElementById("env-n4j-pass").value;
+
+      const envTemplate = `# Outbound API configurations
+GOOGLE_API_KEY="${geminiKey}"
+GITHUB_TOKEN="${gitToken}"
+
+# Knowledge Graph settings
+NEO4J_URI="bolt://localhost:7687"
+NEO4J_USER="neo4j"
+NEO4J_PASSWORD="${n4jPass}"`;
+
+      document.getElementById("env-file-code").innerText = envTemplate;
+    }
+
+    // Dynamic Command Builder
+    function updateCommandOutput() {
+      const targetTypeEl = document.querySelector('input[name="target-type"]:checked');
+      const targetType = targetTypeEl ? targetTypeEl.value : "local";
+      const targetVal = targetType === "github" ? "<github repository url>" : "<directory path>";
+
+      const outputEl = document.getElementById("cmd-output-dir");
+      const outputDir = outputEl ? outputEl.value : "./output";
+      const isOffline = document.getElementById("toggle-offline").checked;
+      const skipLlm = document.getElementById("toggle-skip-llm").checked;
+      const useNeo4j = document.getElementById("toggle-neo4j").checked;
+      const useAgent = document.getElementById("toggle-agent").checked;
+
+      let cmd = "";
+      let hint = "";
+
+      if (useAgent) {
+        if (targetType === "github") {
+          cmd = `python -m src.agent --target <cloned repository path>`;
+          hint = "Executes the ReAct LLM Agent loop. Note: The autonomous agent expects a local directory path for its target codebase. Clone the repository first.";
+        } else {
+          cmd = `python -m src.agent --target ${targetVal}`;
+          if (outputDir) {
+            cmd += ` --output-dir ${outputDir}`;
+          }
+          hint = "Executes the ReAct LLM Agent loop. The agent will autonomously decide which scan sub-operations to run.";
+        }
+      } else {
+        if (targetType === "github") {
+          cmd = `python pipeline_a.py --github-url ${targetVal}`;
+        } else {
+          cmd = `python pipeline_a.py --project-dir ${targetVal}`;
+        }
+        if (outputDir) {
+          cmd += ` --output-dir ${outputDir}`;
+        }
+        if (skipLlm) {
+          cmd += " --skip-llm";
+        }
+        if (useNeo4j) {
+          cmd += " --neo4j";
+        }
+        if (isOffline) {
+          cmd += " --offline";
+        }
+
+        hint = "Runs the sequential 12-phase pipeline. " +
+          (isOffline ? "Loads offline cached packages and patch files. " : "Fetches live online patches and dependencies. ") +
+          (useNeo4j ? "Pushes nodes/edges into your active local Neo4j Docker container." : "");
+      }
+
+      document.getElementById("compiled-cmd").innerText = cmd;
+      document.getElementById("command-hint").innerText = hint;
+    }
+
+    // Accordion Toggle
+    function toggleAccordion(header) {
+      const item = header.closest(".accordion-item");
+      const body = item.querySelector(".accordion-body");
+      const isActive = item.classList.contains("active");
+
+      // Close all accordions
+      document.querySelectorAll(".accordion-item").forEach(el => {
+        el.classList.remove("active");
+        el.querySelector(".accordion-body").style.height = "0";
+      });
+
+      if (!isActive) {
+        item.classList.add("active");
+        const contentHeight = body.querySelector(".accordion-body-content").offsetHeight;
+        body.style.height = `${contentHeight}px`;
+      }
+    }
+
+    // FAQ Search Filter
+    function filterFAQ() {
+      const searchVal = document.getElementById("faq-search-input").value.toLowerCase();
+      const items = document.querySelectorAll(".accordion-item");
+
+      items.forEach(item => {
+        const title = item.querySelector(".accordion-header span").innerText.toLowerCase();
+        const content = item.querySelector(".accordion-body-content").innerText.toLowerCase();
+
+        if (title.includes(searchVal) || content.includes(searchVal)) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    }
+
+    // Sidebar navigation tracking highlighting
+    window.addEventListener("scroll", () => {
+      const sections = document.querySelectorAll("section");
+      const navItems = document.querySelectorAll(".nav-item");
+
+      let currentSectionId = "";
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.scrollY >= sectionTop - 120) {
+          currentSectionId = section.getAttribute("id");
+        }
+      });
+
+      navItems.forEach(item => {
+        if (item.getAttribute("data-target") === currentSectionId) {
+          item.classList.add("active");
+        } else {
+          item.classList.remove("active");
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
