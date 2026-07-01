@@ -172,7 +172,7 @@ if ($WithNeo4j) {
 
     # Check Docker daemon is running
     $dockerOk = docker info 2>$null
-    if ($LASTEXITCODE -ne 0) {
+    if (-not $dockerOk) {
         Write-Fail "Docker daemon is not running. Start Docker Desktop and retry."
         exit 1
     }
