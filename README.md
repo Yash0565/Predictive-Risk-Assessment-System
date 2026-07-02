@@ -16,7 +16,6 @@ A raw Trivy scan of pinned dependencies typically reports dozens of CVEs, most o
 which your code never touches. This tool narrows that list to the CVEs whose
 vulnerable APIs your code actually calls, then explains the impact and simulates
 the upgrade so you can decide with evidence instead of guesswork.
-
 Typical run on the bundled sample app: ~80 CVEs in pins, a handful reach the code,
 one BLOCK verdict, and an HTML report you open in a browser.
 
