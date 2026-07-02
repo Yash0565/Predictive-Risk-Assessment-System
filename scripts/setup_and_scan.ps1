@@ -10,7 +10,8 @@
 #   .\scripts\setup_and_scan.ps1 -RepoUrl "https://github.com/owner/repo" -WithNeo4j -WithLLM
 #
 # Flags:
-#   -RepoUrl    (Required) Full GitHub HTTPS URL of the repo to scan
+#   -RepoUrl    (Required) GitHub HTTPS URL to clone, OR a local directory path
+#               (e.g. .\vulnerable-task-tracker) which is scanned in place
 #   -WithNeo4j  Start Neo4j via Docker and enable graph phases (requires Docker Desktop)
 #   -WithLLM    Enable Ollama LLM explanations (requires Ollama installed + llama3 pulled)
 #   -OutputDir  Where to write the report (default: .\scans\<repo-name>)
@@ -244,39 +245,50 @@ if ($WithLLM) {
     Write-Warn "Skipped (use -WithLLM to enable AI explanations)"
 }
 
-# ── Phase 6: Clone target repo ─────────────────────────────────────────────────
+# ── Phase 6: Resolve target repo (local path or remote URL) ─────────────────────
 
 Write-Step "Phase 6 — Target repository"
 
-# Extract repo name from URL
-$repoName = ($RepoUrl -split "/")[-1] -replace "\.git$", ""
-$reposDir = Join-Path $Root "scans\repos"
-$repoPath = Join-Path $reposDir $repoName
+# A remote URL looks like http(s)://… or git@host:…; anything else that resolves
+# to an existing directory on disk is treated as a local repo (used in place).
+$isRemote = $RepoUrl -match '^(https?://|git@)'
+$isLocal  = (-not $isRemote) -and (Test-Path -LiteralPath $RepoUrl -PathType Container)
 
-if ($SkipClone -and (Test-Path $repoPath)) {
-    Write-OK "Using existing clone at $repoPath"
-} elseif (Test-Path $repoPath) {
-    Write-Host "  Repo directory exists — pulling latest changes..."
-    Push-Location $repoPath
-    git pull --ff-only 2>&1 | ForEach-Object { Write-Host "    $_" }
-    Pop-Location
-    Write-OK "Repository updated: $repoPath"
+if ($isLocal) {
+    $repoPath = (Resolve-Path -LiteralPath $RepoUrl).Path
+    $repoName = Split-Path -Leaf $repoPath
+    Write-OK "Using local repository: $repoPath"
 } else {
-    New-Item -ItemType Directory -Force -Path $reposDir | Out-Null
-    Write-Host "  Cloning $RepoUrl ..."
-    git clone --depth 1 $RepoUrl $repoPath 2>&1 | ForEach-Object { Write-Host "    $_" }
-    if ($LASTEXITCODE -ne 0) {
-        Write-Fail "git clone failed. Check the URL and your internet connection."
-        exit 1
-    }
-    Write-OK "Cloned to $repoPath"
-}
+    # Extract repo name from URL
+    $repoName = ($RepoUrl -split "/")[-1] -replace "\.git$", ""
+    $reposDir = Join-Path $Root "scans\repos"
+    $repoPath = Join-Path $reposDir $repoName
 
-if ($Branch) {
-    Push-Location $repoPath
-    git checkout $Branch 2>&1 | ForEach-Object { Write-Host "    $_" }
-    Pop-Location
-    Write-OK "Checked out branch: $Branch"
+    if ($SkipClone -and (Test-Path $repoPath)) {
+        Write-OK "Using existing clone at $repoPath"
+    } elseif (Test-Path $repoPath) {
+        Write-Host "  Repo directory exists — pulling latest changes..."
+        Push-Location $repoPath
+        git pull --ff-only 2>&1 | ForEach-Object { Write-Host "    $_" }
+        Pop-Location
+        Write-OK "Repository updated: $repoPath"
+    } else {
+        New-Item -ItemType Directory -Force -Path $reposDir | Out-Null
+        Write-Host "  Cloning $RepoUrl ..."
+        git clone --depth 1 $RepoUrl $repoPath 2>&1 | ForEach-Object { Write-Host "    $_" }
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail "git clone failed. Check the URL and your internet connection."
+            exit 1
+        }
+        Write-OK "Cloned to $repoPath"
+    }
+
+    if ($Branch) {
+        Push-Location $repoPath
+        git checkout $Branch 2>&1 | ForEach-Object { Write-Host "    $_" }
+        Pop-Location
+        Write-OK "Checked out branch: $Branch"
+    }
 }
 
 # ── Phase 7: Resolve output directory ──────────────────────────────────────────
