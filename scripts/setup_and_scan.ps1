@@ -42,6 +42,11 @@ function Write-OK([string]$msg) { Write-Host "  ✔ $msg" -ForegroundColor Green
 function Write-Warn([string]$msg) { Write-Host "  ⚠ $msg" -ForegroundColor Yellow }
 function Write-Fail([string]$msg) { Write-Host "  ✘ $msg" -ForegroundColor Red }
 
+# Bold (ANSI SGR 1); resets after. Falls back to plain text on terminals that
+# don't parse escapes. Kept separate so callers can still set -ForegroundColor.
+$script:Esc = [char]27
+function BoldText([string]$msg) { "$script:Esc[1m$msg$script:Esc[0m" }
+
 function Assert-Command([string]$cmd, [string]$installHint) {
     if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
         Write-Fail "$cmd not found on PATH."
@@ -349,6 +354,49 @@ if (Test-Path $report) {
     Write-Host ""
     Start-Process $report
     Write-OK "Report opened in browser"
+
+    # ── How to read the graph (developer reference) ──────────────────────────
+    Write-Host ""
+    Write-Host (BoldText "How to read the graph") -ForegroundColor Cyan
+    Write-Host "  Open the " -NoNewline
+    Write-Host (BoldText "Graph") -ForegroundColor Cyan -NoNewline
+    Write-Host " tab. It shows the reachability call graph: which functions"
+    Write-Host "  reach a vulnerable symbol, and from which entry points."
+    Write-Host ""
+    Write-Host "  Nodes"
+    Write-Host "    " -NoNewline
+    Write-Host (BoldText "Entry point") -ForegroundColor Blue -NoNewline
+    Write-Host "   a service/route where untrusted input enters — start reading here."
+    Write-Host "    " -NoNewline
+    Write-Host (BoldText "Function") -ForegroundColor Gray -NoNewline
+    Write-Host "      an internal function on a call path."
+    Write-Host "    " -NoNewline
+    Write-Host (BoldText "BLOCK") -ForegroundColor Red -NoNewline
+    Write-Host "         a vulnerable symbol that " -NoNewline
+    Write-Host (BoldText "is reachable") -ForegroundColor Red -NoNewline
+    Write-Host " from an entry point — fix first."
+    Write-Host "    " -NoNewline
+    Write-Host (BoldText "REVIEW") -ForegroundColor Yellow -NoNewline
+    Write-Host "        a vulnerable symbol present but not proven reachable — verify manually."
+    Write-Host ""
+    Write-Host "  Edges"
+    Write-Host "    An arrow " -NoNewline
+    Write-Host (BoldText "A -> B") -ForegroundColor White -NoNewline
+    Write-Host " means A calls B. Follow arrows from an " -NoNewline
+    Write-Host (BoldText "Entry point") -ForegroundColor Blue -NoNewline
+    Write-Host " to a"
+    Write-Host "    " -NoNewline
+    Write-Host (BoldText "BLOCK") -ForegroundColor Red -NoNewline
+    Write-Host " node to trace the exact reachable path (the dependency chain)."
+    Write-Host ""
+    Write-Host "  Tips"
+    Write-Host "    Tick " -NoNewline
+    Write-Host (BoldText "BLOCK only") -ForegroundColor Red -NoNewline
+    Write-Host " to hide noise and see just the reachable, must-fix paths."
+    Write-Host "    Click any node for its file, symbol, and CVE details in the side panel."
+    Write-Host "    Use " -NoNewline
+    Write-Host (BoldText "Reset view") -ForegroundColor White -NoNewline
+    Write-Host " to re-center after zooming/dragging."
 } else {
     Write-Warn "Pipeline finished but risk_report.html was not found at $report"
     Write-Host "  Check $OutputDir for partial output."
