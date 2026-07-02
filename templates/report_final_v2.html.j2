@@ -871,6 +871,14 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
   position: relative;
 }
 .live-graph-canvas:focus { outline: 2px solid var(--primary-2); outline-offset: 2px; }
+.live-graph-canvas:fullscreen {
+  width: 100vw; height: 100vh;
+  border-radius: 0; border: none;
+}
+.live-graph-canvas:-webkit-full-screen {
+  width: 100vw; height: 100vh;
+  border-radius: 0; border: none;
+}
 .live-graph-empty {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -1572,7 +1580,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
         {% else %}Derived from assessment (no graph snapshot){% endif %}
       </span>
     </div>
-    <p class="card-sub">Interactive force-directed view of packages, CVEs, services, and call chains. Drag nodes to reposition; click a node to highlight its blast radius; double-click empty space to reset.</p>
+    <p class="card-sub">Layered view of how entry points reach the highest-risk CVEs and their packages. Drag nodes to reposition; click a node to highlight its blast radius; double-click empty space to reset.</p>
 
     <div class="graph-toolbar" role="toolbar" aria-label="Graph filters">
       <button type="button" data-graph-filter="all" class="is-active">All ({{ gs.visible_nodes or 0 }})</button>
@@ -1583,6 +1591,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       <button type="button" data-graph-filter="reachable">Reachable only</button>
       <button type="button" id="graph-fit" style="margin-left:auto;">⤢ Fit view</button>
       <button type="button" id="graph-reset">Reset</button>
+      <button type="button" id="graph-fullscreen" title="Toggle fullscreen">⛶ Fullscreen</button>
     </div>
 
     <div id="neo4j-graph" class="live-graph-canvas" role="img" aria-label="Interactive security graph" tabindex="0">
@@ -1990,7 +1999,7 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       return Object.assign({}, e, {
         width: 1.5,
         font: { size: 10, align: "top", color: "#94A3B8", strokeWidth: 0 },
-        smooth: { type: "cubicBezier", forceDirection: "horizontal", roundness: 0.55 },
+        smooth: { type: "cubicBezier", forceDirection: "vertical", roundness: 0.5 },
         color: Object.assign({ color: "#64748B", highlight: "#E2E8F0", opacity: 0.75 }, e.color || {}),
       });
     }));
@@ -1999,13 +2008,14 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       layout: {
         hierarchical: {
           enabled: true,
-          direction: "LR",          // left-to-right columns
+          direction: "UD",          // top-to-bottom: types become horizontal rows
           sortMethod: "directed",
-          levelSeparation: 220,     // horizontal gap between columns
-          nodeSpacing: 120,         // vertical gap between nodes in a column
-          treeSpacing: 150,
+          levelSeparation: 170,     // vertical gap between rows
+          nodeSpacing: 150,         // horizontal gap between nodes in a row
+          treeSpacing: 170,
           blockShifting: true,
           edgeMinimization: true,
+          parentCentralization: true,
         },
       },
       interaction: { hover: true, tooltipDelay: 100, navigationButtons: false, keyboard: true, dragNodes: true },
@@ -2026,6 +2036,21 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     var resetBtn = document.getElementById("graph-reset");
     if (resetBtn) resetBtn.addEventListener("click", function () {
       applyFilter("all"); resetHighlight(); network.fit({ animation: true });
+    });
+    var fsBtn = document.getElementById("graph-fullscreen");
+    if (fsBtn) fsBtn.addEventListener("click", function () {
+      var el = graphContainer;
+      if (!document.fullscreenElement) {
+        (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen || function () {}).call(document);
+      }
+    });
+    // Refit + relabel the button whenever fullscreen state flips.
+    document.addEventListener("fullscreenchange", function () {
+      var on = document.fullscreenElement === graphContainer;
+      if (fsBtn) fsBtn.innerHTML = on ? "⛶ Exit fullscreen" : "⛶ Fullscreen";
+      if (network) setTimeout(function () { network.redraw(); network.fit({ animation: false }); }, 60);
     });
   }
 

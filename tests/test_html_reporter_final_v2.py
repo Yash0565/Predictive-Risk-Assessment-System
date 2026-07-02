@@ -159,7 +159,10 @@ def graph_snapshot() -> dict:
                 {"id": "cve:CVE-2023-32681", "cve_id": "CVE-2023-32681",
                  "cvss_score": 6.1, "severity": "HIGH"},
             ],
-            "functions": [],
+            "functions": [
+                {"id": "fn:app.api.handle", "qualified_name": "app.api.handle",
+                 "file": "app/api.py", "line_start": 10},
+            ],
             "services": [{"id": "svc:/api/data:POST", "name": "task-tracker",
                           "route": "/api/data", "method": "POST"}],
         },
@@ -170,8 +173,14 @@ def graph_snapshot() -> dict:
             "affected_by": [
                 {"from": "pkg:requests@2.28.0", "to": "cve:CVE-2023-32681"},
             ],
-            "vulnerable_in": [],
-            "exposes": [],
+            # service -> function -> CVE so the reachability chain is complete
+            # (orphan nodes are pruned from the graph, so every kept node connects).
+            "vulnerable_in": [
+                {"from": "cve:CVE-2023-32681", "to": "fn:app.api.handle"},
+            ],
+            "exposes": [
+                {"from": "svc:/api/data:POST", "to": "fn:app.api.handle"},
+            ],
             "calls": [],
         },
         "meta": {"mode": "snapshot"},

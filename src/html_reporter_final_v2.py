@@ -868,13 +868,17 @@ def _build_blast_svg_html(base: dict[str, Any]) -> str:
 # ─────────────────────────────────────────────────────────────────────
 
 
+# Caps kept low so the layered graph stays readable. CVEs are prioritised
+# (reachable / BLOCK / high CVSS first) before the cap, and only nodes that end
+# up connected to a shown CVE are rendered — so the graph shows the risk story,
+# not every transitive package.
 _GRAPH_NODE_LIMITS = {
-    "packages": 80,
-    "cves": 100,
-    "services": 50,
-    "functions": 60,
+    "packages": 24,
+    "cves": 24,
+    "services": 12,
+    "functions": 24,
 }
-_GRAPH_EDGE_LIMIT = 800
+_GRAPH_EDGE_LIMIT = 160
 
 _GRAPH_NODE_STYLES = {
     "package":  {"color": "#7C3AED", "border": "#5B21B6", "shape": "box",     "size": 22},
@@ -935,8 +939,20 @@ def _build_vis_graph(
         }
         nodes.append(node)
 
-    # CVEs first so they remain even when we cap packages/functions.
-    for cve in (snap_nodes.get("cves") or [])[: _GRAPH_NODE_LIMITS["cves"]]:
+    # CVEs first so they remain even when we cap packages/functions. Rank by
+    # what matters — reachable, then BLOCK/REVIEW verdict, then CVSS — so the cap
+    # keeps the highest-signal CVEs rather than an arbitrary slice.
+    _REC_RANK = {"BLOCK": 0, "REVIEW": 1, "PROCEED": 2}
+
+    def _cve_priority(cve: dict[str, Any]) -> tuple:
+        risk = cve_meta.get((cve.get("cve_id") or "").upper(), {})
+        reachable = 0 if risk.get("is_reachable") else 1
+        rec_rank = _REC_RANK.get((risk.get("recommendation") or "").upper(), 3)
+        cvss = float(cve.get("cvss_score") or 0)
+        return (reachable, rec_rank, -cvss)
+
+    ranked_cves = sorted(snap_nodes.get("cves") or [], key=_cve_priority)
+    for cve in ranked_cves[: _GRAPH_NODE_LIMITS["cves"]]:
         cid = cve.get("id") or f"cve:{cve.get('cve_id','')}"
         cve_id = cve.get("cve_id") or ""
         cvss = cve.get("cvss_score") or 0
@@ -988,17 +1004,22 @@ def _build_vis_graph(
              title=f"{qname}\n{file_path}:{line}" if line else f"{qname}\n{file_path}",
              qualified_name=qname, file=file_path, line=line)
 
-    # Build edges only between nodes that survived the caps.
+    # Build edges only between nodes that survived the caps. Order matters: the
+    # risk-story edges (entry -> function -> CVE -> package) are added first so
+    # they always render; transitive DEPENDS_ON clutter only fills leftover budget.
     edges: list[dict[str, Any]] = []
     edge_counts: dict[str, int] = {k: 0 for k in _GRAPH_EDGE_STYLES}
     for kind, snap_key in (
-        ("DEPENDS_ON",    "depends_on"),
-        ("AFFECTED_BY",   "affected_by"),
-        ("VULNERABLE_IN", "vulnerable_in"),
         ("EXPOSES",       "exposes"),
         ("CALLS",         "calls"),
+        ("VULNERABLE_IN", "vulnerable_in"),
+        ("AFFECTED_BY",   "affected_by"),
+        ("DEPENDS_ON",    "depends_on"),
     ):
         style = _GRAPH_EDGE_STYLES[kind]
+        # DEPENDS_ON is transitive-dependency noise; keep only a light sprinkle so
+        # it never buries the CVE reachability chains.
+        per_kind_cap = 24 if kind == "DEPENDS_ON" else _GRAPH_EDGE_LIMIT
         for edge in snap_edges.get(snap_key) or []:
             src = edge.get("from")
             dst = edge.get("to")
@@ -1017,10 +1038,24 @@ def _build_vis_graph(
                 "smooth": {"type": "continuous"},
             })
             edge_counts[kind] += 1
-            if len(edges) >= _GRAPH_EDGE_LIMIT:
+            if edge_counts[kind] >= per_kind_cap or len(edges) >= _GRAPH_EDGE_LIMIT:
                 break
         if len(edges) >= _GRAPH_EDGE_LIMIT:
             break
+
+    # Prune orphans: drop packages/services/functions that aren't wired to any
+    # shown edge. CVEs are always kept (they are the point of the graph). This
+    # removes the disconnected columns that made the graph a wall of nodes.
+    connected: set[str] = set()
+    for e in edges:
+        connected.add(e["from"])
+        connected.add(e["to"])
+    nodes = [
+        n for n in nodes
+        if n.get("group") == "cve" or n["id"] in connected
+    ]
+    kept_ids = {n["id"] for n in nodes}
+    edges = [e for e in edges if e["from"] in kept_ids and e["to"] in kept_ids]
 
     truncation = {
         "packages_truncated": max(0, len(snap_nodes.get("packages") or []) - _GRAPH_NODE_LIMITS["packages"]),
