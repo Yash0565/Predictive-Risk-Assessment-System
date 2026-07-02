@@ -74,6 +74,7 @@ def build_report_data(
     target_repo: str = "project",
     project_dir: Optional[str] = None,
     patches_dir: Optional[str] = None,
+    remediation: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     """Build the dict consumed by ``report_final_v2.html.j2``.
 
@@ -120,7 +121,28 @@ def build_report_data(
         base, upgrade, snapshot, scan
     )
     base["narrative"] = _build_narrative(base, upgrade)
+    base["remediation"] = _attach_remediation(base, remediation)
     return base
+
+
+def _attach_remediation(
+    base: dict[str, Any], remediation: Optional[dict[str, Any]]
+) -> dict[str, Any]:
+    """Group a remediation plan's items onto their CVEs and return the plan.
+
+    Each item is keyed to a CVE by ``cve_id``; matching CVEs get a
+    ``remediation_items`` list the template renders in the Fix Plan tab.
+    """
+    plan = remediation or {"generated_by": "deterministic", "items": []}
+    items = plan.get("items") or []
+    by_cve: dict[str, list[dict[str, Any]]] = {}
+    for it in items:
+        by_cve.setdefault(it.get("cve_id", ""), []).append(it)
+    for c in base.get("cves") or []:
+        matched = by_cve.get(c.get("cve_id", ""))
+        if matched:
+            c["remediation_items"] = matched
+    return plan
 
 
 def generate_report(
@@ -158,6 +180,9 @@ def render_html(
     project_dir: Optional[str] = None,
     target_repo: str = "project",
     offline: bool = False,
+    use_llm: bool = False,
+    llm_backend: str = "ollama",
+    ollama_model: str = "qwen2.5:3b",
 ) -> str:
     """Pipeline entry — same contract as ``html_reporter.render_html``."""
     scan = _load_json(Path(symbol_scan_path)) if symbol_scan_path and Path(symbol_scan_path).is_file() else None
@@ -179,6 +204,19 @@ def render_html(
         target_repo=target_repo,
         project_dir=project_dir,
     )
+
+    # Generate refactored code for this repo's call sites off the built CVEs,
+    # then re-attach so per-CVE remediation_items are populated for the template.
+    from src.remediation_refactor import generate_remediation, save_remediation
+    plan = generate_remediation(
+        data.get("cves") or [],
+        use_llm=use_llm,
+        llm_backend=llm_backend,
+        ollama_model=ollama_model,
+    )
+    save_remediation(plan, output_dir)
+    data["remediation"] = _attach_remediation(data, plan)
+
     out_path = os.path.join(output_dir, "risk_report.html")
     return generate_report(data, output_path=out_path, offline=offline)
 

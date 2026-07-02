@@ -500,6 +500,9 @@ async def run_pipeline(args: argparse.Namespace) -> None:
         project_dir=project_dir,
         target_repo=os.path.basename(project_dir) or "project",
         offline=args.offline,
+        use_llm=not skip_llm,
+        llm_backend=args.llm,
+        ollama_model=args.ollama_model,
     )
 
     if driver:

@@ -173,7 +173,7 @@
   },
   "cwe_409": {
     "source": "ollama",
-    "rule_path": "D:\\Predictive-Risk-Assessment-System\\semgrep_rules\\cwe_409_python.yaml",
+    "rule_path": "D:\\Predictive-Risk-Assessment-System\\scans\\reports\\mini-demo-app\\semgrep_rules\\cwe_409_python.yaml",
     "cwe_ids": [
       "CWE-409"
     ]

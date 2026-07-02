@@ -1,0 +1,109 @@
+{
+  "vulns": [
+    {
+      "cve": "GHSA-2xpw-w6gg-jr37",
+      "cvss": 0.0,
+      "note": "urllib3 streaming API improperly handles highly compressed data",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-34jh-p97f-mpxf",
+      "cvss": 0.0,
+      "note": "urllib3's Proxy-Authorization request header isn't stripped during cross-origin redirects",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-38jv-5279-wg99",
+      "cvss": 0.0,
+      "note": "Decompression-bomb safeguards bypassed when following HTTP redirects (streaming API)",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-g4mx-q9vg-27p4",
+      "cvss": 0.0,
+      "note": "urllib3's request body not stripped after redirect from 303 status changes request method to GET",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-gm62-xv2j-4w53",
+      "cvss": 0.0,
+      "note": "urllib3 allows an unbounded number of links in the decompression chain",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-pq67-6m6q-mj2v",
+      "cvss": 0.0,
+      "note": "urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-qccp-gfcp-xxvc",
+      "cvss": 0.0,
+      "note": "urllib3: Sensitive headers forwarded across origins in proxied low-level redirects",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-r64q-w8jr-g9qp",
+      "cvss": 0.0,
+      "note": "Improper Neutralization of CRLF Sequences in urllib3 library for Python",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-v845-jxx5-vc9f",
+      "cvss": 0.0,
+      "note": "`Cookie` HTTP header isn't stripped on cross-origin redirects",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "GHSA-wqvq-5m8c-6g24",
+      "cvss": 0.0,
+      "note": "CRLF injection in urllib3",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "PYSEC-2019-132",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "PYSEC-2020-148",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "PYSEC-2023-192",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "PYSEC-2023-212",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "1.24.2"
+    },
+    {
+      "cve": "PYSEC-2026-141",
+      "cvss": 0.0,
+      "note": "",
+      "package": "urllib3",
+      "version": "1.24.2"
+    }
+  ]
+}

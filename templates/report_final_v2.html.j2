@@ -509,7 +509,25 @@ main {
 .mini-bar > span { display: block; height: 100%; border-radius: 2px; }
 .detail-row.hidden { display: none; }
 .detail-row td { background: var(--surface-2); padding: 0; }
-.detail-panel { padding: 22px 24px; border-top: 2px solid var(--primary-2); }
+.detail-panel { padding: 22px 24px; border-top: 2px solid var(--primary-2); border-left: 3px solid var(--primary-2); }
+.detail-panel-BLOCK { border-top-color: var(--danger); border-left-color: var(--danger); }
+.detail-panel-REVIEW { border-top-color: var(--warning); border-left-color: var(--warning); }
+.detail-panel-PROCEED { border-top-color: var(--success); border-left-color: var(--success); }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.detail-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.detail-block-full { margin-top: 16px; }
+.ref-route {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  background: var(--warning-bg); color: var(--warning);
+  border-radius: 4px; padding: 1px 6px; margin-left: 4px;
+}
+@media (max-width: 720px) { .detail-grid { grid-template-columns: 1fr; } }
 .detail-panel h4 {
   font-size: 12px;
   font-family: var(--font-mono);
@@ -736,6 +754,26 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
 .mit-body strong { color: var(--text); font-size: 14px; font-weight: 600; }
 .mit-body span { color: var(--text-2); }
 
+/* Refactored-code remediation (Fix Plan tab) */
+.remediation-item {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: var(--surface-2);
+}
+.remediation-item:last-child { margin-bottom: 0; }
+.remediation-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 12px;
+}
+.remediation-loc { font-size: 13px; font-weight: 600; color: var(--primary-2); }
+.remediation-why {
+  margin-top: 10px;
+  font-size: 13px; color: var(--text-2); line-height: 1.6;
+}
+
 .patch-select {
   width: 100%; max-width: 480px;
   background: var(--surface-2);
@@ -788,9 +826,32 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
   padding: 22px;
 }
 .usage-section h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
-.usage-site { margin-bottom: 14px; }
+.usage-site {
+  margin-bottom: 14px;
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+}
 .usage-site:last-child { margin-bottom: 0; }
-.usage-loc { font-family: var(--font-mono); font-size: 13px; color: var(--primary-2); margin-bottom: 6px; }
+.usage-site.is-reachable {
+  border-left-color: var(--danger);
+  background: var(--danger-bg);
+}
+.usage-loc { font-family: var(--font-mono); font-size: 13px; color: var(--primary-2); margin-bottom: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.usage-path { color: var(--primary-2); }
+.usage-reach-badge {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--danger); background: var(--surface);
+  border: 1px solid var(--danger); border-radius: 999px; padding: 1px 8px;
+}
+.usage-route-badge {
+  font-size: 11px; font-weight: 700;
+  color: var(--warning); background: var(--warning-bg);
+  border-radius: 4px; padding: 1px 8px; margin-left: auto;
+}
 .usage-code {
   background: var(--surface-3);
   border: 1px solid var(--border);
@@ -803,6 +864,55 @@ html[data-theme="dark"] .cmd-block { background: #060a13; }
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
+/* AST API differences — grouped by change severity */
+.ast-group {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: var(--surface-2);
+}
+.ast-group:last-child { margin-bottom: 0; }
+.ast-group-danger  { border-left-color: var(--danger); }
+.ast-group-warning { border-left-color: var(--warning); }
+.ast-group-muted   { border-left-color: var(--text-3); }
+.ast-group-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ast-group-title { font-size: 13px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; }
+.ast-group-count {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  background: var(--surface-3); color: var(--text-2);
+  border-radius: 999px; padding: 1px 8px;
+}
+.ast-group-desc { font-size: 12.5px; color: var(--text-3); margin-left: 4px; }
+.ast-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.ast-item:last-child { margin-bottom: 0; }
+.ast-item-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+}
+.ast-symbol { font-size: 13px; font-weight: 600; color: var(--text); }
+.ast-kind { font-size: 12px; }
+.ast-delta { margin-left: auto; font-size: 12.5px; }
+.ast-sig {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.ast-sig-before { color: var(--danger); font-size: 12.5px; }
+.ast-sig-after  { color: var(--success); font-size: 12.5px; }
 
 .graph-wrap {
   background: var(--surface);
@@ -1286,36 +1396,46 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
         </tr>
         <tr class="detail-row hidden">
           <td colspan="8">
-            <div class="detail-panel">
-              {% if c.references %}
-              <h4>Locations in your code</h4>
-              <ul class="ref-list">
-                {% for r in c.references %}
-                {% set ep = r.entry_point_info or {} %}
-                <li><code>{{ r.file }}:{{ r.line }}</code>{% if r.enclosing_function %} in <em>{{ r.enclosing_function }}</em>{% endif %}{% if ep.route %} ({{ ep.method or 'GET' }} {{ ep.route }}){% endif %}</li>
-                {% endfor %}
-              </ul>
-              {% else %}
-              <h4>Reachability</h4>
-              <p style="font-size:14px;color:var(--text-3);">Not directly referenced in scanned application code.</p>
-              {% endif %}
-              <h4>Score breakdown</h4>
-              <div class="score-bars">
-                {% set sev = c.scores.severity_score|default(0) %}
-                {% set exp = c.scores.exploit_score|default(0) %}
-                {% set rch = c.scores.reachability_score|default(0) %}
-                {% set bls = c.scores.blast_radius_score|default(0) %}
-                <div class="score-bar-row"><span class="lbl">Severity</span><div class="bar-track"><div class="bar-fill bar-sev" style="width:{{ ((sev / 40) * 100)|round|int }}%"></div></div><span class="val">{{ sev }}</span></div>
-                <div class="score-bar-row"><span class="lbl">Exploit</span><div class="bar-track"><div class="bar-fill bar-exp" style="width:{{ ((exp / 20) * 100)|round|int }}%"></div></div><span class="val">{{ exp }}</span></div>
-                <div class="score-bar-row"><span class="lbl">Reachability</span><div class="bar-track"><div class="bar-fill bar-reach" style="width:{{ ((rch / 25) * 100)|round|int }}%"></div></div><span class="val">{{ rch }}</span></div>
-                <div class="score-bar-row"><span class="lbl">Blast Radius</span><div class="bar-track"><div class="bar-fill bar-blast" style="width:{{ ((bls / 15) * 100)|round|int }}%"></div></div><span class="val">{{ bls }}</span></div>
+            <div class="detail-panel detail-panel-{{ sev_class }}">
+              <div class="detail-grid">
+                <div class="detail-block">
+                  {% if c.references %}
+                  <h4>Locations in your code</h4>
+                  <ul class="ref-list">
+                    {% for r in c.references %}
+                    {% set ep = r.entry_point_info or {} %}
+                    <li><code>{{ r.file }}:{{ r.line }}</code>{% if r.enclosing_function %} in <em>{{ r.enclosing_function }}</em>{% endif %}{% if ep.route %} <span class="ref-route">{{ ep.method or 'GET' }} {{ ep.route }}</span>{% endif %}</li>
+                    {% endfor %}
+                  </ul>
+                  {% else %}
+                  <h4>Reachability</h4>
+                  <p style="font-size:14px;color:var(--text-3);">Not directly referenced in scanned application code.</p>
+                  {% endif %}
+                </div>
+                <div class="detail-block">
+                  <h4>Score breakdown</h4>
+                  <div class="score-bars">
+                    {% set sev = c.scores.severity_score|default(0) %}
+                    {% set exp = c.scores.exploit_score|default(0) %}
+                    {% set rch = c.scores.reachability_score|default(0) %}
+                    {% set bls = c.scores.blast_radius_score|default(0) %}
+                    <div class="score-bar-row"><span class="lbl">Severity</span><div class="bar-track"><div class="bar-fill bar-sev" style="width:{{ ((sev / 40) * 100)|round|int }}%"></div></div><span class="val">{{ sev }}</span></div>
+                    <div class="score-bar-row"><span class="lbl">Exploit</span><div class="bar-track"><div class="bar-fill bar-exp" style="width:{{ ((exp / 20) * 100)|round|int }}%"></div></div><span class="val">{{ exp }}</span></div>
+                    <div class="score-bar-row"><span class="lbl">Reachability</span><div class="bar-track"><div class="bar-fill bar-reach" style="width:{{ ((rch / 25) * 100)|round|int }}%"></div></div><span class="val">{{ rch }}</span></div>
+                    <div class="score-bar-row"><span class="lbl">Blast Radius</span><div class="bar-track"><div class="bar-fill bar-blast" style="width:{{ ((bls / 15) * 100)|round|int }}%"></div></div><span class="val">{{ bls }}</span></div>
+                  </div>
+                </div>
               </div>
               {% if c.explanation %}
-              <h4>Summary</h4>
-              <p style="font-size:14px;color:var(--text-2);line-height:1.6;">{{ c.explanation }}</p>
+              <div class="detail-block detail-block-full">
+                <h4>Summary</h4>
+                <p style="font-size:14px;color:var(--text-2);line-height:1.6;">{{ c.explanation }}</p>
+              </div>
               {% endif %}
-              <h4>Fixed in</h4>
-              <p style="font-size:14px;"><code style="color:var(--success);font-family:var(--font-mono);">{{ c.fixed_version or 'no upstream patch' }}</code></p>
+              <div class="detail-block detail-block-full">
+                <h4>Fixed in</h4>
+                <p style="font-size:14px;"><code style="color:var(--success);font-family:var(--font-mono);">{{ c.fixed_version or 'no upstream patch' }}</code></p>
+              </div>
             </div>
           </td>
         </tr>
@@ -1403,18 +1523,40 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
   {% if semgrep_hits %}
   <div class="card">
     <h3 class="card-title">Semgrep &amp; Reachability Findings</h3>
-    <p class="card-sub">Locations in this repository that call vulnerable or changed APIs.</p>
+    <p class="card-sub">Locations in this repository that call vulnerable or changed APIs — reachable entry points first.</p>
 
-    {% for hit in semgrep_hits %}
-    <div class="semgrep-hit">
-      <div class="semgrep-file">{{ hit.file }}{% if hit.line %} : line {{ hit.line }}{% endif %}{% if hit.cve_id %} · <span style="color:var(--text-3);font-weight:400;">{{ hit.cve_id }}</span>{% endif %}</div>
-      <div class="semgrep-note">
-        {% if hit.route %}Reachable via <code>{{ hit.method or 'GET' }} {{ hit.route }}</code>{% if hit.enclosing_function %} in <em>{{ hit.enclosing_function }}</em>{% endif %}.
-        {% elif hit.enclosing_function %}Inside <em>{{ hit.enclosing_function }}</em>.
-        {% else %}Direct usage of {{ hit.symbol or hit.package }}.{% endif %}
+    {# A hit is reachable when it is wired to an HTTP entry point (has a route). #}
+    {% set reachable_hits = semgrep_hits|selectattr('route')|list %}
+    {% set direct_hits = semgrep_hits|rejectattr('route')|list %}
+
+    {% set smart_groups = [
+      {'label': 'Reachable via entry point', 'tone': 'danger',
+       'desc': 'Called along a path from an HTTP route — externally exploitable.', 'hits': reachable_hits},
+      {'label': 'Direct usage', 'tone': 'muted',
+       'desc': 'API is referenced but not tied to an external entry point.', 'hits': direct_hits},
+    ] %}
+
+    {% for g in smart_groups %}
+    {% if g.hits %}
+    <div class="ast-group ast-group-{{ g.tone }}">
+      <div class="ast-group-head">
+        <span class="ast-group-title">{{ g.label }}</span>
+        <span class="ast-group-count">{{ g.hits|length }}</span>
+        <span class="ast-group-desc">{{ g.desc }}</span>
       </div>
-      {% if hit.snippet %}<span class="semgrep-match">{{ hit.snippet }}</span>{% endif %}
+      {% for hit in g.hits %}
+      <div class="semgrep-hit">
+        <div class="semgrep-file">{{ hit.file }}{% if hit.line %} : line {{ hit.line }}{% endif %}{% if hit.cve_id %} · <span style="color:var(--text-3);font-weight:400;">{{ hit.cve_id }}</span>{% endif %}</div>
+        <div class="semgrep-note">
+          {% if hit.route %}Reachable via <code>{{ hit.method or 'GET' }} {{ hit.route }}</code>{% if hit.enclosing_function %} in <em>{{ hit.enclosing_function }}</em>{% endif %}.
+          {% elif hit.enclosing_function %}Inside <em>{{ hit.enclosing_function }}</em>.
+          {% else %}Direct usage of {{ hit.symbol or hit.package }}.{% endif %}
+        </div>
+        {% if hit.snippet %}<span class="semgrep-match">{{ hit.snippet }}</span>{% endif %}
+      </div>
+      {% endfor %}
     </div>
+    {% endif %}
     {% endfor %}
   </div>
   {% endif %}
@@ -1467,6 +1609,43 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
     </ul>
   </div>
   {% endif %}
+
+  {% set remediation_items = (remediation['items'] if remediation else []) or [] %}
+  {% if remediation_items %}
+  <div class="card">
+    <h3 class="card-title">Refactored Code · your call sites</h3>
+    <p class="card-sub">
+      Suggested edits to migrate this repository's usages across the upgrade.
+      {% if remediation['generated_by'] and remediation['generated_by'] != 'deterministic' %}
+      Generated by <span class="mono">{{ remediation['generated_by'] }}</span>.
+      {% else %}
+      Rule-based suggestions (run with <code>--llm</code> for AI-authored refactors).
+      {% endif %}
+    </p>
+    {% for item in remediation_items %}
+    <div class="remediation-item">
+      <div class="remediation-head">
+        <span class="mono remediation-loc">{{ item.file }}{% if item.line %}:{{ item.line }}{% endif %}</span>
+        {% if item.cve_id %}<span class="mono muted">{{ item.cve_id }}</span>{% endif %}
+        {% if item.change_classification %}<span class="badge badge-{{ item.change_classification }}">{{ item.change_classification }}</span>{% endif %}
+      </div>
+      <div class="diff-grid" style="margin-bottom:0;">
+        <div class="diff-panel before">
+          <h3>Current · your code</h3>
+          <pre>{{ item.old_code or '# (call site source unavailable)' }}</pre>
+        </div>
+        <div class="diff-panel after">
+          <h3>Suggested · refactored</h3>
+          <pre>{{ item.new_code or '# No change required' }}</pre>
+        </div>
+      </div>
+      {% if item.explanation %}
+      <p class="remediation-why">{{ item.explanation }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
 
 <!-- TAB 4 · PATCHES -->
@@ -1508,37 +1687,57 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
       {% if c.patch.symbols %}
       <div class="usage-section" style="margin-bottom:16px;">
         <h3>API / AST differences &amp; target changes</h3>
-        <p class="card-sub" style="margin-bottom:14px;">Per-symbol signature changes extracted by an AST diff of the upstream fix commit.</p>
-        <table class="data-table" style="margin-bottom:0;">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Kind</th>
-              <th>Target change</th>
-              <th>Signature (before → after)</th>
-              <th>Δ Lines</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for s in c.patch.symbols %}
-            {% set cls = s.change_classification or 'INTERNAL_CHANGE' %}
-            <tr>
-              <td><span class="mono">{{ s.short_name or s.fully_qualified_name }}</span></td>
-              <td><span class="mono muted">{{ s.kind or 'function' }}</span></td>
-              <td><span class="badge badge-{{ cls }}">{{ cls }}</span></td>
-              <td>
-                {% if s.before_signature or s.after_signature %}
-                <div class="mono" style="color:var(--danger);font-size:12.5px;">- {{ s.before_signature or '(absent)' }}</div>
-                <div class="mono" style="color:var(--success);font-size:12.5px;">+ {{ s.after_signature or '(absent)' }}</div>
-                {% else %}
-                <span class="muted" style="font-size:13px;">{{ s.summary or '—' }}</span>
-                {% endif %}
-              </td>
-              <td><span class="mono" style="color:var(--success)">+{{ s.lines_added|default(0) }}</span> <span class="muted">/</span> <span class="mono" style="color:var(--danger)">-{{ s.lines_removed|default(0) }}</span></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <p class="card-sub" style="margin-bottom:14px;">Per-symbol signature changes extracted by an AST diff of the upstream fix commit, grouped by change type — most severe first.</p>
+
+        {# Severity tiers: most breaking first. Symbols with no matching tier fall through to Internal. #}
+        {% set ast_groups = [
+          {'key': 'breaking', 'label': 'Breaking changes', 'tone': 'danger',
+           'desc': 'Signatures your code depends on were removed, renamed, or changed.',
+           'classes': ['REMOVED', 'RENAMED', 'SIGNATURE_CHANGED']},
+          {'key': 'behavioral', 'label': 'Behavioral changes', 'tone': 'warning',
+           'desc': 'Same signature, but return values or hardening behavior changed.',
+           'classes': ['RETURN_CHANGED', 'HARDENED_ONLY']},
+          {'key': 'internal', 'label': 'Internal changes', 'tone': 'muted',
+           'desc': 'Implementation-only changes with no impact on the public API.',
+           'classes': ['INTERNAL_CHANGE', 'ADDED']},
+        ] %}
+
+        {% for g in ast_groups %}
+        {% set g_syms = c.patch.symbols
+            | selectattr('change_classification', 'in', g.classes) | list
+            if g.key != 'internal'
+            else c.patch.symbols
+              | rejectattr('change_classification', 'in', ast_groups[0].classes)
+              | rejectattr('change_classification', 'in', ast_groups[1].classes) | list %}
+        {% if g_syms %}
+        <div class="ast-group ast-group-{{ g.tone }}">
+          <div class="ast-group-head">
+            <span class="ast-group-title">{{ g.label }}</span>
+            <span class="ast-group-count">{{ g_syms|length }}</span>
+            <span class="ast-group-desc">{{ g.desc }}</span>
+          </div>
+          {% for s in g_syms %}
+          {% set cls = s.change_classification or 'INTERNAL_CHANGE' %}
+          <div class="ast-item">
+            <div class="ast-item-head">
+              <span class="mono ast-symbol">{{ s.short_name or s.fully_qualified_name }}</span>
+              <span class="mono muted ast-kind">{{ s.kind or 'function' }}</span>
+              <span class="badge badge-{{ cls }}">{{ cls }}</span>
+              <span class="ast-delta"><span class="mono" style="color:var(--success)">+{{ s.lines_added|default(0) }}</span> <span class="muted">/</span> <span class="mono" style="color:var(--danger)">-{{ s.lines_removed|default(0) }}</span></span>
+            </div>
+            {% if s.before_signature or s.after_signature %}
+            <div class="ast-sig">
+              <div class="mono ast-sig-before">- {{ s.before_signature or '(absent)' }}</div>
+              <div class="mono ast-sig-after">+ {{ s.after_signature or '(absent)' }}</div>
+            </div>
+            {% elif s.summary %}
+            <div class="ast-sig"><span class="muted" style="font-size:13px;">{{ s.summary }}</span></div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
       </div>
       {% endif %}
 
@@ -1547,8 +1746,12 @@ html[data-theme="dark"] .raw-json { background: #050a13; }
         <h3>Vulnerable code block · your code that calls this API</h3>
         {% for r in c.references %}
         {% set ep = r.entry_point_info or {} %}
-        <div class="usage-site">
-          <div class="usage-loc">{{ r.file }}:{{ r.line }}{% if r.enclosing_function %} in {{ r.enclosing_function }}(){% endif %}{% if ep.route %} · reachable via {{ ep.method or 'GET' }} {{ ep.route }}{% endif %}</div>
+        <div class="usage-site{% if ep.route %} is-reachable{% endif %}">
+          <div class="usage-loc">
+            {% if ep.route %}<span class="usage-reach-badge">● REACHABLE</span>{% endif %}
+            <span class="usage-path">{{ r.file }}:{{ r.line }}</span>{% if r.enclosing_function %} <span class="muted">in {{ r.enclosing_function }}()</span>{% endif %}
+            {% if ep.route %}<span class="usage-route-badge">{{ ep.method or 'GET' }} {{ ep.route }}</span>{% endif %}
+          </div>
           {% if r.code_snippet or r.source %}
           <pre class="usage-code">{{ r.code_snippet or r.source }}</pre>
           {% endif %}

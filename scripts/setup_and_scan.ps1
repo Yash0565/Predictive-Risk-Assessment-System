@@ -11,7 +11,9 @@
 #
 # Flags:
 #   -RepoUrl    (Required) GitHub HTTPS URL to clone, OR a local directory path
-#               (e.g. .\vulnerable-task-tracker) which is scanned in place
+#               which is scanned in place. The local path may be anywhere on disk
+#               and may be absolute (e.g. D:\mini-demo-app) or relative to your
+#               current shell location (e.g. .\mini-demo-app or ..\mini-demo-app).
 #   -WithNeo4j  Start Neo4j via Docker and enable graph phases (requires Docker Desktop)
 #   -WithLLM    Enable Ollama LLM explanations (requires Ollama installed + llama3 pulled)
 #   -OutputDir  Where to write the report (default: .\scans\<repo-name>)
@@ -29,6 +31,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
+# Remember where the caller invoked us from, so a relative -RepoUrl (e.g.
+# ".\my-app" or "..\my-app") resolves against their shell's location — not the
+# PRAS repo root we're about to switch into. Absolute paths are unaffected.
+$InvocationDir = (Get-Location).Path
 Set-Location $Root
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -254,13 +260,27 @@ if ($WithLLM) {
 
 Write-Step "Phase 6 — Target repository"
 
-# A remote URL looks like http(s)://… or git@host:…; anything else that resolves
-# to an existing directory on disk is treated as a local repo (used in place).
+# A remote URL looks like http(s)://… or git@host:…; anything else is treated as
+# a local directory (scanned in place, wherever it lives on disk). Relative paths
+# are resolved against the caller's original location, not the PRAS repo root.
 $isRemote = $RepoUrl -match '^(https?://|git@)'
-$isLocal  = (-not $isRemote) -and (Test-Path -LiteralPath $RepoUrl -PathType Container)
+
+$localCandidate = $RepoUrl
+if (-not $isRemote -and -not [System.IO.Path]::IsPathRooted($RepoUrl)) {
+    $localCandidate = Join-Path $InvocationDir $RepoUrl
+}
+$isLocal = (-not $isRemote) -and (Test-Path -LiteralPath $localCandidate -PathType Container)
+
+# A non-remote argument that doesn't resolve to a directory is a user error —
+# fail early with a clear message rather than trying to git-clone a bad path.
+if (-not $isRemote -and -not $isLocal) {
+    Write-Fail "Local path not found: $RepoUrl"
+    Write-Host "  → Pass an existing directory, or a GitHub URL (https://… / git@…)." -ForegroundColor Yellow
+    exit 1
+}
 
 if ($isLocal) {
-    $repoPath = (Resolve-Path -LiteralPath $RepoUrl).Path
+    $repoPath = (Resolve-Path -LiteralPath $localCandidate).Path
     $repoName = Split-Path -Leaf $repoPath
     Write-OK "Using local repository: $repoPath"
 } else {
